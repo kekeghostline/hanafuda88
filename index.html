@@ -39,6 +39,29 @@
   --transition: 0.22s ease;
 }
 
+/* ===== 背景テーマ別フォント色 ===== */
+#scr-game.bg-wakakusa {
+  --text:          #c8b080;
+  --text-dim:      #7a6040;
+  --text-faint:    #4a3a20;
+  --text-game:     #8aaa78;
+  --text-game-dim: #5a7050;
+  --gold:          #c8993a;
+  --gold-light:    #e8c97e;
+  --green:         #90c080;
+}
+#scr-game.bg-shiraki {
+  --text:          #3a2a10;
+  --text-dim:      #5a4020;
+  --text-faint:    #7a6040;
+  --text-game:     #2a3a20;
+  --text-game-dim: #4a5a38;
+  --gold:          #7a3a00;
+  --gold-light:    #3d1f00;
+  --green:         #3a6020;
+  --red:           #a02020;
+}
+
 /* ===== リセット ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; }
@@ -264,7 +287,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-bottom: 0.5px solid #1e1808;
   gap: 6px;
 }
-.yaku-name { font-size: 15px; color: #d4b870; font-weight: 500; min-width: 56px; }
+.yaku-name { font-size: 15px; color: var(--gold-light); font-weight: 500; min-width: 56px; }
 .yaku-cond { font-size: 13px; color: var(--text-dim); flex: 1; padding: 0 6px; }
 .yaku-pt   { font-size: 15px; color: var(--gold); font-weight: 500; min-width: 44px; text-align: right; }
 .yaku-top { display: flex; justify-content: space-between; align-items: center; }
@@ -278,7 +301,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background-size: cover;
   background-position: center;
 }
-.yaku-card-name { font-size: 8px; color: #7a6040; text-align: center; line-height: 1.2; max-width: 34px; }
+.yaku-card-name { font-size: 8px; color: var(--text-dim); text-align: center; line-height: 1.2; max-width: 34px; }
 
 /* 操作方法タブ */
 .op-row {
@@ -303,11 +326,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-bottom: 0.5px solid var(--border-dim);
   flex-shrink: 0;
 }
-.g-title { font-size: 16px; font-weight: 600; color: #b8d090; letter-spacing: 0.06em; }
+.g-title { font-size: 16px; font-weight: 600; color: var(--text-game); letter-spacing: 0.06em; }
 .g-meta  { font-size: 12px; color: var(--text-game-dim); }
 .g-icons { display: flex; gap: 12px; }
 .g-icon-btn {
-  font-size: 22px; color: #7a9070;
+  font-size: 22px; color: var(--text-game-dim);
   transition: color var(--transition);
   line-height: 1;
 }
@@ -340,7 +363,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
 .cap-cat { display: flex; flex-direction: column; gap: 2px; }
-.cap-cat-label { font-size: 8px; color: #4a6040; }
+.cap-cat-label { font-size: 8px; color: var(--text-game-dim); }
 .cap-cards {
   position: relative;
   display: flex;
@@ -391,7 +414,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: #1a1a2a; border: 1px solid #3a3a5a;
   border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; color: #5a5a8a;
+  font-size: 11px; color: var(--text-game-dim);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -421,7 +444,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: transparent;
   border: 0.5px dashed #3a3a3a;
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; color: #3a3a3a;
+  font-size: 11px; color: var(--text-game-dim);
 }
 .field-card.highlight {
   box-shadow: 0 0 0 2px var(--gold);
@@ -514,7 +537,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 7px;
   background: #0d0d0d;
   border: 0.5px solid var(--border);
-  color: #9a8060;
+  color: var(--text-dim);
   transition: background var(--transition), border-color var(--transition), color var(--transition);
 }
 .opt-btn.active {
@@ -585,8 +608,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 11px; padding: 4px 6px; text-align: center;
 }
 .s-pay  { color: var(--red); }
-.s-recv { color: #5a9a60; }
-.s-even { color: #5a5a50; }
+.s-recv { color: var(--green); }
+.s-even { color: var(--text-faint); }
 .final-row td {
   font-size: 14px; font-weight: 500; color: var(--gold-light);
   border-top: 1px solid #3a2a10; padding-top: 5px;
@@ -1368,6 +1391,8 @@ const G = (() => {
     el.style.backgroundSize     = 'cover';
     el.style.backgroundPosition = 'center';
     el.style.backgroundColor    = fallback[name] || fallback.kuronuri;
+    el.classList.remove('bg-kuronuri', 'bg-wakakusa', 'bg-shiraki');
+    el.classList.add('bg-' + name);
   }
 
   function applySettingsUI() {
@@ -1797,7 +1822,7 @@ const G = (() => {
       } else {
         const img = _cardImg(c);
         const stackBadge = c.stacked
-          ? `<span style="position:absolute;bottom:1px;right:2px;font-size:7px;color:#f90">×3</span>`
+          ? `<span style="position:absolute;bottom:1px;right:2px;font-size:7px;color:var(--gold)">×3</span>`
           : '';
         html += `<div class="field-card ${img.cls}"
           id="fc-${i}"
@@ -2486,7 +2511,7 @@ const G = (() => {
     }
 
     // 累計行
-    let cumulHtml = '<td class="row-label" style="color:#4a7040;font-size:10px">累計点</td>';
+    let cumulHtml = '<td class="row-label" style="color:var(--text-game-dim);font-size:10px">累計点</td>';
     for (const pi of cols) {
       const color = cumScore[pi] >= 0 ? 'var(--green)' : 'var(--red)';
       const sign  = cumScore[pi] >= 0 ? '+' : '';
@@ -2506,7 +2531,7 @@ const G = (() => {
           ${bannerHtml}
           <tr><td class="row-label">精算</td>${seisanHtml.replace('<td class="row-label">精算</td>','')}</tr>
           <tr class="final-row"><td class="row-label" style="color:var(--text-dim);font-size:10px">最終得点</td>${finalHtml.replace(/<td class="row-label"[^>]*>最終得点<\/td>/,'')}</tr>
-          <tr class="cumul-row"><td class="row-label" style="color:#4a7040;font-size:10px">累計点</td>${cumulHtml.replace(/<td class="row-label"[^>]*>累計点<\/td>/,'')}</tr>
+          <tr class="cumul-row"><td class="row-label" style="color:var(--text-game-dim);font-size:10px">累計点</td>${cumulHtml.replace(/<td class="row-label"[^>]*>累計点<\/td>/,'')}</tr>
         </tbody>
       </table>
       <button class="ok-btn" onclick="G.nextRound()">${btnLabel}</button>`;
