@@ -34,6 +34,13 @@
   --mc-kas:  #1a2a18;
   --mc-kas-b: #2a4028;
 
+  /* バッジ色 */
+  --badge-turn-bg:     #2a3a28;
+  --badge-turn-text:   #80c090;
+  --badge-turn-border: #3a5a38;
+  --badge-fuke-bg:     #2a0808;
+  --badge-fuke-border: #5a1818;
+
   --radius-phone: 36px;
   --radius-screen: 24px;
   --transition: 0.22s ease;
@@ -41,14 +48,20 @@
 
 /* ===== 背景テーマ別フォント色 ===== */
 #scr-game.bg-wakakusa {
-  --text:          #c8b080;
-  --text-dim:      #7a6040;
-  --text-faint:    #4a3a20;
-  --text-game:     #8aaa78;
-  --text-game-dim: #5a7050;
-  --gold:          #c8993a;
-  --gold-light:    #e8c97e;
-  --green:         #90c080;
+  --text:          #2a1a08;
+  --text-dim:      #4a3010;
+  --text-faint:    #6a5030;
+  --text-game:     #1a2a08;
+  --text-game-dim: #3a4a28;
+  --gold:          #7a4a00;
+  --gold-light:    #3d2200;
+  --green:         #2a5010;
+  --red:           #8a1010;
+  --badge-turn-bg:     rgba(0,0,0,0.45);
+  --badge-turn-text:   #1a3a10;
+  --badge-turn-border: #3a6020;
+  --badge-fuke-bg:     rgba(0,0,0,0.35);
+  --badge-fuke-border: #7a1010;
 }
 #scr-game.bg-shiraki {
   --text:          #3a2a10;
@@ -60,6 +73,11 @@
   --gold-light:    #3d1f00;
   --green:         #3a6020;
   --red:           #a02020;
+  --badge-turn-bg:     rgba(0,0,0,0.12);
+  --badge-turn-text:   #1a4010;
+  --badge-turn-border: #4a7030;
+  --badge-fuke-bg:     rgba(180,30,30,0.12);
+  --badge-fuke-border: #8a2020;
 }
 
 /* ===== リセット ===== */
@@ -351,15 +369,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .cpu-pts  { font-size: 12px; color: var(--gold); }
 .turn-badge {
   font-size: 11px;
-  background: #2a3a28; color: #80c090;
+  background: var(--badge-turn-bg); color: var(--badge-turn-text);
   border-radius: 4px; padding: 1px 5px;
-  border: 0.5px solid #3a5a38;
+  border: 0.5px solid var(--badge-turn-border);
 }
 .fuke-badge-sm {
   font-size: 11px;
-  background: #2a0808; color: var(--red);
+  background: var(--badge-fuke-bg); color: var(--red);
   border-radius: 4px; padding: 1px 5px;
-  border: 0.5px solid #5a1818;
+  border: 0.5px solid var(--badge-fuke-border);
 }
 .cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
 .cap-cat { display: flex; flex-direction: column; gap: 2px; }
