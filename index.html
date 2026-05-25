@@ -2175,9 +2175,19 @@ const G = (() => {
     const yakuNagare = !amefure &&
       yakuResults.every(r => r.yakuPts > 0 && !r.isFuke);
 
-    // 雨流れ・役流れ時は役をすべて無効化
+    // 雨流れ・役流れ時: フケ以外の役を無効化
+    // フケプレイヤーはフケ80点のみ有効（同時成立の他の役も無効）
     if (amefure || yakuNagare) {
-      yakuResults.forEach(r => { r.yakuPts = 0; r.yakuNames = []; r.isFuke = false; });
+      yakuResults.forEach(r => {
+        if (r.isFuke) {
+          // フケのみ残す
+          r.yakuPts  = 80;
+          r.yakuNames = ['フケ'];
+        } else {
+          r.yakuPts  = 0;
+          r.yakuNames = [];
+        }
+      });
     }
 
     // --- 6 & 7. フケ精算・役精算（差額精算方式）---
@@ -2270,8 +2280,6 @@ const G = (() => {
      戻り値: { yakuPts, yakuNames:string[], isFuke }
      ============================================================ */
   function calcYaku(pi, caps, rawPts, isFuke) {
-    if (isFuke) return { yakuPts: 80, yakuNames: ['フケ'], isFuke: true };
-
     const ids = new Set(caps.map(c => c.id));
     const S   = CARDS.SPECIAL;
     let pts = 0;
@@ -2334,6 +2342,12 @@ const G = (() => {
       names.push(`カス(${kasCount}枚)`);
     }
 
+    // フケ成立時はフケ80点を加算（他の役と同時成立可）
+    if (isFuke) {
+      pts += 80;
+      names.unshift('フケ');
+      return { yakuPts: pts, yakuNames: names, isFuke: true };
+    }
     return { yakuPts: pts, yakuNames: names, isFuke: false };
   }
 
