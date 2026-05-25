@@ -40,6 +40,7 @@
   --badge-turn-border: #3a5a38;
   --badge-fuke-bg:     #2a0808;
   --badge-fuke-border: #5a1818;
+  --badge-yaku-bg:     #2a1f08;
 
   --radius-phone: 36px;
   --radius-screen: 24px;
@@ -57,11 +58,12 @@
   --gold-light:    #3d2200;
   --green:         #2a5010;
   --red:           #8a1010;
-  --badge-turn-bg:     rgba(0,0,0,0.45);
-  --badge-turn-text:   #1a3a10;
-  --badge-turn-border: #3a6020;
-  --badge-fuke-bg:     rgba(0,0,0,0.35);
-  --badge-fuke-border: #7a1010;
+  --badge-turn-bg:     #1a3a14;
+  --badge-turn-text:   #a0e090;
+  --badge-turn-border: #4a8a30;
+  --badge-fuke-bg:     #3a0808;
+  --badge-fuke-border: #8a1818;
+  --badge-yaku-bg:     #3a2800;
 }
 #scr-game.bg-shiraki {
   --text:          #3a2a10;
@@ -73,11 +75,12 @@
   --gold-light:    #3d1f00;
   --green:         #3a6020;
   --red:           #a02020;
-  --badge-turn-bg:     rgba(0,0,0,0.12);
-  --badge-turn-text:   #1a4010;
-  --badge-turn-border: #4a7030;
-  --badge-fuke-bg:     rgba(180,30,30,0.12);
+  --badge-turn-bg:     #2a4a1a;
+  --badge-turn-text:   #b0d890;
+  --badge-turn-border: #4a7a28;
+  --badge-fuke-bg:     #4a1010;
   --badge-fuke-border: #8a2020;
+  --badge-yaku-bg:     #5a3800;
 }
 
 /* ===== リセット ===== */
@@ -612,12 +615,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .row-label { color: var(--text-faint) !important; text-align: left !important; font-size: 12px; }
 .yaku-badge {
   display: inline-block;
-  background: #2a1f08; color: var(--gold);
+  background: var(--badge-yaku-bg); color: var(--gold);
   border-radius: 3px; padding: 1px 4px; font-size: 8px;
 }
 .fuke-badge {
   display: inline-block;
-  background: #2a0808; color: var(--red);
+  background: var(--badge-fuke-bg); color: var(--red);
   border-radius: 3px; padding: 1px 4px; font-size: 8px;
 }
 .banner-cell {
