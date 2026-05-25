@@ -1679,9 +1679,17 @@ const G = (() => {
         if (nameEl.textContent !== newLabel) nameEl.textContent = newLabel;
       }
 
-      // 取り点
+      // 取り点 + リアルタイム役名バッジ
       const ptsEl = document.getElementById(`cap-pts-${pi}`);
-      if (ptsEl) ptsEl.textContent = `取り点 ${pts}点`;
+      if (ptsEl) {
+        const liveYaku = calcYakuLive(st.caps[pi]);
+        const yakuBadges = liveYaku.map(n =>
+          `<span style="display:inline-block;background:#2a1f08;color:var(--gold);` +
+          `border-radius:3px;padding:0 4px;font-size:9px;margin-left:3px;` +
+          `border:0.5px solid var(--gold-dark)">${n}</span>`
+        ).join('');
+        ptsEl.innerHTML = `取り点 ${pts}点${yakuBadges}`;
+      }
 
       // 手番バッジ
       const tbEl = document.getElementById(`turn-badge-${pi}`);
@@ -2183,6 +2191,38 @@ const G = (() => {
   }
 
   /* ============================================================
+     calcYakuLive — リアルタイム役チェック（局中表示用・フケ判定なし）
+     現時点の取り札で成立している役名一覧を返す
+     ============================================================ */
+  function calcYakuLive(caps) {
+    const ids = new Set(caps.map(c => c.id));
+    const S   = CARDS.SPECIAL;
+    const names = [];
+
+    const picaIds = [S.matsu_pica, S.sakura_pica, S.susuki_pica, S.yanagi_pica, S.kiri_pica];
+    const picaOwn = picaIds.filter(id => ids.has(id));
+    if (picaOwn.length === 5) names.push('五光');
+    else if (picaOwn.length === 4) {
+      if (ids.has(S.yanagi_pica) && ids.has(S.matsu_pica) && ids.has(S.kiri_pica) && ids.has(S.susuki_pica))
+        names.push('雨四光');
+      else if (!ids.has(S.yanagi_pica)) names.push('四光');
+    } else if (picaOwn.length === 3) {
+      if (ids.has(S.matsu_pica) && ids.has(S.kiri_pica) && ids.has(S.susuki_pica)) names.push('三光');
+    }
+
+    if ([S.matsu_zaku, S.ume_zaku, S.sakura_zaku].every(id => ids.has(id))) names.push('赤短');
+    if ([S.botan_zaku, S.kiku_zaku, S.momiji_zaku].every(id => ids.has(id))) names.push('青短');
+    if ([S.hagi_tane, S.momiji_tane, S.botan_tane].every(id => ids.has(id))) names.push('猪鹿蝶');
+    if (ids.has(S.susuki_pica) && ids.has(S.kiku_tane)) names.push('月見酒');
+    if (ids.has(S.sakura_pica) && ids.has(S.kiku_tane)) names.push('花見酒');
+
+    const kasCount = caps.filter(c => c.type === 'kas').length + (ids.has(S.kiku_tane) ? 1 : 0);
+    if (kasCount >= 13) names.push(`カス`);
+
+    return names;
+  }
+
+  /* ============================================================
      calcYaku — 役計算
      戻り値: { yakuPts, yakuNames:string[], isFuke }
      ============================================================ */
@@ -2343,32 +2383,23 @@ const G = (() => {
       let cell = '';
       for (const d of seisanDetail[pi]) {
         const vsName = PLAYER_NAMES[d.vs];
-        const vsIsPlayer = d.vs === 0; // 相手が「あなた」かどうか
+        // 矢印方向: 相手列が右(d.vs > pi)なら→、左(d.vs < pi)なら←
+        const goRight = d.vs > pi;
         if (d.dir === 'even') {
           cell += `<div class="s-even">差額なし（${vsName}）</div>`;
         } else if (d.dir === 'pay') {
           // 支払い
-          if (vsIsPlayer) {
-            // 相手が「あなた」→ 左矢印
-            cell += `<div class="s-pay">← ${d.amount}点 あなたへ</div>`;
-          } else {
-            // 相手がCPU → 右矢印
+          if (goRight) {
             cell += `<div class="s-pay">${vsName}へ ${d.amount}点 →</div>`;
+          } else {
+            cell += `<div class="s-pay">← ${d.amount}点 ${vsName}へ</div>`;
           }
         } else {
           // 受け取り
-          if (vsIsPlayer) {
-            // 相手が「あなた」→ 右矢印で「あなたから」
-            cell += `<div class="s-recv">→ ${d.amount}点 あなたから</div>`;
+          if (goRight) {
+            cell += `<div class="s-recv">${vsName}から ${d.amount}点 ←</div>`;
           } else {
-            // 相手がCPU
-            if (pi === 0) {
-              // あなた列: CPU○から XX点 ←
-              cell += `<div class="s-recv">${vsName}から ${d.amount}点 ←</div>`;
-            } else {
-              // CPU列: → XX点 CPU○から
-              cell += `<div class="s-recv">→ ${d.amount}点 ${vsName}から</div>`;
-            }
+            cell += `<div class="s-recv">→ ${d.amount}点 ${vsName}から</div>`;
           }
         }
       }
