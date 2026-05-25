@@ -1574,8 +1574,9 @@ const G = (() => {
     document.getElementById('g-round-label').textContent =
       `${st.roundNo}局／12局`;
 
-    // ボタンを非表示
-    document.getElementById('btn-start-round').style.display = 'none';
+    // ボタンバーはrenderBtns()で制御するためここでは不要（nullセーフ化）
+    const bsr = document.getElementById('btn-start-round');
+    if (bsr) bsr.style.display = 'none';
 
     render();
     log(`=== ${st.roundNo}局開始 親:${PLAYER_NAMES[st.parentIdx]} ===`);
