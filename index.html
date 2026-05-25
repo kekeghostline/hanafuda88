@@ -42,6 +42,9 @@
   --badge-fuke-border: #5a1818;
   --badge-yaku-bg:     #2a1f08;
   --cumul-bg:          rgba(20,40,10,0.4);
+  --modal-title:       var(--gold-light);
+  --modal-text:        var(--text);
+  --modal-text-dim:    var(--text-dim);
 
   --radius-phone: 36px;
   --radius-screen: 24px;
@@ -59,13 +62,16 @@
   --gold-light:    #3d2200;
   --green:         #2a5010;
   --red:           #8a1010;
-  --badge-turn-bg:     #1a3a14;
-  --badge-turn-text:   #a0e090;
-  --badge-turn-border: #4a8a30;
-  --badge-fuke-bg:     #3a0808;
-  --badge-fuke-border: #8a1818;
-  --badge-yaku-bg:     #3a2800;
+  --badge-turn-bg:     rgba(10,50,10,0.75);
+  --badge-turn-text:   #d0f0b0;
+  --badge-turn-border: #5aaa38;
+  --badge-fuke-bg:     rgba(60,10,10,0.75);
+  --badge-fuke-border: #aa2828;
+  --badge-yaku-bg:     rgba(60,40,0,0.75);
   --cumul-bg:          rgba(20,40,10,0.35);
+  --modal-title:       #e8c97e;
+  --modal-text:        #c8b080;
+  --modal-text-dim:    #9a8060;
 }
 #scr-game.bg-shiraki {
   --text:          #3a2a10;
@@ -77,13 +83,16 @@
   --gold-light:    #3d1f00;
   --green:         #3a6020;
   --red:           #a02020;
-  --badge-turn-bg:     #2a4a1a;
-  --badge-turn-text:   #b0d890;
-  --badge-turn-border: #4a7a28;
-  --badge-fuke-bg:     #4a1010;
-  --badge-fuke-border: #8a2020;
-  --badge-yaku-bg:     #5a3800;
+  --badge-turn-bg:     rgba(20,60,10,0.82);
+  --badge-turn-text:   #d8f0b0;
+  --badge-turn-border: #5a9030;
+  --badge-fuke-bg:     rgba(80,15,15,0.82);
+  --badge-fuke-border: #aa2828;
+  --badge-yaku-bg:     rgba(80,50,0,0.82);
   --cumul-bg:          rgba(180,160,100,0.15);
+  --modal-title:       #e8c97e;
+  --modal-text:        #c8b080;
+  --modal-text-dim:    #9a8060;
 }
 
 /* ===== リセット ===== */
@@ -594,7 +603,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .seisan-title {
   font-size: 17px; font-weight: 500;
-  color: var(--gold-light); text-align: center;
+  color: var(--modal-title); text-align: center;
   margin-bottom: 12px;
 }
 .seisan-table {
@@ -602,13 +611,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 12px; table-layout: fixed;
 }
 .seisan-table th {
-  color: var(--text-dim); font-weight: 500;
+  color: var(--modal-text-dim); font-weight: 500;
   text-align: center; padding: 4px 2px;
   border-bottom: 0.5px solid var(--border);
   font-size: 12px;
 }
 .seisan-table td {
-  color: var(--text); text-align: center;
+  color: var(--modal-text); text-align: center;
   padding: 3px 2px;
   border-bottom: 0.5px solid var(--border-dim);
   vertical-align: top;
@@ -814,7 +823,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.1　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.2　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1324,7 +1333,7 @@ const G = (() => {
     el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
     el.addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - sx;
-      if (dx < -60) G.hideRules();
+      if (dx > 60) G.hideRules();
     }, { passive: true });
   }
 
