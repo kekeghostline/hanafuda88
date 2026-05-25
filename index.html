@@ -2620,47 +2620,55 @@ const G = (() => {
     const st = G_state;
     const is4 = group.length === 4;
 
-    // 対象カードを手札から伏せる（山札へ戻す）
+    // 1. 同月札を手札から取り出す
     for (const c of group) {
       const idx = st.hands[pi].findIndex(h => h.id === c.id);
       if (idx !== -1) st.hands[pi].splice(idx, 1);
     }
-    st.deck.push(...group);
-    shuf(st.deck);
 
     if (is4) {
-      // 両隣が1枚ずつ抜き取る
-      const left  = st.turnOrder[(orderIdx + 1) % 3];
-      const right = st.turnOrder[(orderIdx + 2) % 3];
-      // 隣プレイヤーの手札先頭を山札に返す（プレイヤーが絡む場合の選択UIはStep4スコープ外）
-      if (st.hands[left].length > 0) {
-        st.deck.push(st.hands[left].shift());
-      }
-      if (st.hands[right].length > 0) {
-        st.deck.push(st.hands[right].shift());
-      }
+      // 4枚の場合:
+      // ・次のプレイヤーが1枚、その次が1枚をランダムに選んで山札へ（計2枚）
+      // ・残り2枚は手札に直接戻す
+      // ・山札シャッフル → 上2枚を補充
+      const discardIdx1 = Math.floor(Math.random() * group.length);
+      const kept = group.filter((_, i) => i !== discardIdx1);
+      const discardIdx2 = Math.floor(Math.random() * kept.length);
+      const returnCards = kept.filter((_, i) => i !== discardIdx2);
+      const discardCards = group.filter(c => !returnCards.includes(c));
+
+      // 選ばれた2枚のみ山札へ
+      st.deck.push(...discardCards);
       shuf(st.deck);
+      // 残り2枚を手札に戻す（同月2枚が必ず残る）
+      st.hands[pi].push(...returnCards);
       // 山札上2枚を補充
       st.hands[pi].push(st.deck.pop());
       st.hands[pi].push(st.deck.pop());
     } else {
-      // 次の手番プレイヤーが1枚抜く
-      const next = st.turnOrder[(orderIdx + 1) % 3];
-      if (st.hands[next].length > 0) {
-        st.deck.push(st.hands[next].shift());
-        shuf(st.deck);
-      }
+      // 3枚の場合:
+      // ・次のプレイヤーが1枚をランダムに選んで山札へ
+      // ・残り2枚は手札に直接戻す
+      // ・山札シャッフル → 上1枚を補充
+      const discardIdx = Math.floor(Math.random() * group.length);
+      const returnCards = group.filter((_, i) => i !== discardIdx);
+      const discardCard = group[discardIdx];
+
+      // 選ばれた1枚のみ山札へ
+      st.deck.push(discardCard);
+      shuf(st.deck);
+      // 残り2枚を手札に戻す（同月2枚が必ず残る）
+      st.hands[pi].push(...returnCards);
       // 山札上1枚を補充
       st.hands[pi].push(st.deck.pop());
     }
 
-    log(`交換: ${PLAYER_NAMES[pi]} ${is4 ? '4枚' : '3枚'}交換`);
+    log(`交換: ${PLAYER_NAMES[pi]} ${is4 ? '4枚' : '3枚'}交換 手札:${st.hands[pi].length}枚`);
     render();
 
-    // 交換後も条件を満たすか再チェック
+    // 交換後も同月3枚・4枚が発生したら再度交換可能
     const groups = _findSoroi(st.hands[pi]);
     if (groups.length > 0) {
-      // 再度同じプレイヤーへ（プレイヤーならモーダル、CPUなら自動）
       if (pi === 0) {
         const s3 = groups.filter(g => g.length === 3);
         const s4 = groups.filter(g => g.length === 4);
