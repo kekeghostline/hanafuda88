@@ -2412,8 +2412,11 @@ const G = (() => {
     for (const pi of cols) {
       const r = yakuResults[pi];
       if (r.isFuke) {
-        yakuHtml += `<td><span class="fuke-badge">フケ</span><br>
-          <span style="color:var(--red)">80点</span></td>`;
+        // フケは精算モーダルでは他の役と同じ色（ゴールド）で表示
+        const fukeNames = r.yakuNames.map(n =>
+          `<span class="yaku-badge">${n}</span>`).join(' ');
+        yakuHtml += `<td>${fukeNames}<br>
+          <span style="color:var(--gold)">+${r.yakuPts}点</span></td>`;
       } else if (r.yakuNames.length > 0) {
         const badges = r.yakuNames.map(n =>
           `<span class="yaku-badge">${n}</span>`).join(' ');
