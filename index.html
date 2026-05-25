@@ -1687,9 +1687,12 @@ const G = (() => {
       const name  = PLAYER_NAMES[pi];
       const { pts } = calcScore(st.caps[pi], true);
 
-      // 名前ラベル
+      // 名前ラベル（局開始時に設定、手番が変わっても固定）
       const nameEl = document.getElementById(pi === 0 ? 'cap-name-0' : `cap-name-${pi}`);
-      if (nameEl) nameEl.textContent = pi === 0 ? name : `${label}　${name}`;
+      if (nameEl) {
+        const newLabel = pi === 0 ? name : `${label}　${name}`;
+        if (nameEl.textContent !== newLabel) nameEl.textContent = newLabel;
+      }
 
       // 取り点
       const ptsEl = document.getElementById(`cap-pts-${pi}`);
@@ -2375,18 +2378,32 @@ const G = (() => {
       let cell = '';
       for (const d of seisanDetail[pi]) {
         const vsName = PLAYER_NAMES[d.vs];
+        const vsIsPlayer = d.vs === 0; // 相手が「あなた」かどうか
         if (d.dir === 'even') {
           cell += `<div class="s-even">差額なし（${vsName}）</div>`;
         } else if (d.dir === 'pay') {
-          cell += `<div class="s-pay">${vsName}へ ${d.amount}点 →</div>`;
+          // 支払い
+          if (vsIsPlayer) {
+            // 相手が「あなた」→ 左矢印
+            cell += `<div class="s-pay">← ${d.amount}点 あなたへ</div>`;
+          } else {
+            // 相手がCPU → 右矢印
+            cell += `<div class="s-pay">${vsName}へ ${d.amount}点 →</div>`;
+          }
         } else {
-          // recv: あなた列は「← XX点 CPU1から」、CPU列は方向反転
-          if (pi === 0) {
-            cell += `<div class="s-recv">${vsName}から ${d.amount}点 ←</div>`;
-          } else if (d.vs === 0) {
+          // 受け取り
+          if (vsIsPlayer) {
+            // 相手が「あなた」→ 右矢印で「あなたから」
             cell += `<div class="s-recv">→ ${d.amount}点 あなたから</div>`;
           } else {
-            cell += `<div class="s-recv">${vsName}から ${d.amount}点 ←</div>`;
+            // 相手がCPU
+            if (pi === 0) {
+              // あなた列: CPU○から XX点 ←
+              cell += `<div class="s-recv">${vsName}から ${d.amount}点 ←</div>`;
+            } else {
+              // CPU列: → XX点 CPU○から
+              cell += `<div class="s-recv">→ ${d.amount}点 ${vsName}から</div>`;
+            }
           }
         }
       }
