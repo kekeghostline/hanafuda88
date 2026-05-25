@@ -44,22 +44,18 @@
 html, body { width: 100%; height: 100%; overflow: hidden; }
 body {
   font-family: -apple-system, 'Hiragino Sans', 'Helvetica Neue', sans-serif;
-  background: #111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #000;
 }
 button { font-family: inherit; cursor: pointer; border: none; background: none; }
 
 /* ===== フォン枠 ===== */
 #app {
-  width: 375px;
-  height: 812px;
+  width: 100vw;
+  height: 100dvh;
   background: var(--bg);
-  border-radius: var(--radius-phone);
+  border-radius: 0;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 0 0 0.5px #444;
 }
 
 /* ===== 画面共通 ===== */
@@ -69,6 +65,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: none;
   flex-direction: column;
   overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .screen.active { display: flex; }
 
@@ -93,7 +91,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 5px;
   border: 1px solid #5c4510;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
+  font-size: 30px;
 }
 .loading-spinner {
   width: 28px; height: 28px;
@@ -135,23 +133,23 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 5px;
   border: 1px solid #5c4510;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
+  font-size: 30px;
 }
 .s1-title {
-  font-size: 26px; font-weight: 600;
+  font-size: 28px; font-weight: 600;
   color: var(--gold-light);
   letter-spacing: 0.14em;
   margin-bottom: 4px;
 }
 .s1-sub {
-  font-size: 11px; color: var(--gold-dark);
+  font-size: 13px; color: var(--gold-dark);
   letter-spacing: 0.26em;
   margin-bottom: 42px;
 }
 .s1-btn {
   width: 216px; padding: 13px 0;
   border-radius: 9px;
-  font-size: 14px; font-weight: 500;
+  font-size: 16px; font-weight: 500;
   letter-spacing: 0.06em;
   display: block;
   text-align: center;
@@ -163,12 +161,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .s1-btn-secondary {
   background: transparent; color: var(--gold);
   border: 1px solid var(--gold-dark);
-  font-size: 13px;
+  font-size: 15px;
 }
 .s1-footer {
-  position: absolute; bottom: 20px;
-  font-size: 10px; color: #5a4a30;
+  font-size: 12px; color: #5a4a30;
   letter-spacing: 0.06em;
+  margin-top: 28px;
+  padding-bottom: 24px;
+  text-align: center;
 }
 
 /* ===== SCR-002 ルール説明画面 ===== */
@@ -186,19 +186,19 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-bottom: 10px;
 }
 .back-btn {
-  color: var(--gold); font-size: 13px;
+  color: var(--gold); font-size: 15px;
   padding: 4px 0;
   transition: opacity var(--transition);
 }
 .back-btn:active { opacity: 0.6; }
 .s2-header-title {
-  font-size: 16px; font-weight: 500;
+  font-size: 18px; font-weight: 500;
   color: var(--gold-light); flex: 1; text-align: center;
 }
 .tabs { display: flex; }
 .tab {
   flex: 1; padding: 8px 4px;
-  font-size: 11px; color: var(--text-dim);
+  font-size: 13px; color: var(--text-dim);
   text-align: center;
   border-bottom: 2px solid transparent;
   transition: color var(--transition), border-color var(--transition);
@@ -216,17 +216,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* 基本ルールタブ */
 .rule-section { margin-bottom: 16px; }
 .rule-section-title {
-  font-size: 11px; color: var(--gold); font-weight: 500;
+  font-size: 13px; color: var(--gold); font-weight: 500;
   margin-bottom: 8px;
   border-left: 3px solid var(--gold);
   padding-left: 7px;
 }
 .rule-text {
-  font-size: 12px; color: var(--text); line-height: 1.8;
+  font-size: 14px; color: var(--text); line-height: 1.8;
 }
 .rule-table {
   width: 100%; border-collapse: collapse;
-  font-size: 11px; color: var(--text);
+  font-size: 13px; color: var(--text);
   margin-top: 6px;
 }
 .rule-table th {
@@ -243,7 +243,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* 札一覧タブ */
 .card-list-month { margin-bottom: 14px; }
 .card-list-month-title {
-  font-size: 11px; color: var(--gold); font-weight: 500;
+  font-size: 13px; color: var(--gold); font-weight: 500;
   margin-bottom: 6px;
   border-left: 3px solid var(--gold);
   padding-left: 7px;
@@ -252,10 +252,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; align-items: center; gap: 8px;
   padding: 4px 0;
   border-bottom: 0.5px solid #1a1408;
-  font-size: 11px;
+  font-size: 13px;
 }
 .card-list-thumb {
-  width: 24px; height: 36px;
+  width: 38px; height: 57px;
   border-radius: 3px;
   flex-shrink: 0;
 }
@@ -270,23 +270,23 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 6px 0;
   border-bottom: 0.5px solid #1e1808;
 }
-.yaku-name { font-size: 13px; color: #d4b870; font-weight: 500; min-width: 56px; }
-.yaku-cond { font-size: 11px; color: var(--text-dim); flex: 1; padding: 0 6px; }
-.yaku-pt   { font-size: 13px; color: var(--gold); font-weight: 500; min-width: 44px; text-align: right; }
+.yaku-name { font-size: 15px; color: #d4b870; font-weight: 500; min-width: 56px; }
+.yaku-cond { font-size: 13px; color: var(--text-dim); flex: 1; padding: 0 6px; }
+.yaku-pt   { font-size: 15px; color: var(--gold); font-weight: 500; min-width: 44px; text-align: right; }
 
 /* 操作方法タブ */
 .op-row {
   display: flex; gap: 10px; align-items: flex-start;
   padding: 8px 0; border-bottom: 0.5px solid #1a1408;
 }
-.op-icon { font-size: 18px; flex-shrink: 0; width: 28px; text-align: center; }
-.op-text { font-size: 12px; color: var(--text); line-height: 1.7; }
+.op-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
+.op-text { font-size: 14px; color: var(--text); line-height: 1.7; }
 .op-text strong { color: var(--gold-light); font-weight: 500; }
 
 /* ===== SCR-003 ゲーム画面 ===== */
 #scr-game {
   background: var(--bg-game);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 /* ゲームヘッダー */
@@ -297,11 +297,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-bottom: 0.5px solid var(--border-dim);
   flex-shrink: 0;
 }
-.g-title { font-size: 14px; font-weight: 600; color: #b8d090; letter-spacing: 0.06em; }
-.g-meta  { font-size: 10px; color: var(--text-game-dim); }
+.g-title { font-size: 16px; font-weight: 600; color: #b8d090; letter-spacing: 0.06em; }
+.g-meta  { font-size: 12px; color: var(--text-game-dim); }
 .g-icons { display: flex; gap: 12px; }
 .g-icon-btn {
-  font-size: 20px; color: #7a9070;
+  font-size: 22px; color: #7a9070;
   transition: color var(--transition);
   line-height: 1;
 }
@@ -318,16 +318,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; align-items: center; gap: 6px;
   margin-bottom: 4px;
 }
-.cpu-name { font-size: 10px; color: var(--text-game); font-weight: 500; }
-.cpu-pts  { font-size: 10px; color: var(--gold); }
+.cpu-name { font-size: 12px; color: var(--text-game); font-weight: 500; }
+.cpu-pts  { font-size: 12px; color: var(--gold); }
 .turn-badge {
-  font-size: 9px;
+  font-size: 11px;
   background: #2a3a28; color: #80c090;
   border-radius: 4px; padding: 1px 5px;
   border: 0.5px solid #3a5a38;
 }
 .fuke-badge-sm {
-  font-size: 9px;
+  font-size: 11px;
   background: #2a0808; color: var(--red);
   border-radius: 4px; padding: 1px 5px;
   border: 0.5px solid #5a1818;
@@ -366,14 +366,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: #1a1a2a; border: 1px solid #3a3a5a;
   border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 9px; color: #5a5a8a;
+  font-size: 11px; color: #5a5a8a;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
 }
-.yama-count { font-size: 9px; color: var(--text-game-dim); }
+.yama-count { font-size: 11px; color: var(--text-game-dim); }
 .field-zone { flex: 1; }
-.field-title { font-size: 9px; color: var(--text-game-dim); margin-bottom: 3px; }
+.field-title { font-size: 11px; color: var(--text-game-dim); margin-bottom: 3px; }
 #field-cards {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -396,7 +396,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: transparent;
   border: 0.5px dashed #3a3a3a;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #3a3a3a;
+  font-size: 16px; color: #3a3a3a;
 }
 .field-card.highlight {
   box-shadow: 0 0 0 2px var(--gold);
@@ -411,8 +411,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-bottom: 0.5px solid var(--border-dim);
   flex-shrink: 0;
 }
-.status-txt { font-size: 11px; color: var(--text-game); }
-.status-sub { font-size: 9px; color: var(--text-faint); }
+.status-txt { font-size: 13px; color: var(--text-game); }
+.status-sub { font-size: 11px; color: var(--text-faint); }
 
 /* ボタンバー */
 .g-btn-bar {
@@ -424,7 +424,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .g-action-btn {
   padding: 6px 16px;
-  border-radius: 7px; font-size: 12px; font-weight: 500;
+  border-radius: 7px; font-size: 14px; font-weight: 500;
   transition: opacity var(--transition), transform var(--transition);
 }
 .g-action-btn:active { opacity: 0.75; transform: scale(0.96); }
@@ -441,7 +441,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 6px 10px;
   flex-shrink: 0;
 }
-.hand-label { font-size: 9px; color: var(--text-game-dim); margin-bottom: 4px; }
+.hand-label { font-size: 11px; color: var(--text-game-dim); margin-bottom: 4px; }
 #player-cards {
   display: flex; gap: 4px; justify-content: center; flex-wrap: nowrap;
 }
@@ -479,7 +479,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .s4-modal {
   background: #161006;
   border-radius: 20px 20px 0 0;
-  padding: 18px 16px 28px;
+  padding: 18px 16px calc(28px + env(safe-area-inset-bottom, 0px));
   border-top: 0.5px solid var(--border);
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
@@ -489,14 +489,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 16px;
 }
-.s4-title { font-size: 16px; font-weight: 500; color: var(--gold-light); }
-.close-btn { font-size: 22px; color: var(--text-dim); transition: color var(--transition); }
+.s4-title { font-size: 18px; font-weight: 500; color: var(--gold-light); }
+.close-btn { font-size: 24px; color: var(--text-dim); transition: color var(--transition); }
 .close-btn:active { color: var(--gold); }
 .setting-row { margin-bottom: 14px; }
-.setting-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+.setting-label { font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
 .setting-opts { display: flex; gap: 6px; flex-wrap: wrap; }
 .opt-btn {
-  font-size: 12px; padding: 6px 12px;
+  font-size: 14px; padding: 6px 12px;
   border-radius: 7px;
   background: #0d0d0d;
   border: 0.5px solid var(--border);
@@ -531,19 +531,19 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   overflow-y: auto;
 }
 .seisan-title {
-  font-size: 15px; font-weight: 500;
+  font-size: 17px; font-weight: 500;
   color: var(--gold-light); text-align: center;
   margin-bottom: 12px;
 }
 .seisan-table {
   width: 100%; border-collapse: collapse;
-  font-size: 10px; table-layout: fixed;
+  font-size: 12px; table-layout: fixed;
 }
 .seisan-table th {
   color: var(--text-dim); font-weight: 500;
   text-align: center; padding: 4px 2px;
   border-bottom: 0.5px solid var(--border);
-  font-size: 10px;
+  font-size: 12px;
 }
 .seisan-table td {
   color: var(--text); text-align: center;
@@ -552,7 +552,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   vertical-align: top;
   line-height: 1.7;
 }
-.row-label { color: var(--text-faint) !important; text-align: left !important; font-size: 10px; }
+.row-label { color: var(--text-faint) !important; text-align: left !important; font-size: 12px; }
 .yaku-badge {
   display: inline-block;
   background: #2a1f08; color: var(--gold);
@@ -566,17 +566,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .banner-cell {
   background: #1a0a0a; border: 0.5px solid #4a1a1a;
   border-radius: 4px; color: var(--red);
-  font-size: 9px; padding: 4px 6px; text-align: center;
+  font-size: 11px; padding: 4px 6px; text-align: center;
 }
 .s-pay  { color: var(--red); }
 .s-recv { color: #5a9a60; }
 .s-even { color: #5a5a50; }
 .final-row td {
-  font-size: 12px; font-weight: 500; color: var(--gold-light);
+  font-size: 14px; font-weight: 500; color: var(--gold-light);
   border-top: 1px solid #3a2a10; padding-top: 5px;
 }
 .cumul-row td {
-  font-size: 10px; color: var(--green);
+  font-size: 12px; color: var(--green);
   border-top: 0.5px solid #2a3a20;
   background: rgba(20,40,10,0.4);
 }
@@ -584,7 +584,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: 100%; margin-top: 12px; padding: 10px;
   background: var(--gold); color: #1a0e00;
   border-radius: 9px;
-  font-size: 14px; font-weight: 500;
+  font-size: 16px; font-weight: 500;
 }
 .ok-btn:active { opacity: 0.8; }
 
@@ -607,11 +607,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   text-align: center;
 }
 .exchange-title {
-  font-size: 15px; font-weight: 500;
+  font-size: 17px; font-weight: 500;
   color: var(--gold-light); margin-bottom: 8px;
 }
 .exchange-desc {
-  font-size: 12px; color: var(--text-dim); margin-bottom: 16px;
+  font-size: 14px; color: var(--text-dim); margin-bottom: 16px;
   line-height: 1.7;
 }
 .exchange-cards {
@@ -628,7 +628,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .exchange-btns { display: flex; gap: 8px; }
 .exchange-btn {
   flex: 1; padding: 10px 0;
-  border-radius: 8px; font-size: 13px; font-weight: 500;
+  border-radius: 8px; font-size: 15px; font-weight: 500;
 }
 .exchange-btn-do   { background: var(--gold); color: #1a0e00; }
 .exchange-btn-skip { background: transparent; color: var(--gold); border: 1px solid var(--gold-dark); }
@@ -652,11 +652,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   text-align: center;
 }
 .field-select-title {
-  font-size: 14px; font-weight: 500;
+  font-size: 16px; font-weight: 500;
   color: var(--gold-light); margin-bottom: 8px;
 }
 .field-select-desc {
-  font-size: 12px; color: var(--text-dim); margin-bottom: 14px;
+  font-size: 14px; color: var(--text-dim); margin-bottom: 14px;
 }
 .field-select-cards {
   display: flex; justify-content: center; gap: 10px;
@@ -685,7 +685,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 1px solid var(--gold);
   border-radius: 12px;
   padding: 14px 24px;
-  font-size: 20px; font-weight: 600;
+  font-size: 22px; font-weight: 600;
   color: var(--gold-light);
   letter-spacing: 0.1em;
   pointer-events: none;
@@ -718,12 +718,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 0.5px solid var(--border);
   text-align: center;
 }
-.confirm-title { font-size: 15px; color: var(--gold-light); margin-bottom: 8px; font-weight: 500; }
-.confirm-desc  { font-size: 12px; color: var(--text-dim); margin-bottom: 18px; line-height: 1.7; }
+.confirm-title { font-size: 17px; color: var(--gold-light); margin-bottom: 8px; font-weight: 500; }
+.confirm-desc  { font-size: 14px; color: var(--text-dim); margin-bottom: 18px; line-height: 1.7; }
 .confirm-btns  { display: flex; gap: 8px; }
 .confirm-btn {
   flex: 1; padding: 10px 0;
-  border-radius: 8px; font-size: 13px; font-weight: 500;
+  border-radius: 8px; font-size: 15px; font-weight: 500;
 }
 .confirm-btn-ok   { background: var(--gold); color: #1a0e00; }
 .confirm-btn-cancel { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
@@ -2926,6 +2926,12 @@ const G = (() => {
     calcYaku,
     nextRound,
     showFinal,
+    // Step3 (手番操作)
+    selectCard,
+    selField,
+    discardCard,
+    autoDraw,
+    afterDraw,
     // Step8
     fmSafe,
     // ゲーム状態（Step4以降で利用）
