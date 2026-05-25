@@ -41,6 +41,7 @@
   --badge-fuke-bg:     #2a0808;
   --badge-fuke-border: #5a1818;
   --badge-yaku-bg:     #2a1f08;
+  --cumul-bg:          rgba(20,40,10,0.4);
 
   --radius-phone: 36px;
   --radius-screen: 24px;
@@ -64,6 +65,7 @@
   --badge-fuke-bg:     #3a0808;
   --badge-fuke-border: #8a1818;
   --badge-yaku-bg:     #3a2800;
+  --cumul-bg:          rgba(20,40,10,0.35);
 }
 #scr-game.bg-shiraki {
   --text:          #3a2a10;
@@ -81,6 +83,7 @@
   --badge-fuke-bg:     #4a1010;
   --badge-fuke-border: #8a2020;
   --badge-yaku-bg:     #5a3800;
+  --cumul-bg:          rgba(180,160,100,0.15);
 }
 
 /* ===== リセット ===== */
@@ -274,7 +277,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .rule-table td {
   padding: 5px 6px;
-  border-bottom: 0.5px solid #1a1408;
+  border-bottom: 0.5px solid var(--border-dim);
   line-height: 1.5;
 }
 
@@ -289,7 +292,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .card-list-row {
   display: flex; align-items: center; gap: 8px;
   padding: 4px 0;
-  border-bottom: 0.5px solid #1a1408;
+  border-bottom: 0.5px solid var(--border-dim);
   font-size: 13px;
 }
 .card-list-thumb {
@@ -317,7 +320,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .yaku-card-img {
   width: 30px; height: 45px;
   border-radius: 3px;
-  border: 0.5px solid #3a2a10;
+  border: 0.5px solid var(--border);
   background: #1a1208;
   background-size: cover;
   background-position: center;
@@ -327,7 +330,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* 操作方法タブ */
 .op-row {
   display: flex; gap: 10px; align-items: flex-start;
-  padding: 8px 0; border-bottom: 0.5px solid #1a1408;
+  padding: 8px 0; border-bottom: 0.5px solid var(--border-dim);
 }
 .op-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
 .op-text { font-size: 14px; color: var(--text); line-height: 1.7; }
@@ -384,7 +387,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
 .cap-cat { display: flex; flex-direction: column; gap: 2px; }
-.cap-cat-label { font-size: 8px; color: var(--text-game-dim); }
+.cap-cat-label { font-size: 11px; color: var(--text-game-dim); }
 .cap-cards {
   position: relative;
   display: flex;
@@ -445,7 +448,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .field-title { font-size: 11px; color: var(--text-game-dim); margin-bottom: 3px; }
 #field-cards {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto auto;
   gap: 2px;
 }
 .field-card {
@@ -606,7 +610,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .seisan-table td {
   color: var(--text); text-align: center;
   padding: 3px 2px;
-  border-bottom: 0.5px solid #1a1408;
+  border-bottom: 0.5px solid var(--border-dim);
   vertical-align: top;
   line-height: 1.7;
   font-size: 11px;
@@ -624,7 +628,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 3px; padding: 1px 4px; font-size: 8px;
 }
 .banner-cell {
-  background: #1a0a0a; border: 0.5px solid #4a1a1a;
+  background: var(--badge-fuke-bg); border: 0.5px solid var(--badge-fuke-border);
   border-radius: 4px; color: var(--red);
   font-size: 11px; padding: 4px 6px; text-align: center;
 }
@@ -633,12 +637,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .s-even { color: var(--text-faint); }
 .final-row td {
   font-size: 14px; font-weight: 500; color: var(--gold-light);
-  border-top: 1px solid #3a2a10; padding-top: 5px;
+  border-top: 1px solid var(--border); padding-top: 5px;
 }
 .cumul-row td {
   font-size: 12px; color: var(--green);
-  border-top: 0.5px solid #2a3a20;
-  background: rgba(20,40,10,0.4);
+  border-top: 0.5px solid var(--border-dim);
+  background: var(--cumul-bg);
 }
 .ok-btn {
   width: 100%; margin-top: 12px; padding: 10px;
@@ -1308,6 +1312,20 @@ const G = (() => {
     switchRuleTab(0);
     // 札一覧を初回のみ描画
     _renderCardList();
+    // 左スワイプで戻る
+    _attachRulesSwipe();
+  }
+
+  function _attachRulesSwipe() {
+    const el = document.getElementById('scr-rules');
+    if (!el || el._swipeAttached) return;
+    el._swipeAttached = true;
+    let sx = 0;
+    el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+    el.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      if (dx < -60) G.hideRules();
+    }, { passive: true });
   }
 
   function hideRules() {
@@ -1836,7 +1854,7 @@ const G = (() => {
     let html = `<div class="field-card fc-discard" id="discard-zone"
       onclick="G.discardCard()" title="捨てる">🗑</div>`;
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 13; i++) {
       const c = st.field[i];
       if (!c) {
         html += `<div class="field-card fc-empty"></div>`;
@@ -1935,7 +1953,7 @@ const G = (() => {
     _clearHighlight();
     const sel = hand[idx];
     const matchSlots = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 13; i++) {
       const fc = st.field[i];
       if (fc && fc.month === sel.month) matchSlots.push(i);
     }
@@ -2084,7 +2102,7 @@ const G = (() => {
 
     // 場札に同月が何枚あるか（17スロット全体を検索）
     const matches = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 13; i++) {
       if (st.field[i] && st.field[i].month === drawn.month) matches.push(i);
     }
 
@@ -2901,7 +2919,7 @@ const G = (() => {
   function _fieldMatches(month) {
     const st = G_state;
     const result = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 13; i++) {
       if (st.field[i] && st.field[i].month === month) result.push(i);
     }
     return result;
