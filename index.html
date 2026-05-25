@@ -2177,14 +2177,15 @@ const G = (() => {
 
     // 雨流れ・役流れ時: フケ以外の役を無効化
     // フケプレイヤーはフケ80点のみ有効（同時成立の他の役も無効）
+    // 表示用に無効化前の役名を保存しておく
+    yakuResults.forEach(r => { r.yakuNamesOrig = r.yakuNames.slice(); });
     if (amefure || yakuNagare) {
       yakuResults.forEach(r => {
         if (r.isFuke) {
-          // フケのみ残す
-          r.yakuPts  = 80;
+          r.yakuPts   = 80;
           r.yakuNames = ['フケ'];
         } else {
-          r.yakuPts  = 0;
+          r.yakuPts   = 0;
           r.yakuNames = [];
         }
       });
@@ -2411,17 +2412,27 @@ const G = (() => {
     let yakuHtml = '<td class="row-label">役</td>';
     for (const pi of cols) {
       const r = yakuResults[pi];
+      const isVoided = (amefure || yakuNagare) && !r.isFuke; // 無効化された役あり
+      const dispNames = isVoided ? r.yakuNamesOrig : r.yakuNames;
+
       if (r.isFuke) {
-        // フケは精算モーダルでは他の役と同じ色（ゴールド）で表示
+        // フケはゴールドで表示
         const fukeNames = r.yakuNames.map(n =>
           `<span class="yaku-badge">${n}</span>`).join(' ');
         yakuHtml += `<td>${fukeNames}<br>
           <span style="color:var(--gold)">+${r.yakuPts}点</span></td>`;
-      } else if (r.yakuNames.length > 0) {
-        const badges = r.yakuNames.map(n =>
-          `<span class="yaku-badge">${n}</span>`).join(' ');
-        yakuHtml += `<td>${badges}<br>
-          <span style="color:var(--gold)">+${r.yakuPts}点</span></td>`;
+      } else if (dispNames.length > 0) {
+        // 無効化された役: 役名に（無効）を付けてグレー表示
+        const badges = dispNames.map(n =>
+          `<span class="yaku-badge" style="${isVoided ? 'opacity:0.5' : ''}">${n}</span>`
+        ).join(' ');
+        if (isVoided) {
+          yakuHtml += `<td>${badges}<br>
+            <span style="color:var(--text-dim);font-size:9px">（無効）</span></td>`;
+        } else {
+          yakuHtml += `<td>${badges}<br>
+            <span style="color:var(--gold)">+${r.yakuPts}点</span></td>`;
+        }
       } else {
         yakuHtml += '<td>—</td>';
       }
