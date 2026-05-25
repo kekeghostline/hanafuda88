@@ -341,7 +341,26 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
 .cap-cat { display: flex; flex-direction: column; gap: 2px; }
 .cap-cat-label { font-size: 8px; color: #4a6040; }
-.cap-cards { display: flex; gap: 2px; flex-wrap: wrap; max-width: 110px; }
+.cap-cards {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  min-width: 28px;
+  min-height: 38px;
+}
+/* 4枚以上は重ね表示モード（JSでdata-stack属性付与） */
+.cap-cards.stacked {
+  display: block;
+  position: relative;
+  width: 60px;
+  height: 38px;
+  flex-shrink: 0;
+}
+.cap-cards.stacked .mini-card {
+  position: absolute;
+  top: 0;
+}
 .mini-card {
   width: 24px; height: 36px; border-radius: 3px; flex-shrink: 0;
   background-repeat: no-repeat;
@@ -1606,7 +1625,7 @@ const G = (() => {
 
       // 場札スロットを12個（null埋め）で管理
       // 同月3枚は先頭のカードに他2枚を積む（stackedプロパティ）
-      const fieldSlots = Array(17).fill(null);
+      const fieldSlots = Array(12).fill(null);
       const used = [];
       let slotIdx = 0;
       for (let m = 1; m <= 12; m++) {
@@ -1719,6 +1738,21 @@ const G = (() => {
           <div class="cap-cards">`;
         if (cards.length === 0) {
           html += `<div class="mini-card mc-empty"></div>`;
+        } else if (cards.length >= 4) {
+          // 4枚以上: 12pxオフセットで重ね表示
+          html = html.replace(/<div class="cap-cards">$/, '<div class="cap-cards stacked">');
+          const totalW = 24 + (cards.length - 1) * 12;
+          cards.forEach((c, i) => {
+            const img = _cardImg(c);
+            html += `<div class="mini-card ${img.cls}"
+              style="background-image:${img.bgImg};background-size:cover;background-position:center;left:${i*12}px"
+              title="${c.name}"></div>`;
+          });
+          // コンテナ幅を動的に設定
+          html = html.replace(
+            /<div class="cap-cards stacked">/,
+            `<div class="cap-cards stacked" style="width:${totalW + 24}px">`
+          );
         } else {
           for (const c of cards) {
             const img = _cardImg(c);
@@ -1756,7 +1790,7 @@ const G = (() => {
     let html = `<div class="field-card fc-discard" id="discard-zone"
       onclick="G.discardCard()" title="捨てる">🗑</div>`;
 
-    for (let i = 0; i < 17; i++) {
+    for (let i = 0; i < 12; i++) {
       const c = st.field[i];
       if (!c) {
         html += `<div class="field-card fc-empty"></div>`;
@@ -1855,7 +1889,7 @@ const G = (() => {
     _clearHighlight();
     const sel = hand[idx];
     const matchSlots = [];
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 12; i++) {
       const fc = st.field[i];
       if (fc && fc.month === sel.month) matchSlots.push(i);
     }
@@ -1864,9 +1898,15 @@ const G = (() => {
       if (el) el.classList.add('highlight');
     }
 
-    // 捨てゾーン: 常に有効（合う札があってもあえて捨てられる）
+    // 捨てゾーン: 合う場札がない時はハイライト、ある時も捨てられるがハイライトなし
     const dz = document.getElementById('discard-zone');
-    if (dz) dz.style.opacity = '1';
+    if (dz) {
+      if (matchSlots.length === 0) {
+        dz.classList.add('highlight');  // マッチなし → ハイライト
+      } else {
+        dz.style.opacity = '1';         // マッチあり → 薄く表示のまま有効
+      }
+    }
 
     renderHands();
   }
@@ -1875,7 +1915,10 @@ const G = (() => {
     document.querySelectorAll('.field-card.highlight')
       .forEach(el => el.classList.remove('highlight'));
     const dz = document.getElementById('discard-zone');
-    if (dz) dz.style.opacity = '0.4';
+    if (dz) {
+      dz.classList.remove('highlight');
+      dz.style.opacity = '0.4';
+    }
   }
 
   /* ============================================================
@@ -1970,7 +2013,7 @@ const G = (() => {
     _clearHighlight();
 
     // 空きスロットに置く
-    const emptySlot = st.field.slice(0, 17).findIndex(c => c === null);
+    const emptySlot = st.field.slice(0, 12).findIndex(c => c === null);
     if (emptySlot !== -1) st.field[emptySlot] = card;
     st.hands[pi].splice(handIdx, 1);
 
@@ -1995,13 +2038,13 @@ const G = (() => {
 
     // 場札に同月が何枚あるか（17スロット全体を検索）
     const matches = [];
-    for (let i = 0; i < 17; i++) {
+    for (let i = 0; i < 12; i++) {
       if (st.field[i] && st.field[i].month === drawn.month) matches.push(i);
     }
 
     if (matches.length === 0) {
       // マッチなし → 場に置く
-      const empty = st.field.slice(0, 17).findIndex(c => c === null);
+      const empty = st.field.slice(0, 12).findIndex(c => c === null);
       if (empty !== -1) st.field[empty] = drawn;
       render();
       afterDraw(pi, null, -1);
@@ -2776,7 +2819,7 @@ const G = (() => {
   function _fieldMatches(month) {
     const st = G_state;
     const result = [];
-    for (let i = 0; i < 17; i++) {
+    for (let i = 0; i < 12; i++) {
       if (st.field[i] && st.field[i].month === month) result.push(i);
     }
     return result;
