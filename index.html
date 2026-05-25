@@ -409,17 +409,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transform: translateY(-2px);
 }
 
-/* ステータスバー */
-.g-status {
-  background: rgba(0,0,0,0.5);
-  padding: 5px 14px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 0.5px solid var(--border-dim);
-  flex-shrink: 0;
-}
-.status-txt { font-size: 13px; color: var(--text-game); }
-.status-sub { font-size: 11px; color: var(--text-faint); }
-
 /* ボタンバー */
 .g-btn-bar {
   background: rgba(0,0,0,0.35);
@@ -952,11 +941,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
       </div>
     </div>
 
-    <!-- ステータスバー -->
-    <div class="g-status">
-      <span class="status-txt" id="g-status-txt">ゲーム開始を押してください</span>
-      <span class="status-sub" id="g-status-sub"></span>
-    </div>
+
 
     <!-- ボタンバー -->
     <div class="g-btn-bar" id="g-btn-bar">
@@ -972,7 +957,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <!-- プレイヤー取り札 -->
     <div class="player-cap">
       <div class="hand-label">
-        <span id="cap-name-0">あなた</span>の取り札
+        <span id="cap-name-0"></span>の取り札
         <span class="cpu-pts" id="cap-pts-0" style="margin-left:8px">取り点 —</span>
         <span class="turn-badge" id="turn-badge-0" style="display:none;margin-left:4px">手番中</span>
         <span class="fuke-badge-sm" id="fuke-badge-0" style="display:none;margin-left:4px">フケ圏</span>
@@ -1687,10 +1672,10 @@ const G = (() => {
       const name  = PLAYER_NAMES[pi];
       const { pts } = calcScore(st.caps[pi], true);
 
-      // 名前ラベル（局開始時に設定、手番が変わっても固定）
+      // 名前ラベル（局開始時に設定、手番が変わっても固定・全員にラベル表示）
       const nameEl = document.getElementById(pi === 0 ? 'cap-name-0' : `cap-name-${pi}`);
       if (nameEl) {
-        const newLabel = pi === 0 ? name : `${label}　${name}`;
+        const newLabel = `${label}　${name}`;
         if (nameEl.textContent !== newLabel) nameEl.textContent = newLabel;
       }
 
@@ -1817,14 +1802,9 @@ const G = (() => {
     if (!bar) return;
 
     // ステータステキスト
-    const statusEl = document.getElementById('g-status-txt');
-    const subEl    = document.getElementById('g-status-sub');
-
     if (st.phase === 'idle') {
       bar.innerHTML = `<button class="g-action-btn g-action-btn-primary"
         id="btn-start-round" onclick="G.startRound()">局を開始</button>`;
-      if (statusEl) statusEl.textContent = 'ゲーム開始を押してください';
-      if (subEl)    subEl.textContent = '';
       return;
     }
 
@@ -1832,26 +1812,11 @@ const G = (() => {
     if (st.phase === 'end') {
       bar.innerHTML = `<button class="g-action-btn g-action-btn-primary"
         onclick="G.endRound()">精算</button>`;
-      if (statusEl) statusEl.textContent = '局が終了しました';
-      if (subEl)    subEl.textContent = '';
       return;
     }
 
     // ゲーム中はボタンバー不要（手札タップで操作）
     bar.innerHTML = '';
-
-    if (st.phase === 'play' || st.phase === 'draw') {
-      const cur = st.turnOrder[st.turnIdx];
-      const rank = _rankOf(cur);
-      const { pts } = calcScore(st.caps[cur], true);
-      if (statusEl) statusEl.textContent =
-        `${TURN_LABELS[rank]}　${PLAYER_NAMES[cur]}　取り点 ${pts}点`;
-      if (subEl) subEl.textContent =
-        `基準 ${FUKE_BASE[rank]}点`;
-    } else if (st.phase === 'exchange') {
-      if (statusEl) statusEl.textContent = '交換フェーズ';
-      if (subEl)    subEl.textContent = '';
-    }
   }
 
   /* ============================================================
@@ -2020,9 +1985,9 @@ const G = (() => {
     const drawn = st.deck.pop();
     SE.play('draw');
 
-    // 場札に同月が何枚あるか
+    // 場札に同月が何枚あるか（17スロット全体を検索）
     const matches = [];
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 17; i++) {
       if (st.field[i] && st.field[i].month === drawn.month) matches.push(i);
     }
 
