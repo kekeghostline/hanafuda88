@@ -119,22 +119,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   pointer-events: none;
 }
 .s1-card-icon {
-  width: 62px; height: 92px;
-  background: #1a1a1a;
-  border: 1.5px solid var(--gold);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
+  width: 72px; height: 108px;
+  border-radius: 10px;
   margin-bottom: 22px;
-  box-shadow: 0 0 20px rgba(200,153,58,0.15);
+  box-shadow: 0 0 24px rgba(200,153,58,0.25);
+  background-image: url('https://kekeghostline.github.io/hanafuda88/images/original/card_back.png');
+  background-size: cover;
+  background-position: center;
+  border: 1.5px solid var(--gold);
 }
-.s1-card-inner {
-  width: 52px; height: 78px;
-  background: #2a1f08;
-  border-radius: 5px;
-  border: 1px solid #5c4510;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 30px;
-}
+.s1-card-inner { display: none; }
 .s1-title {
   font-size: 28px; font-weight: 600;
   color: var(--gold-light);
@@ -164,7 +158,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 15px;
 }
 .s1-footer {
-  font-size: 12px; color: #5a4a30;
+  font-size: 12px; color: #cccccc;
   letter-spacing: 0.06em;
   margin-top: 28px;
   padding-bottom: 24px;
@@ -335,9 +329,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
 .cap-cat { display: flex; flex-direction: column; gap: 2px; }
 .cap-cat-label { font-size: 8px; color: #4a6040; }
-.cap-cards { display: flex; gap: 2px; flex-wrap: wrap; max-width: 72px; }
+.cap-cards { display: flex; gap: 2px; flex-wrap: wrap; max-width: 110px; }
 .mini-card {
-  width: 16px; height: 24px; border-radius: 2px; flex-shrink: 0;
+  width: 24px; height: 36px; border-radius: 3px; flex-shrink: 0;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -376,8 +370,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .field-title { font-size: 11px; color: var(--text-game-dim); margin-bottom: 3px; }
 #field-cards {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 3px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
 }
 .field-card {
   width: 100%; aspect-ratio: 2/3;
@@ -396,7 +390,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: transparent;
   border: 0.5px dashed #3a3a3a;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px; color: #3a3a3a;
+  font-size: 11px; color: #3a3a3a;
 }
 .field-card.highlight {
   box-shadow: 0 0 0 2px var(--gold);
@@ -744,7 +738,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   <!-- SCR-001 スタート画面 -->
   <div id="scr-start" class="screen">
     <div class="s1-glow"></div>
-    <div class="s1-card-icon"><div class="s1-card-inner">🀄</div></div>
+    <div class="s1-card-icon"></div>
     <div class="s1-title">花合わせ</div>
     <div class="s1-sub">HANA AWASE</div>
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
@@ -1602,7 +1596,7 @@ const G = (() => {
 
       // 場札スロットを12個（null埋め）で管理
       // 同月3枚は先頭のカードに他2枚を積む（stackedプロパティ）
-      const fieldSlots = Array(12).fill(null);
+      const fieldSlots = Array(17).fill(null);
       const used = [];
       let slotIdx = 0;
       for (let m = 1; m <= 12; m++) {
@@ -1741,7 +1735,7 @@ const G = (() => {
     let html = `<div class="field-card fc-discard" id="discard-zone"
       onclick="G.discardCard()" title="捨てる">🗑</div>`;
 
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 17; i++) {
       const c = st.field[i];
       if (!c) {
         html += `<div class="field-card fc-empty"></div>`;
@@ -1966,7 +1960,7 @@ const G = (() => {
     _clearHighlight();
 
     // 空きスロットに置く
-    const emptySlot = st.field.findIndex(c => c === null);
+    const emptySlot = st.field.slice(0, 17).findIndex(c => c === null);
     if (emptySlot !== -1) st.field[emptySlot] = card;
     st.hands[pi].splice(handIdx, 1);
 
@@ -1997,7 +1991,7 @@ const G = (() => {
 
     if (matches.length === 0) {
       // マッチなし → 場に置く
-      const empty = st.field.findIndex(c => c === null);
+      const empty = st.field.slice(0, 17).findIndex(c => c === null);
       if (empty !== -1) st.field[empty] = drawn;
       render();
       afterDraw(pi, null, -1);
@@ -2736,7 +2730,7 @@ const G = (() => {
   function _fieldMatches(month) {
     const st = G_state;
     const result = [];
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 17; i++) {
       if (st.field[i] && st.field[i].month === month) result.push(i);
     }
     return result;
