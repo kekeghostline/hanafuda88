@@ -247,6 +247,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   animation: yaku-flash-out 0.36s ease-in forwards;
 }
 
+@keyframes seisan-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes seisan-modal-in {
+  0%   { opacity: 0; transform: translateY(16px) scale(0.97); }
+  60%  { transform: translateY(-3px) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @keyframes pulse {
   0%,100% { box-shadow: 0 0 0 0 rgba(200,153,58,0); }
   50%      { box-shadow: 0 0 14px 4px rgba(200,153,58,0.25); }
@@ -681,7 +691,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 14px;
   z-index: 100;
 }
-#seisan-overlay.active { display: flex; }
+#seisan-overlay.active {
+  display: flex;
+  animation: seisan-fadein 0.35s ease forwards;
+}
 .seisan-modal {
   background: #161006;
   border-radius: 14px;
@@ -690,6 +703,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 0.5px solid #3a2a10;
   max-height: 90%;
   overflow-y: auto;
+  opacity: 0;
 }
 .seisan-title {
   font-size: 17px; font-weight: 500;
@@ -2799,6 +2813,12 @@ const G = (() => {
 
     document.getElementById('seisan-modal-content').innerHTML = html;
     showOv('seisan-overlay');
+    // モーダル本体をアニメーション速度に連動してスライドイン
+    const _dur = _spd() === 150 ? 240 : _spd() === 500 ? 480 : 340;
+    const modal = document.getElementById('seisan-modal-content');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      modal.style.animation = `seisan-modal-in ${_dur}ms cubic-bezier(.17,.67,.45,1.1) forwards`;
+    }));
   }
 
   /* ============================================================
