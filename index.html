@@ -2810,11 +2810,19 @@ const G = (() => {
       <button class="ok-btn" onclick="G.nextRound()">${btnLabel}</button>`;
 
     document.getElementById('seisan-modal-content').innerHTML = html;
-    // モーダル本体にアニメーションを直接設定（animation-fill-mode:bothで確実に表示）
+
+    // 役・流れフラッシュが残存していれば即クリーンアップ
+    document.querySelectorAll('.yaku-flash, .nagare-flash').forEach(el => el.remove());
+
+    // アニメーションのタイミングをイベントループの次サイクルに分離
+    // （フラッシュのsetTimeoutコールバックと干渉しないよう確実に後回し）
     const _dur = _spd() === 150 ? 220 : _spd() === 500 ? 420 : 300;
-    const modal = document.getElementById('seisan-modal-content');
-    modal.style.cssText += `animation: seisan-modal-in ${_dur}ms cubic-bezier(.25,.46,.45,.94) ${Math.round(_dur*0.15)}ms both;`;
-    showOv('seisan-overlay');
+    setTimeout(() => {
+      const modal = document.getElementById('seisan-modal-content');
+      if (!modal) return;
+      modal.style.animation = `seisan-modal-in ${_dur}ms cubic-bezier(.25,.46,.45,.94) both`;
+      showOv('seisan-overlay');
+    }, 0);
   }
 
   /* ============================================================
