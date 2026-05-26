@@ -2256,12 +2256,8 @@ const G = (() => {
     const handCard  = st.hands[pi][handIdx];
     const fieldCard = st.field[slotIdx];
 
-    // 月不一致バグの防御的チェック
-    if (!fmSafe(handCard, fieldCard)) {
-      // 不一致ならdiscardにフォールバック
-      _doDiscard(pi, handIdx);
-      return;
-    }
+    // 月不一致バグの防御的チェック（不一致なら何もしない）
+    if (!fmSafe(handCard, fieldCard)) return;
 
     handCard._selected = false;
     _clearHighlight();
