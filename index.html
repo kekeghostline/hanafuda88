@@ -685,14 +685,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 #seisan-overlay {
   position: absolute; inset: 0;
   background: rgba(0,0,0,0.78);
-  display: none;
+  display: flex;
   align-items: center; justify-content: center;
   padding: 14px;
   z-index: 100;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
 #seisan-overlay.active {
-  display: flex;
-  animation: seisan-overlay-in 0.3s ease both;
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s ease, visibility 0s linear 0s;
 }
 .seisan-modal {
   background: #161006;
@@ -702,6 +706,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 0.5px solid #3a2a10;
   max-height: 90%;
   overflow-y: auto;
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(.25,.46,.45,.94);
+}
+#seisan-overlay.active .seisan-modal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 .seisan-title {
   font-size: 17px; font-weight: 500;
@@ -2814,15 +2825,7 @@ const G = (() => {
     // 役・流れフラッシュが残存していれば即クリーンアップ
     document.querySelectorAll('.yaku-flash, .nagare-flash').forEach(el => el.remove());
 
-    // アニメーションのタイミングをイベントループの次サイクルに分離
-    // （フラッシュのsetTimeoutコールバックと干渉しないよう確実に後回し）
-    const _dur = _spd() === 150 ? 220 : _spd() === 500 ? 420 : 300;
-    setTimeout(() => {
-      const modal = document.getElementById('seisan-modal-content');
-      if (!modal) return;
-      modal.style.animation = `seisan-modal-in ${_dur}ms cubic-bezier(.25,.46,.45,.94) both`;
-      showOv('seisan-overlay');
-    }, 0);
+    showOv('seisan-overlay');
   }
 
   /* ============================================================
