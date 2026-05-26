@@ -247,14 +247,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   animation: yaku-flash-out 0.36s ease-in forwards;
 }
 
-@keyframes seisan-fadein {
+@keyframes seisan-overlay-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 @keyframes seisan-modal-in {
-  0%   { opacity: 0; transform: translateY(16px) scale(0.97); }
-  60%  { transform: translateY(-3px) scale(1.005); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes pulse {
@@ -693,7 +692,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 #seisan-overlay.active {
   display: flex;
-  animation: seisan-fadein 0.35s ease forwards;
+  animation: seisan-overlay-in 0.3s ease both;
 }
 .seisan-modal {
   background: #161006;
@@ -703,7 +702,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 0.5px solid #3a2a10;
   max-height: 90%;
   overflow-y: auto;
-  opacity: 0;
 }
 .seisan-title {
   font-size: 17px; font-weight: 500;
@@ -2812,13 +2810,11 @@ const G = (() => {
       <button class="ok-btn" onclick="G.nextRound()">${btnLabel}</button>`;
 
     document.getElementById('seisan-modal-content').innerHTML = html;
-    showOv('seisan-overlay');
-    // モーダル本体をアニメーション速度に連動してスライドイン
-    const _dur = _spd() === 150 ? 240 : _spd() === 500 ? 480 : 340;
+    // モーダル本体にアニメーションを直接設定（animation-fill-mode:bothで確実に表示）
+    const _dur = _spd() === 150 ? 220 : _spd() === 500 ? 420 : 300;
     const modal = document.getElementById('seisan-modal-content');
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      modal.style.animation = `seisan-modal-in ${_dur}ms cubic-bezier(.17,.67,.45,1.1) forwards`;
-    }));
+    modal.style.cssText += `animation: seisan-modal-in ${_dur}ms cubic-bezier(.25,.46,.45,.94) ${Math.round(_dur*0.15)}ms both;`;
+    showOv('seisan-overlay');
   }
 
   /* ============================================================
