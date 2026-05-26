@@ -16,8 +16,8 @@
   --gold:        #c8993a;
   --gold-light:  #e8c97e;
   --gold-dark:   #7a5a20;
-  --red:         #d06060;
-  --green:       #90c080;
+  --red:         #e88080;
+  --green:       #a0d090;
   --text:        #c8b080;
   --text-dim:    #7a6040;
   --text-faint:  #4a3a20;
@@ -41,6 +41,8 @@
   --badge-fuke-bg:     #2a0808;
   --badge-fuke-border: #5a1818;
   --badge-yaku-bg:     #2a1f08;
+  --badge-yaku-text:   #f0d890;
+  --badge-fuke-text:   #f0a0a0;
   --cumul-bg:          rgba(20,40,10,0.4);
   --modal-title:       var(--gold-light);
   --modal-text:        var(--text);
@@ -60,18 +62,20 @@
   --text-game-dim: #3a4a28;
   --gold:          #7a4a00;
   --gold-light:    #3d2200;
-  --green:         #2a5010;
-  --red:           #8a1010;
+  --green:         #90d878;
+  --red:           #e87878;
   --badge-turn-bg:     rgba(10,50,10,0.75);
   --badge-turn-text:   #d0f0b0;
   --badge-turn-border: #5aaa38;
   --badge-fuke-bg:     rgba(60,10,10,0.75);
   --badge-fuke-border: #aa2828;
   --badge-yaku-bg:     rgba(60,40,0,0.75);
+  --badge-yaku-text:   #fff8e0;
+  --badge-fuke-text:   #ffe0e0;
   --cumul-bg:          rgba(20,40,10,0.35);
   --modal-title:       #e8c97e;
-  --modal-text:        #c8b080;
-  --modal-text-dim:    #9a8060;
+  --modal-text:        #f0e8d0;
+  --modal-text-dim:    #c8b090;
 }
 #scr-game.bg-shiraki {
   --text:          #3a2a10;
@@ -81,18 +85,20 @@
   --text-game-dim: #4a5a38;
   --gold:          #7a3a00;
   --gold-light:    #3d1f00;
-  --green:         #3a6020;
-  --red:           #a02020;
+  --green:         #90d878;
+  --red:           #e87878;
   --badge-turn-bg:     rgba(20,60,10,0.82);
   --badge-turn-text:   #d8f0b0;
   --badge-turn-border: #5a9030;
   --badge-fuke-bg:     rgba(80,15,15,0.82);
   --badge-fuke-border: #aa2828;
   --badge-yaku-bg:     rgba(80,50,0,0.82);
+  --badge-yaku-text:   #fff8e0;
+  --badge-fuke-text:   #ffe0e0;
   --cumul-bg:          rgba(180,160,100,0.15);
   --modal-title:       #e8c97e;
-  --modal-text:        #c8b080;
-  --modal-text-dim:    #9a8060;
+  --modal-text:        #f0e8d0;
+  --modal-text-dim:    #c8b090;
 }
 
 /* ===== リセット ===== */
@@ -390,7 +396,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .fuke-badge-sm {
   font-size: 11px;
-  background: var(--badge-fuke-bg); color: var(--red);
+  background: var(--badge-fuke-bg); color: var(--badge-fuke-text);
   border-radius: 4px; padding: 1px 5px;
   border: 0.5px solid var(--badge-fuke-border);
 }
@@ -628,12 +634,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .row-label { color: var(--text-faint) !important; text-align: left !important; font-size: 12px; }
 .yaku-badge {
   display: inline-block;
-  background: var(--badge-yaku-bg); color: var(--gold);
+  background: var(--badge-yaku-bg); color: var(--badge-yaku-text);
   border-radius: 3px; padding: 1px 4px; font-size: 8px;
 }
 .fuke-badge {
   display: inline-block;
-  background: var(--badge-fuke-bg); color: var(--red);
+  background: var(--badge-fuke-bg); color: var(--badge-fuke-text);
   border-radius: 3px; padding: 1px 4px; font-size: 8px;
 }
 .banner-cell {
