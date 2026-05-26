@@ -1782,9 +1782,7 @@ const G = (() => {
       if (ptsEl) {
         const liveYaku = calcYakuLive(st.caps[pi]);
         const yakuBadges = liveYaku.map(n =>
-          `<span style="display:inline-block;background:#2a1f08;color:var(--gold);` +
-          `border-radius:3px;padding:0 4px;font-size:9px;margin-left:3px;` +
-          `border:0.5px solid var(--gold-dark)">${n}</span>`
+          `<span class="yaku-badge" style="margin-left:3px">${n}</span>`
         ).join('');
         ptsEl.innerHTML = `取り点 ${pts}点${yakuBadges}`;
       }
