@@ -1034,7 +1034,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
           </div>
           <div class="op-row">
             <div class="op-icon">🗑</div>
-            <div class="op-text"><strong>捨てるゾーンタップ</strong><br>手札を場に捨てます。合う場札がない場合のみ有効です。<br>※合う場札があっても意図的に捨てることができます。</div>
+            <div class="op-text"><strong>捨てるゾーンタップ</strong><br>手札を場に捨てます。合う場札がない場合のみ有効です。</div>
           </div>
         </div>
         <div class="rule-section">
@@ -2173,13 +2173,13 @@ const G = (() => {
       if (el) el.classList.add('highlight');
     }
 
-    // 捨てゾーン: 合う場札がない時はハイライト、ある時も捨てられるがハイライトなし
+    // 捨てゾーン: 合う場札がない時のみハイライト・有効
     const dz = document.getElementById('discard-zone');
     if (dz) {
       if (matchSlots.length === 0) {
         dz.classList.add('highlight');  // マッチなし → ハイライト
       } else {
-        dz.style.opacity = '1';         // マッチあり → 薄く表示のまま有効
+        dz.style.opacity = '0.25';      // マッチあり → 無効として薄く表示
       }
     }
 
@@ -2224,6 +2224,11 @@ const G = (() => {
 
     const selCardIdx = st.hands[0].findIndex(c => c._selected);
     if (selCardIdx === -1) return;
+
+    // 合う場札がある場合は捨て不可
+    const sel = st.hands[0][selCardIdx];
+    const hasMatch = st.field.some(fc => fc && fc.month === sel.month);
+    if (hasMatch) return;
 
     SE.play('discard');
     _doDiscard(0, selCardIdx);
