@@ -2177,9 +2177,11 @@ const G = (() => {
     const dz = document.getElementById('discard-zone');
     if (dz) {
       if (matchSlots.length === 0) {
-        dz.classList.add('highlight');  // マッチなし → ハイライト
+        dz.classList.add('highlight');       // マッチなし → ハイライト
+        dz.style.pointerEvents = 'auto';
       } else {
-        dz.style.opacity = '0.25';      // マッチあり → 無効として薄く表示
+        dz.style.opacity = '0.25';           // マッチあり → 無効
+        dz.style.pointerEvents = 'none';     // タップ自体を無効化
       }
     }
 
@@ -2193,6 +2195,7 @@ const G = (() => {
     if (dz) {
       dz.classList.remove('highlight');
       dz.style.opacity = '0.4';
+      dz.style.pointerEvents = 'auto';
     }
   }
 
