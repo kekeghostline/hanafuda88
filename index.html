@@ -163,6 +163,50 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== 役成立フラッシュ ===== */
+.yaku-flash {
+  position: absolute; inset: 0; z-index: 8000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+  gap: 8px;
+}
+.yaku-flash-name {
+  font-size: clamp(28px, 9vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--gold-light);
+  text-shadow: 0 0 24px rgba(200,153,58,0.9), 0 0 60px rgba(200,153,58,0.4);
+  white-space: nowrap;
+}
+.yaku-flash-pts {
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+.yaku-flash-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 50%,
+    rgba(180,130,20,0.18) 0%, transparent 70%);
+}
+@keyframes yaku-flash-in {
+  0%   { opacity: 0; transform: scale(0.55); }
+  60%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes yaku-flash-out {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+.yaku-flash-enter {
+  animation: yaku-flash-in 0.32s cubic-bezier(.17,.67,.45,1.3) forwards;
+}
+.yaku-flash-leave {
+  animation: yaku-flash-out 0.36s ease-in forwards;
+}
+
 @keyframes pulse {
   0%,100% { box-shadow: 0 0 0 0 rgba(200,153,58,0); }
   50%      { box-shadow: 0 0 14px 4px rgba(200,153,58,0.25); }
@@ -1276,6 +1320,53 @@ const G = (() => {
   function _spd() { return SPEED[cfg.hana_speed] || 300; }
 
   /* ============================================================
+     animYakuFlash — 役成立フラッシュ表示
+     局中にカード取得のたびに呼ぶ。同一局内で同じ役は1度だけ表示。
+     _shownYakuKeys: 今局で既に表示した役キーのSet（startRoundでリセット）
+     ============================================================ */
+  let _shownYakuKeys = new Set();
+
+  function animYakuFlash(pi, caps) {
+    const newYaku = calcYakuLive(caps);
+    if (newYaku.length === 0) return;
+
+    // 今局で未表示の役だけ取り出す
+    const unseen = newYaku.filter(n => !_shownYakuKeys.has(n));
+    if (unseen.length === 0) return;
+
+    unseen.forEach(n => _shownYakuKeys.add(n));
+
+    const speedMs = { fast: 900, normal: 1400, slow: 2000 };
+    const totalMs = speedMs[cfg.hana_speed] || 1400;
+    const holdMs  = totalMs * 0.62;
+    const outMs   = totalMs * 0.28;
+
+    const screen = document.getElementById('scr-game');
+    if (!screen) return;
+
+    // 複数役の場合は少しずらして順番に表示
+    unseen.forEach((name, i) => {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'yaku-flash yaku-flash-enter';
+        el.innerHTML = `
+          <div class="yaku-flash-bg"></div>
+          <div class="yaku-flash-name">${name}</div>`;
+        screen.appendChild(el);
+
+        SE.play('yaku');
+
+        setTimeout(() => {
+          el.classList.remove('yaku-flash-enter');
+          el.classList.add('yaku-flash-leave');
+          el.style.animationDuration = `${outMs}ms`;
+          setTimeout(() => el.remove(), outMs);
+        }, holdMs);
+      }, i * (totalMs * 0.55));
+    });
+  }
+
+  /* ============================================================
      画面切り替えユーティリティ
      ============================================================ */
   function showOv(id) {
@@ -1628,6 +1719,7 @@ const G = (() => {
   function startRound() {
     const st = G_state;
     st.roundNo++;
+    _shownYakuKeys = new Set(); // 役フラッシュ履歴をリセット
 
     // 親を決定（1局目ランダム、以降右隣）
     if (st.roundNo === 1) {
@@ -2076,6 +2168,7 @@ const G = (() => {
     st.field[slotIdx] = null;
 
     render();
+    animYakuFlash(pi, st.caps[pi]);
     // 山札めくりへ
     setTimeout(() => autoDraw(pi), _spd());
   }
@@ -2134,6 +2227,7 @@ const G = (() => {
       }
       st.field[matches[0]] = null;
       render();
+      animYakuFlash(pi, st.caps[pi]);
       afterDraw(pi, drawn, matches[0]);
     } else if (matches.length >= 2) {
       // 2枚マッチ → プレイヤーは選択、CPUは自動
@@ -2146,6 +2240,7 @@ const G = (() => {
           }
           st.field[chosenSlot] = null;
           render();
+          animYakuFlash(pi, st.caps[pi]);
           afterDraw(pi, drawn, chosenSlot);
         });
       } else {
@@ -2158,6 +2253,7 @@ const G = (() => {
         }
         st.field[chosen] = null;
         render();
+        animYakuFlash(pi, st.caps[pi]);
         afterDraw(pi, drawn, chosen);
       }
     }
