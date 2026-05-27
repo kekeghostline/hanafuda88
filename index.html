@@ -1482,22 +1482,28 @@ const G = (() => {
 
     const from = fromEl.getBoundingClientRect();
     const to   = toEl.getBoundingClientRect();
-    if (to.width === 0) { cb(); return; }
 
-    // fromRight=true の場合、エリアの右端を起点にする
+    // 要素が画面外または非表示なら即コールバック
+    if (to.width === 0 || to.height === 0) { cb(); return; }
+    if (!fromRight && (from.width === 0 || from.height === 0)) { cb(); return; }
+
+    // カードサイズはtoEl（場札スロット）から取得して統一
+    const cardW = to.width;
+    const cardH = to.height;
+
+    // 開始位置
     const startLeft = fromRight
-      ? from.right - (from.height * 0.65) // カード幅を高さから推定
-      : from.left;
-    const startTop  = fromRight
-      ? from.top + from.height / 2 - (from.height * 0.65) / 2 * 1.5
-      : from.top;
-    const cardW = fromRight ? from.height * 0.65 : from.width;
-    const cardH = fromRight ? from.height * 0.65 * 1.5 : from.height;
+      ? from.right - cardW   // エリア右端
+      : from.left + from.width  / 2 - cardW / 2;
+    const startTop = fromRight
+      ? from.top  + from.height / 2 - cardH / 2
+      : from.top  + from.height / 2 - cardH / 2;
 
+    // 終了位置（toElの中心）
     const destLeft = to.left + to.width  / 2 - cardW / 2;
     const destTop  = to.top  + to.height / 2 - cardH / 2;
 
-    const dur = _spd() === 150 ? 160 : _spd() === 500 ? 380 : 240;
+    const dur = _spd() === 150 ? 180 : _spd() === 500 ? 400 : 260;
 
     _animating = true;
 
@@ -1512,22 +1518,23 @@ const G = (() => {
     `;
     document.body.appendChild(ghost);
 
+    // 16ms待ってから遷移（Safariで確実に初期フレームを描画させる）
     setTimeout(() => {
       ghost.style.transition = `
         left    ${dur}ms cubic-bezier(.4,0,.2,1),
         top     ${dur}ms cubic-bezier(.4,0,.2,1),
-        opacity ${Math.round(dur*0.25)}ms ${Math.round(dur*0.75)}ms ease
+        opacity ${Math.round(dur * 0.3)}ms ${Math.round(dur * 0.7)}ms ease
       `;
       ghost.style.left    = `${destLeft}px`;
       ghost.style.top     = `${destTop}px`;
       ghost.style.opacity = '0';
-    }, 0);
+    }, 16);
 
     setTimeout(() => {
       ghost.remove();
       _animating = false;
       cb();
-    }, dur + 60);
+    }, dur + 80);
   }
 
   /* ============================================================
