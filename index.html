@@ -1471,6 +1471,55 @@ const G = (() => {
   }
 
   /* ============================================================
+     animCardFly — カード飛翔アニメーション（⑤）
+     fromEl: 飛翔元要素, toEl: 飛翔先要素, bgImg: カード画像(url(...))
+     cb: 完了コールバック
+     ============================================================ */
+  let _animating = false;
+
+  function animCardFly(fromEl, toEl, bgImg, cb) {
+    if (!fromEl || !toEl) { cb(); return; }
+
+    const from = fromEl.getBoundingClientRect();
+    const to   = toEl.getBoundingClientRect();
+    const dur  = _spd() === 150 ? 160 : _spd() === 500 ? 380 : 240;
+
+    _animating = true;
+
+    const ghost = document.createElement('div');
+    ghost.style.cssText = `
+      position:fixed; z-index:9999; pointer-events:none;
+      width:${from.width}px; height:${from.height}px;
+      left:${from.left}px; top:${from.top}px;
+      background-image:${bgImg};
+      background-size:cover; background-position:center;
+      border-radius:4px;
+      transition:
+        left ${dur}ms cubic-bezier(.4,0,.2,1),
+        top  ${dur}ms cubic-bezier(.4,0,.2,1),
+        width ${dur}ms cubic-bezier(.4,0,.2,1),
+        height ${dur}ms cubic-bezier(.4,0,.2,1),
+        opacity ${Math.round(dur*0.25)}ms ${Math.round(dur*0.75)}ms ease;
+    `;
+    document.body.appendChild(ghost);
+
+    // 飛翔先のサイズ・位置へ
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      ghost.style.left    = `${to.left}px`;
+      ghost.style.top     = `${to.top}px`;
+      ghost.style.width   = `${to.width}px`;
+      ghost.style.height  = `${to.height}px`;
+      ghost.style.opacity = '0';
+    }));
+
+    setTimeout(() => {
+      ghost.remove();
+      _animating = false;
+      cb();
+    }, dur + 60);
+  }
+
+  /* ============================================================
      画面切り替えユーティリティ
      ============================================================ */
   function showOv(id) {
@@ -2146,6 +2195,7 @@ const G = (() => {
      ============================================================ */
   function selectCard(idx) {
     const st = G_state;
+    if (_animating) return;
     if (st.phase !== 'play' || st.turnOrder[st.turnIdx] !== 0) return;
     SE.play('btn');
 
@@ -2204,6 +2254,7 @@ const G = (() => {
      ============================================================ */
   function selField(slotIdx) {
     const st = G_state;
+    if (_animating) return;
     if (st.phase !== 'play' || st.turnOrder[st.turnIdx] !== 0) return;
 
     const selCardIdx = st.hands[0].findIndex(c => c._selected);
@@ -2223,6 +2274,7 @@ const G = (() => {
      ============================================================ */
   function discardCard() {
     const st = G_state;
+    if (_animating) return;
     if (st.phase !== 'play' || st.turnOrder[st.turnIdx] !== 0) return;
 
     const selCardIdx = st.hands[0].findIndex(c => c._selected);
@@ -2259,29 +2311,35 @@ const G = (() => {
     const handCard  = st.hands[pi][handIdx];
     const fieldCard = st.field[slotIdx];
 
-    // 月不一致バグの防御的チェック（不一致なら何もしない）
     if (!fmSafe(handCard, fieldCard)) return;
 
     handCard._selected = false;
     _clearHighlight();
 
-    // 取り札へ
-    st.caps[pi].push(handCard);
-    st.caps[pi].push(fieldCard);
-    if (fieldCard.stacked) {
-      st.caps[pi].push(...fieldCard.stacked);
+    // 飛翔元・先を取得（アニメーション前にDOM要素を確保）
+    const fromEl = document.getElementById(`hc-${handIdx}`);
+    const capEl  = document.getElementById(`cap-cards-${pi}`);
+    const bgImg  = _cardImg(handCard).bgImg;
+
+    const _exec = () => {
+      st.caps[pi].push(handCard);
+      st.caps[pi].push(fieldCard);
+      if (fieldCard.stacked) st.caps[pi].push(...fieldCard.stacked);
+      st.hands[pi].splice(handIdx, 1);
+      st.field[slotIdx] = null;
+      render();
+      animYakuFlash(pi, st.caps[pi]);
+      checkNagare();
+      setTimeout(() => autoDraw(pi), _spd());
+    };
+
+    if (fromEl && capEl) {
+      // 手札要素を即非表示にしてghostだけ飛ばす
+      fromEl.style.opacity = '0';
+      animCardFly(fromEl, capEl, bgImg, _exec);
+    } else {
+      _exec();
     }
-
-    // 手札から削除
-    st.hands[pi].splice(handIdx, 1);
-    // 場札スロットをnullに
-    st.field[slotIdx] = null;
-
-    render();
-    animYakuFlash(pi, st.caps[pi]);
-    checkNagare();
-    // 山札めくりへ
-    setTimeout(() => autoDraw(pi), _spd());
   }
 
   /* ============================================================
@@ -2293,13 +2351,24 @@ const G = (() => {
     card._selected = false;
     _clearHighlight();
 
-    // 空きスロットに置く
-    const emptySlot = st.field.slice(0, 12).findIndex(c => c === null);
-    if (emptySlot !== -1) st.field[emptySlot] = card;
-    st.hands[pi].splice(handIdx, 1);
+    const fromEl  = document.getElementById(`hc-${handIdx}`);
+    const fieldEl = document.getElementById('field-cards');
+    const bgImg   = _cardImg(card).bgImg;
 
-    render();
-    setTimeout(() => autoDraw(pi), _spd());
+    const _exec = () => {
+      const emptySlot = st.field.slice(0, 12).findIndex(c => c === null);
+      if (emptySlot !== -1) st.field[emptySlot] = card;
+      st.hands[pi].splice(handIdx, 1);
+      render();
+      setTimeout(() => autoDraw(pi), _spd());
+    };
+
+    if (fromEl && fieldEl) {
+      fromEl.style.opacity = '0';
+      animCardFly(fromEl, fieldEl, bgImg, _exec);
+    } else {
+      _exec();
+    }
   }
 
   /* ============================================================
