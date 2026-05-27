@@ -1484,7 +1484,11 @@ const G = (() => {
     const to   = toEl.getBoundingClientRect();
     if (from.width === 0 || to.width === 0) { cb(); return; }
 
-    const dur  = _spd() === 150 ? 160 : _spd() === 500 ? 380 : 240;
+    // 飛翔先の中心へ移動（サイズは変えない）
+    const destLeft = to.left + to.width  / 2 - from.width  / 2;
+    const destTop  = to.top  + to.height / 2 - from.height / 2;
+
+    const dur = _spd() === 150 ? 160 : _spd() === 500 ? 380 : 240;
 
     _animating = true;
 
@@ -1499,19 +1503,14 @@ const G = (() => {
     `;
     document.body.appendChild(ghost);
 
-    // setTimeout(0) で確実にブラウザが初期位置を描画してからトランジション開始
     setTimeout(() => {
       ghost.style.transition = `
-        left ${dur}ms cubic-bezier(.4,0,.2,1),
-        top  ${dur}ms cubic-bezier(.4,0,.2,1),
-        width ${dur}ms cubic-bezier(.4,0,.2,1),
-        height ${dur}ms cubic-bezier(.4,0,.2,1),
+        left    ${dur}ms cubic-bezier(.4,0,.2,1),
+        top     ${dur}ms cubic-bezier(.4,0,.2,1),
         opacity ${Math.round(dur*0.25)}ms ${Math.round(dur*0.75)}ms ease
       `;
-      ghost.style.left    = `${to.left}px`;
-      ghost.style.top     = `${to.top}px`;
-      ghost.style.width   = `${to.width}px`;
-      ghost.style.height  = `${to.height}px`;
+      ghost.style.left    = `${destLeft}px`;
+      ghost.style.top     = `${destTop}px`;
       ghost.style.opacity = '0';
     }, 0);
 
@@ -2319,11 +2318,11 @@ const G = (() => {
     handCard._selected = false;
     _clearHighlight();
 
-    // 飛翔元・先を取得（CPUはyama要素を代用）
+    // 飛翔元・先を取得（CPUはyama要素を代用、飛翔先は合う場札スロット）
     const fromEl = pi === 0
       ? document.getElementById(`hc-${handIdx}`)
       : document.getElementById('yama-card-img');
-    const capEl  = document.getElementById(`cap-cards-${pi}`);
+    const toEl  = document.getElementById(`fc-${slotIdx}`);
     const bgImg  = _cardImg(handCard).bgImg;
 
     const _exec = () => {
@@ -2338,10 +2337,9 @@ const G = (() => {
       setTimeout(() => autoDraw(pi), _spd());
     };
 
-    if (fromEl && capEl) {
-      // 手札要素を即非表示にしてghostだけ飛ばす
+    if (fromEl && toEl) {
       fromEl.style.opacity = '0';
-      animCardFly(fromEl, capEl, bgImg, _exec);
+      animCardFly(fromEl, toEl, bgImg, _exec);
     } else {
       _exec();
     }
@@ -2356,11 +2354,15 @@ const G = (() => {
     card._selected = false;
     _clearHighlight();
 
-    const fromEl  = pi === 0
+    const fromEl = pi === 0
       ? document.getElementById(`hc-${handIdx}`)
       : document.getElementById('yama-card-img');
-    const fieldEl = document.getElementById('field-cards');
-    const bgImg   = _cardImg(card).bgImg;
+    // 飛翔先：場の空きスロット要素（fc-empty）を探す
+    const emptySlotIdx = G_state.field.slice(0, 12).findIndex(c => c === null);
+    const toEl = emptySlotIdx !== -1
+      ? document.getElementById(`fc-${emptySlotIdx}`)
+      : document.getElementById('field-cards');
+    const bgImg = _cardImg(card).bgImg;
 
     const _exec = () => {
       const emptySlot = st.field.slice(0, 12).findIndex(c => c === null);
@@ -2370,9 +2372,9 @@ const G = (() => {
       setTimeout(() => autoDraw(pi), _spd());
     };
 
-    if (fromEl && fieldEl) {
+    if (fromEl && toEl) {
       fromEl.style.opacity = '0';
-      animCardFly(fromEl, fieldEl, bgImg, _exec);
+      animCardFly(fromEl, toEl, bgImg, _exec);
     } else {
       _exec();
     }
