@@ -1477,16 +1477,25 @@ const G = (() => {
      ============================================================ */
   let _animating = false;
 
-  function animCardFly(fromEl, toEl, bgImg, cb) {
+  function animCardFly(fromEl, toEl, bgImg, cb, fromRight = false) {
     if (!fromEl || !toEl) { cb(); return; }
 
     const from = fromEl.getBoundingClientRect();
     const to   = toEl.getBoundingClientRect();
-    if (from.width === 0 || to.width === 0) { cb(); return; }
+    if (to.width === 0) { cb(); return; }
 
-    // 飛翔先の中心へ移動（サイズは変えない）
-    const destLeft = to.left + to.width  / 2 - from.width  / 2;
-    const destTop  = to.top  + to.height / 2 - from.height / 2;
+    // fromRight=true の場合、エリアの右端を起点にする
+    const startLeft = fromRight
+      ? from.right - (from.height * 0.65) // カード幅を高さから推定
+      : from.left;
+    const startTop  = fromRight
+      ? from.top + from.height / 2 - (from.height * 0.65) / 2 * 1.5
+      : from.top;
+    const cardW = fromRight ? from.height * 0.65 : from.width;
+    const cardH = fromRight ? from.height * 0.65 * 1.5 : from.height;
+
+    const destLeft = to.left + to.width  / 2 - cardW / 2;
+    const destTop  = to.top  + to.height / 2 - cardH / 2;
 
     const dur = _spd() === 150 ? 160 : _spd() === 500 ? 380 : 240;
 
@@ -1495,8 +1504,8 @@ const G = (() => {
     const ghost = document.createElement('div');
     ghost.style.cssText = `
       position:fixed; z-index:9999; pointer-events:none;
-      width:${from.width}px; height:${from.height}px;
-      left:${from.left}px; top:${from.top}px;
+      width:${cardW}px; height:${cardH}px;
+      left:${startLeft}px; top:${startTop}px;
       background-image:${bgImg};
       background-size:cover; background-position:center;
       border-radius:4px;
@@ -2318,11 +2327,11 @@ const G = (() => {
     handCard._selected = false;
     _clearHighlight();
 
-    // 飛翔元・先を取得（CPUはyama要素を代用、飛翔先は合う場札スロット）
+    // 飛翔元・先
     const fromEl = pi === 0
       ? document.getElementById(`hc-${handIdx}`)
-      : document.getElementById('yama-card-img');
-    const toEl  = document.getElementById(`fc-${slotIdx}`);
+      : document.getElementById(`cap-area-${pi}`);  // CPU: 取り札エリア右端を飛翔元に
+    const toEl   = document.getElementById(`fc-${slotIdx}`);
     const bgImg  = _cardImg(handCard).bgImg;
 
     const _exec = () => {
@@ -2338,8 +2347,8 @@ const G = (() => {
     };
 
     if (fromEl && toEl) {
-      fromEl.style.opacity = '0';
-      animCardFly(fromEl, toEl, bgImg, _exec);
+      if (pi === 0) fromEl.style.opacity = '0'; // 手札のみ非表示（yamaは触らない）
+      animCardFly(fromEl, toEl, bgImg, _exec, pi !== 0);
     } else {
       _exec();
     }
@@ -2356,8 +2365,7 @@ const G = (() => {
 
     const fromEl = pi === 0
       ? document.getElementById(`hc-${handIdx}`)
-      : document.getElementById('yama-card-img');
-    // 飛翔先：場の空きスロット要素（fc-empty）を探す
+      : document.getElementById(`cap-area-${pi}`);  // CPU: 取り札エリア右端を飛翔元に
     const emptySlotIdx = G_state.field.slice(0, 12).findIndex(c => c === null);
     const toEl = emptySlotIdx !== -1
       ? document.getElementById(`fc-${emptySlotIdx}`)
@@ -2373,8 +2381,8 @@ const G = (() => {
     };
 
     if (fromEl && toEl) {
-      fromEl.style.opacity = '0';
-      animCardFly(fromEl, toEl, bgImg, _exec);
+      if (pi === 0) fromEl.style.opacity = '0';
+      animCardFly(fromEl, toEl, bgImg, _exec, pi !== 0);
     } else {
       _exec();
     }
