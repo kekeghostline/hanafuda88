@@ -2135,7 +2135,7 @@ const G = (() => {
     for (let i = 0; i < 13; i++) {
       const c = st.field[i];
       if (!c) {
-        html += `<div class="field-card fc-empty"></div>`;
+        html += `<div class="field-card fc-empty" id="fc-${i}"></div>`;
       } else {
         const img = _cardImg(c);
         const stackBadge = c.stacked
