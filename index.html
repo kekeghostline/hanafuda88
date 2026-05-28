@@ -913,7 +913,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.2　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.3　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1067,6 +1067,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.3</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
         <button class="g-icon-btn" onclick="G.toggleSettings(true)" title="設定">⚙️</button>
@@ -2410,54 +2411,109 @@ const G = (() => {
     const drawn = st.deck.pop();
     SE.play('draw');
 
+    // 山札要素を表面に切り替えてめくり演出
+    const yamaEl = document.getElementById('yama-card-img');
+    const drawnImg = _cardImg(drawn);
+    if (yamaEl) {
+      yamaEl.style.backgroundImage = drawnImg.bgImg;
+      yamaEl.style.backgroundSize = 'cover';
+      yamaEl.style.backgroundPosition = 'center';
+      yamaEl.textContent = '';
+    }
+
     const matches = [];
     for (let i = 0; i < 13; i++) {
       if (st.field[i] && st.field[i].month === drawn.month) matches.push(i);
     }
 
-    if (matches.length === 0) {
-      const empty = st.field.slice(0, 12).findIndex(c => c === null);
-      if (empty !== -1) st.field[empty] = drawn;
-      render();
-      afterDraw(pi, null, -1);
-    } else if (matches.length === 1) {
-      st.caps[pi].push(drawn);
-      st.caps[pi].push(st.field[matches[0]]);
-      if (st.field[matches[0]].stacked) {
-        st.caps[pi].push(...st.field[matches[0]].stacked);
-      }
-      st.field[matches[0]] = null;
-      render();
-      animYakuFlash(pi, st.caps[pi]);
-      checkNagare();
-      afterDraw(pi, drawn, matches[0]);
-    } else if (matches.length >= 2) {
-      if (pi === 0) {
-        _showFieldSelect(drawn, matches, (chosenSlot) => {
+    // めくり後に少し見せてからスライド
+    const revealMs = _spd() === 150 ? 80 : _spd() === 500 ? 200 : 130;
+
+    setTimeout(() => {
+      if (matches.length === 0) {
+        // 合う札なし → 空きスロットへスライド
+        const emptyIdx = st.field.slice(0, 12).findIndex(c => c === null);
+        const toEl = emptyIdx !== -1 ? document.getElementById(`fc-${emptyIdx}`) : null;
+        const _exec = () => {
+          if (emptyIdx !== -1) st.field[emptyIdx] = drawn;
+          render();
+          afterDraw(pi, null, -1);
+        };
+        if (yamaEl && toEl) {
+          animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
+            _exec();
+          });
+        } else {
+          _exec();
+        }
+
+      } else if (matches.length === 1) {
+        // 1枚マッチ → 合う場札へスライド
+        const toEl = document.getElementById(`fc-${matches[0]}`);
+        const _exec = () => {
           st.caps[pi].push(drawn);
-          st.caps[pi].push(st.field[chosenSlot]);
-          if (st.field[chosenSlot].stacked) {
-            st.caps[pi].push(...st.field[chosenSlot].stacked);
-          }
-          st.field[chosenSlot] = null;
+          st.caps[pi].push(st.field[matches[0]]);
+          if (st.field[matches[0]].stacked) st.caps[pi].push(...st.field[matches[0]].stacked);
+          st.field[matches[0]] = null;
           render();
           animYakuFlash(pi, st.caps[pi]);
-          afterDraw(pi, drawn, chosenSlot);
-        });
-      } else {
-        const chosen = matches[0];
-        st.caps[pi].push(drawn);
-        st.caps[pi].push(st.field[chosen]);
-        if (st.field[chosen].stacked) {
-          st.caps[pi].push(...st.field[chosen].stacked);
+          checkNagare();
+          afterDraw(pi, drawn, matches[0]);
+        };
+        if (yamaEl && toEl) {
+          animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
+            _exec();
+          });
+        } else {
+          _exec();
         }
-        st.field[chosen] = null;
-        render();
-        animYakuFlash(pi, st.caps[pi]);
-        checkNagare();
-        afterDraw(pi, drawn, chosen);
+
+      } else if (matches.length >= 2) {
+        if (pi === 0) {
+          // 2枚マッチ・プレイヤー → 選択させてからスライド
+          _showFieldSelect(drawn, matches, (chosenSlot) => {
+            const toEl = document.getElementById(`fc-${chosenSlot}`);
+            const _exec = () => {
+              st.caps[pi].push(drawn);
+              st.caps[pi].push(st.field[chosenSlot]);
+              if (st.field[chosenSlot].stacked) st.caps[pi].push(...st.field[chosenSlot].stacked);
+              st.field[chosenSlot] = null;
+              render();
+              animYakuFlash(pi, st.caps[pi]);
+              afterDraw(pi, drawn, chosenSlot);
+            };
+            if (yamaEl && toEl) {
+              animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
+                _exec();
+              });
+            } else {
+              _exec();
+            }
+          });
+        } else {
+          // 2枚マッチ・CPU → 合う場札へスライド
+          const chosen = matches[0];
+          const toEl = document.getElementById(`fc-${chosen}`);
+          const _exec = () => {
+            st.caps[pi].push(drawn);
+            st.caps[pi].push(st.field[chosen]);
+            if (st.field[chosen].stacked) st.caps[pi].push(...st.field[chosen].stacked);
+            st.field[chosen] = null;
+            render();
+            animYakuFlash(pi, st.caps[pi]);
+            checkNagare();
+            afterDraw(pi, drawn, chosen);
+          };
+          if (yamaEl && toEl) {
+            animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
+              _exec();
+            });
+          } else {
+            _exec();
+          }
+        }
       }
-    }
+    }, revealMs);
   }
 
   /* ============================================================
