@@ -945,7 +945,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.4　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.6　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1099,7 +1099,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.4</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.6</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
         <button class="g-icon-btn" onclick="G.toggleSettings(true)" title="設定">⚙️</button>
@@ -1410,9 +1410,7 @@ const G = (() => {
 
     unseen.forEach(n => _shownYakuKeys.add(n));
 
-    const speedMs = { fast: 900, normal: 1400, slow: 2000 };
-    const totalMs = speedMs[cfg.hana_speed] || 1400;
-    const holdMs  = totalMs * 0.62;
+    const speedMs = { fast: 1100, normal: 1400, slow: 2000 };
     const outMs   = totalMs * 0.28;
 
     const screen = document.getElementById('scr-game');
@@ -1483,7 +1481,7 @@ const G = (() => {
   function _animNagareFlash(type) {
     const screen = document.getElementById('scr-game');
     if (!screen) return;
-    const speedMs = { fast: 900, normal: 1400, slow: 2000 };
+    const speedMs = { fast: 1100, normal: 1400, slow: 2000 };
     const totalMs = speedMs[cfg.hana_speed] || 1400;
     const holdMs  = totalMs * 0.65;
     const outMs   = totalMs * 0.28;
@@ -1536,7 +1534,7 @@ const G = (() => {
     const destLeft = to.left + to.width  / 2 - cardW / 2;
     const destTop  = to.top  + to.height / 2 - cardH / 2;
 
-    const dur = _spd() === 150 ? 180 : _spd() === 500 ? 400 : 260;
+    const dur = _spd() === 150 ? 240 : _spd() === 500 ? 520 : 360;
 
     _animating = true;
 
@@ -2466,7 +2464,7 @@ const G = (() => {
     }
 
     // めくり後に少し見せてからスライド
-    const revealMs = _spd() === 150 ? 80 : _spd() === 500 ? 200 : 130;
+    const revealMs = _spd() === 150 ? 150 : _spd() === 500 ? 350 : 220;
 
     setTimeout(() => {
       if (matches.length === 0) {
