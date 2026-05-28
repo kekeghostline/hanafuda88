@@ -945,7 +945,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.7　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.8　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1099,7 +1099,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.7</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.8</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
         <button class="g-icon-btn" onclick="G.toggleSettings(true)" title="設定">⚙️</button>
@@ -1400,24 +1400,25 @@ const G = (() => {
      ============================================================ */
   let _shownYakuKeys = new Set();
 
-  function animYakuFlash(pi, caps) {
+  function animYakuFlash(pi, caps, cb) {
     const newYaku = calcYakuLive(caps);
-    if (newYaku.length === 0) return;
+    if (newYaku.length === 0) { cb?.(); return; }
 
-    // 今局で未表示の役だけ取り出す
     const unseen = newYaku.filter(n => !_shownYakuKeys.has(n));
-    if (unseen.length === 0) return;
+    if (unseen.length === 0) { cb?.(); return; }
 
     unseen.forEach(n => _shownYakuKeys.add(n));
 
     const speedMs = { fast: 1100, normal: 1400, slow: 2000 };
+    const totalMs = speedMs[cfg.hana_speed] || 1400;
+    const holdMs  = totalMs * 0.62;
     const outMs   = totalMs * 0.28;
 
     const screen = document.getElementById('scr-game');
-    if (!screen) return;
+    if (!screen) { cb?.(); return; }
 
-    // 複数役の場合は少しずらして順番に表示
     unseen.forEach((name, i) => {
+      const isLast = i === unseen.length - 1;
       setTimeout(() => {
         const el = document.createElement('div');
         el.className = 'yaku-flash yaku-flash-enter';
@@ -1432,7 +1433,10 @@ const G = (() => {
           el.classList.remove('yaku-flash-enter');
           el.classList.add('yaku-flash-leave');
           el.style.animationDuration = `${outMs}ms`;
-          setTimeout(() => el.remove(), outMs);
+          setTimeout(() => {
+            el.remove();
+            if (isLast) cb?.(); // 最後の役が消えたらコールバック
+          }, outMs);
         }, holdMs);
       }, i * (totalMs * 0.55));
     });
@@ -2387,9 +2391,10 @@ const G = (() => {
       st.hands[pi].splice(handIdx, 1);
       st.field[slotIdx] = null;
       render();
-      animYakuFlash(pi, st.caps[pi]);
       checkNagare();
-      setTimeout(() => autoDraw(pi), _spd());
+      animYakuFlash(pi, st.caps[pi], () => {
+        setTimeout(() => autoDraw(pi), _spd());
+      });
     };
 
     if (fromEl && toEl) {
@@ -2494,9 +2499,10 @@ const G = (() => {
           if (st.field[matches[0]].stacked) st.caps[pi].push(...st.field[matches[0]].stacked);
           st.field[matches[0]] = null;
           render();
-          animYakuFlash(pi, st.caps[pi]);
           checkNagare();
-          afterDraw(pi, drawn, matches[0]);
+          animYakuFlash(pi, st.caps[pi], () => {
+            afterDraw(pi, drawn, matches[0]);
+          });
         };
         if (yamaEl && toEl) {
           animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
@@ -2517,13 +2523,12 @@ const G = (() => {
               if (st.field[chosenSlot].stacked) st.caps[pi].push(...st.field[chosenSlot].stacked);
               st.field[chosenSlot] = null;
               render();
-              animYakuFlash(pi, st.caps[pi]);
-              afterDraw(pi, drawn, chosenSlot);
+              animYakuFlash(pi, st.caps[pi], () => {
+                afterDraw(pi, drawn, chosenSlot);
+              });
             };
             if (yamaEl && toEl) {
-              animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
-                _exec();
-              });
+              animCardFly(yamaEl, toEl, drawnImg.bgImg, () => { _exec(); });
             } else {
               _exec();
             }
@@ -2538,14 +2543,13 @@ const G = (() => {
             if (st.field[chosen].stacked) st.caps[pi].push(...st.field[chosen].stacked);
             st.field[chosen] = null;
             render();
-            animYakuFlash(pi, st.caps[pi]);
             checkNagare();
-            afterDraw(pi, drawn, chosen);
+            animYakuFlash(pi, st.caps[pi], () => {
+              afterDraw(pi, drawn, chosen);
+            });
           };
           if (yamaEl && toEl) {
-            animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
-              _exec();
-            });
+            animCardFly(yamaEl, toEl, drawnImg.bgImg, () => { _exec(); });
           } else {
             _exec();
           }
