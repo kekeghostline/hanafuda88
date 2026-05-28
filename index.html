@@ -575,6 +575,38 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transform: translateY(-2px);
 }
 
+/* 3枚重ねスロット */
+.fc-stacked-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+}
+.fc-stacked-wrap .fc-stack-card {
+  position: absolute; inset: 0;
+  border-radius: 3px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%; height: 100%;
+}
+.fc-stacked-wrap .fc-stack-card:nth-child(1) {
+  transform: translate(-3px, -3px) rotate(-4deg);
+  z-index: 1;
+}
+.fc-stacked-wrap .fc-stack-card:nth-child(2) {
+  transform: translate(2px, -1px) rotate(2deg);
+  z-index: 2;
+}
+.fc-stacked-wrap .fc-stack-card:nth-child(3) {
+  transform: translate(0, 0) rotate(0deg);
+  z-index: 3;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+.fc-stacked-wrap.highlight .fc-stack-card:nth-child(3) {
+  box-shadow: 0 0 0 2px var(--gold), 2px 2px 6px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+}
+
 /* ボタンバー */
 .g-btn-bar {
   background: rgba(0,0,0,0.35);
@@ -913,7 +945,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.3　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.4　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1067,7 +1099,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.3</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.4</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
         <button class="g-icon-btn" onclick="G.toggleSettings(true)" title="設定">⚙️</button>
@@ -2139,15 +2171,22 @@ const G = (() => {
         html += `<div class="field-card fc-empty" id="fc-${i}"></div>`;
       } else {
         const img = _cardImg(c);
-        const stackBadge = c.stacked
-          ? `<span style="position:absolute;bottom:1px;right:2px;font-size:7px;color:var(--gold)">×3</span>`
-          : '';
-        html += `<div class="field-card ${img.cls}"
-          id="fc-${i}"
-          style="background-image:${img.bgImg};background-size:cover;background-position:center;position:relative;"
-          onclick="G.selField(${i})"
-          title="${c.name}${c.stacked ? '（3枚重ね）' : ''}"
-          >${stackBadge}</div>`;
+        if (c.stacked) {
+          const img1 = _cardImg(c.stacked[0]);
+          const img2 = _cardImg(c.stacked[1]);
+          html += `<div class="fc-stacked-wrap" id="fc-${i}" onclick="G.selField(${i})" title="${c.name}（3枚重ね）">
+            <div class="fc-stack-card" style="background-image:${img1.bgImg}"></div>
+            <div class="fc-stack-card" style="background-image:${img2.bgImg}"></div>
+            <div class="fc-stack-card" style="background-image:${img.bgImg}"></div>
+          </div>`;
+        } else {
+          html += `<div class="field-card ${img.cls}"
+            id="fc-${i}"
+            style="background-image:${img.bgImg};background-size:cover;background-position:center;position:relative;"
+            onclick="G.selField(${i})"
+            title="${c.name}"
+            ></div>`;
+        }
       }
     }
     el.innerHTML = html;
@@ -2258,7 +2297,7 @@ const G = (() => {
   }
 
   function _clearHighlight() {
-    document.querySelectorAll('.field-card.highlight')
+    document.querySelectorAll('.field-card.highlight, .fc-stacked-wrap.highlight')
       .forEach(el => el.classList.remove('highlight'));
     const dz = document.getElementById('discard-zone');
     if (dz) {
