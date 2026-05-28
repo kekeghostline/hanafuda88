@@ -58,8 +58,8 @@
   --text:          #2a1a08;
   --text-dim:      #4a3010;
   --text-faint:    #6a5030;
-  --text-game:     #1a2a08;
-  --text-game-dim: #3a4a28;
+  --text-game:     #1a3a08;
+  --text-game-dim: #2a5010;
   --gold:          #7a4a00;
   --gold-light:    #3d2200;
   --green:         #90d878;
@@ -81,8 +81,8 @@
   --text:          #3a2a10;
   --text-dim:      #5a4020;
   --text-faint:    #7a6040;
-  --text-game:     #2a3a20;
-  --text-game-dim: #4a5a38;
+  --text-game:     #2a3a10;
+  --text-game-dim: #3a5018;
   --gold:          #7a3a00;
   --gold-light:    #3d1f00;
   --green:         #90d878;
@@ -607,6 +607,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transform: translateY(-2px);
 }
 
+#scr-game.bg-wakakusa .g-title,
+#scr-game.bg-shiraki  .g-title  { color: #f0ead0; }
+#scr-game.bg-wakakusa .g-meta,
+#scr-game.bg-shiraki  .g-meta   { color: #d8d0b0; }
+#scr-game.bg-wakakusa .g-icon-btn,
+#scr-game.bg-shiraki  .g-icon-btn { color: #d8d0b0; }
+
 /* ボタンバー */
 .g-btn-bar {
   background: rgba(0,0,0,0.35);
@@ -945,7 +952,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.8　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.9　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1099,7 +1106,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.8</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.9</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
         <button class="g-icon-btn" onclick="G.toggleSettings(true)" title="設定">⚙️</button>
