@@ -311,6 +311,31 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   text-align: center;
 }
 
+/* ===== 局数選択 ===== */
+.s1-rounds-label {
+  font-size: 11px; color: var(--text-dim);
+  letter-spacing: 0.1em; margin-bottom: 8px;
+}
+.s1-rounds-opts {
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+.s1-round-btn {
+  display: flex; flex-direction: column; align-items: center;
+  width: 96px; padding: 10px 0;
+  border-radius: 9px; font-size: 14px; font-weight: 500;
+  letter-spacing: 0.04em;
+  background: transparent; color: var(--gold);
+  border: 1px solid var(--gold-dark);
+  transition: background var(--transition), border-color var(--transition);
+}
+.s1-round-btn.active {
+  background: #2a1f08; border-color: var(--gold);
+}
+.s1-round-btn:active { opacity: 0.75; }
+.s1-round-sub {
+  font-size: 10px; color: var(--text-dim); margin-top: 2px;
+}
+
 /* ===== SCR-002 ルール説明画面 ===== */
 #scr-rules {
   background: var(--bg);
@@ -484,7 +509,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 4px; padding: 1px 5px;
   border: 0.5px solid var(--badge-fuke-border);
 }
+.cap-area-inner { display: flex; flex-direction: column; }
 .cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
+/* 取り札2段レイアウト */
+.cap-row1 { display: flex; gap: 6px; flex-wrap: wrap; }
+.cap-row2 { display: flex; gap: 6px; margin-top: 3px; }
 .cap-cat { display: flex; flex-direction: column; gap: 2px; }
 .cap-cat-label { font-size: 11px; color: var(--text-game-dim); }
 .cap-cards {
@@ -949,10 +978,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="s1-card-icon"></div>
     <div class="s1-title">花合わせ</div>
     <div class="s1-sub">HANA AWASE</div>
+    <!-- 局数選択 -->
+    <div class="s1-rounds-label">— 対戦形式 —</div>
+    <div class="s1-rounds-opts">
+      <button class="s1-round-btn active" id="round-btn-6" onclick="G.setRounds(6,this)">
+        半年戦<span class="s1-round-sub">6局</span>
+      </button>
+      <button class="s1-round-btn" id="round-btn-12" onclick="G.setRounds(12,this)">
+        1年戦<span class="s1-round-sub">12局</span>
+      </button>
+    </div>
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.9　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.10　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1106,8 +1145,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.9</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.10</div>
       <div class="g-icons">
+        <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
         <button class="g-icon-btn" onclick="G.toggleSettings(true)" title="設定">⚙️</button>
       </div>
@@ -1121,7 +1161,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         <span class="turn-badge" id="turn-badge-1" style="display:none">手番中</span>
         <span class="fuke-badge-sm" id="fuke-badge-1" style="display:none">フケ圏</span>
       </div>
-      <div class="cap-categories" id="cap-cards-1"></div>
+      <div class="cap-area-inner" id="cap-cards-1"></div>
     </div>
 
     <!-- CPU2 取り札エリア -->
@@ -1132,7 +1172,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         <span class="turn-badge" id="turn-badge-2" style="display:none">手番中</span>
         <span class="fuke-badge-sm" id="fuke-badge-2" style="display:none">フケ圏</span>
       </div>
-      <div class="cap-categories" id="cap-cards-2"></div>
+      <div class="cap-area-inner" id="cap-cards-2"></div>
     </div>
 
     <!-- 場札・山札ゾーン -->
@@ -1169,7 +1209,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         <span class="turn-badge" id="turn-badge-0" style="display:none;margin-left:4px">手番中</span>
         <span class="fuke-badge-sm" id="fuke-badge-0" style="display:none;margin-left:4px">フケ圏</span>
       </div>
-      <div class="cap-categories" id="cap-cards-0"></div>
+      <div class="cap-area-inner" id="cap-cards-0"></div>
     </div>
 
     <!-- 精算モーダル -->
@@ -1366,12 +1406,13 @@ const G = (() => {
 
   /* ---------- 設定デフォルト値 ---------- */
   const DEFAULTS = {
-    hana_design: 'original',
-    hana_bg:     'kuronuri',
-    hana_speed:  'normal',
-    hana_se:     'on',
-    hana_bgm:    'on',
-    hana_cpu:    'normal',
+    hana_design:  'original',
+    hana_bg:      'kuronuri',
+    hana_speed:   'normal',
+    hana_se:      'on',
+    hana_bgm:     'on',
+    hana_cpu:     'normal',
+    hana_rounds:  '6',
   };
 
   /* ---------- 内部状態 ---------- */
@@ -1385,16 +1426,17 @@ const G = (() => {
 
   /* ---------- ゲーム状態 ---------- */
   let G_state = {
-    hands:      [[], [], []],
-    caps:       [[], [], []],
-    field:      [],
-    deck:       [],
-    turnOrder:  [0, 1, 2],
-    turnIdx:    0,
-    roundNo:    0,
-    cumScore:   [0, 0, 0],
-    phase:      'idle',
-    parentIdx:  0,
+    hands:       [[], [], []],
+    caps:        [[], [], []],
+    field:       [],
+    deck:        [],
+    turnOrder:   [0, 1, 2],
+    turnIdx:     0,
+    roundNo:     0,
+    totalRounds: 6,
+    cumScore:    [0, 0, 0],
+    phase:       'idle',
+    parentIdx:   0,
   };
 
   const SPEED = { fast: 150, normal: 300, slow: 500 };
@@ -1601,6 +1643,13 @@ const G = (() => {
     loadSettings();
     applySettings();
 
+    // 局数ボタンのUIを初期化
+    const savedRounds = cfg.hana_rounds || '6';
+    document.querySelectorAll('.s1-round-btn').forEach(btn => {
+      const rounds = btn.id === 'round-btn-6' ? '6' : '12';
+      btn.classList.toggle('active', rounds === savedRounds);
+    });
+
     // ローディング → 画像プリロード後スタート画面へ
     _preloadImages(() => {
       showScreen('scr-start');
@@ -1613,9 +1662,11 @@ const G = (() => {
   function startGame() {
     SE.play('btn');
     // ゲーム状態をリセット（累計点・局数など）
+    const rounds = parseInt(cfg.hana_rounds || '6', 10);
     G_state = {
       hands: [[],[],[]], caps: [[],[],[]], field: [], deck: [],
       turnOrder: [0,1,2], turnIdx: 0, roundNo: 0,
+      totalRounds: rounds,
       cumScore: [0,0,0], phase: 'idle', parentIdx: 0,
     };
     showScreen('scr-game');
@@ -1703,6 +1754,46 @@ const G = (() => {
 
   function _doCloseSettings() {
     showScreen(_settingsFrom === 'game' ? 'scr-game' : 'scr-start');
+  }
+
+  /* ============================================================
+     goHome — ゲーム中からスタート画面へ戻る
+     局が進行中の場合は確認ダイアログを表示
+     ============================================================ */
+  function goHome() {
+    SE.play('btn');
+    const st = G_state;
+    if (st.phase === 'idle' || st.roundNo === 0) {
+      _resetToStart();
+      return;
+    }
+    _confirm(
+      'ゲームを中断しますか？',
+      'スタート画面に戻ります。現在のゲームの進行状況は失われ、最初からになります。',
+      () => { _resetToStart(); },
+      null
+    );
+  }
+
+  function _resetToStart() {
+    BGM.stop();
+    G_state = {
+      hands: [[],[],[]], caps: [[],[],[]], field: [], deck: [],
+      turnOrder: [0,1,2], turnIdx: 0, roundNo: 0,
+      totalRounds: 6,
+      cumScore: [0,0,0], phase: 'idle', parentIdx: 0,
+    };
+    showScreen('scr-start');
+  }
+
+  /* ============================================================
+     setRounds — スタート画面で局数を選択
+     ============================================================ */
+  function setRounds(rounds, btn) {
+    SE.play('btn');
+    cfg.hana_rounds = String(rounds);
+    document.querySelectorAll('.s1-round-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
 
   /* ============================================================
@@ -1962,7 +2053,7 @@ const G = (() => {
 
     // ヘッダー更新
     document.getElementById('g-round-label').textContent =
-      `${st.roundNo}局／12局`;
+      `${st.roundNo}局／${st.totalRounds}局`;
 
     // ボタンバーはrenderBtns()で制御するためここでは不要（nullセーフ化）
     const bsr = document.getElementById('btn-start-round');
@@ -2107,47 +2198,51 @@ const G = (() => {
         fbEl.style.display = pts <= fukeBase && st.roundNo > 0 ? 'inline-block' : 'none';
       }
 
-      // 取り札カード描画（光/種/短冊/カス）
+      // 取り札カード描画（光/種/短冊を1段目、カスを2段目に分離）
       const capEl = document.getElementById(`cap-cards-${pi}`);
       if (!capEl) continue;
       const groups = { pica:[], tane:[], zaku:[], kas:[] };
       for (const c of st.caps[pi]) {
         if (groups[c.type]) groups[c.type].push(c);
       }
-      let html = '';
-      for (const [type, cards] of Object.entries(groups)) {
+
+      // カードグループHTML生成ヘルパー
+      const _capGroupHtml = (type, cards) => {
         const label2 = { pica:'光', tane:'種', zaku:'短冊', kas:'カス' }[type];
-        html += `<div class="cap-cat">
-          <div class="cap-cat-label">${label2}</div>
-          <div class="cap-cards">`;
         if (cards.length === 0) {
-          html += `<div class="mini-card mc-empty"></div>`;
+          return `<div class="cap-cat"><div class="cap-cat-label">${label2}</div>` +
+                 `<div class="cap-cards"><div class="mini-card mc-empty"></div></div></div>`;
         } else if (cards.length >= 4) {
-          // 4枚以上: 12pxオフセットで重ね表示
-          html = html.replace(/<div class="cap-cards">$/, '<div class="cap-cards stacked">');
           const totalW = 24 + (cards.length - 1) * 12;
+          let h = `<div class="cap-cat"><div class="cap-cat-label">${label2}</div>` +
+                  `<div class="cap-cards stacked" style="width:${totalW + 24}px">`;
           cards.forEach((c, i) => {
             const img = _cardImg(c);
-            html += `<div class="mini-card ${img.cls}"
+            h += `<div class="mini-card ${img.cls}"
               style="background-image:${img.bgImg};background-size:cover;background-position:center;left:${i*12}px"
               title="${c.name}"></div>`;
           });
-          // コンテナ幅を動的に設定
-          html = html.replace(
-            /<div class="cap-cards stacked">/,
-            `<div class="cap-cards stacked" style="width:${totalW + 24}px">`
-          );
+          return h + `</div></div>`;
         } else {
+          let h = `<div class="cap-cat"><div class="cap-cat-label">${label2}</div><div class="cap-cards">`;
           for (const c of cards) {
             const img = _cardImg(c);
-            html += `<div class="mini-card ${img.cls}"
+            h += `<div class="mini-card ${img.cls}"
               style="background-image:${img.bgImg};background-size:cover;background-position:center"
               title="${c.name}"></div>`;
           }
+          return h + `</div></div>`;
         }
-        html += `</div></div>`;
-      }
-      capEl.innerHTML = html;
+      };
+
+      // 1段目: 光・種・短冊
+      const row1 = ['pica','tane','zaku'].map(t => _capGroupHtml(t, groups[t])).join('');
+      // 2段目: カス
+      const row2 = _capGroupHtml('kas', groups.kas);
+
+      capEl.innerHTML =
+        `<div class="cap-row1">${row1}</div>` +
+        `<div class="cap-row2">${row2}</div>`;
     }
   }
 
@@ -2837,8 +2932,8 @@ const G = (() => {
   function nextRound() {
     hideOv('seisan-overlay');
     const st = G_state;
-    if (st.roundNo >= 12) {
-      // 12局終了 → スタート画面へ
+    if (st.roundNo >= st.totalRounds) {
+      // 全局終了 → スタート画面へ
       showFinal();
     } else {
       startRound();
@@ -2858,6 +2953,7 @@ const G = (() => {
       G_state = {
         hands: [[],[],[]], caps: [[],[],[]], field: [], deck: [],
         turnOrder: [0,1,2], turnIdx: 0, roundNo: 0,
+        totalRounds: 6,
         cumScore: [0,0,0], phase: 'idle', parentIdx: 0,
       };
       showScreen('scr-start');
@@ -2972,7 +3068,7 @@ const G = (() => {
       cumulHtml += `<td style="color:${color}">${sign}${cumScore[pi]}点</td>`;
     }
 
-    const isLast = st.roundNo >= 12;
+    const isLast = st.roundNo >= st.totalRounds;
     const btnLabel = isLast ? '結果を見る' : '次の局へ';
 
     const html = `
@@ -3498,6 +3594,8 @@ const G = (() => {
     hideRules,
     showStartSettings,
     toggleSettings,
+    goHome,
+    setRounds,
     switchRuleTab,
     setS,
     showToast,
