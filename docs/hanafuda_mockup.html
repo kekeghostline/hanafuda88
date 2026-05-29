@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>花合わせ（HANA AWASE）モック画面</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  background: #1a1a1a;
+  color: #ccc;
+  padding: 40px 20px;
+}
+h1 {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: 0.15em;
+  margin-bottom: 48px;
+}
+
+/* レイアウト */
+.screens-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+  justify-content: center;
+  align-items: flex-start;
+}
+.screen-block { display: flex; flex-direction: column; align-items: center; }
+.screen-label {
+  font-size: 11px;
+  color: #555;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* デバイスフレーム */
+.phone {
+  width: 320px;
+  background: #111;
+  border-radius: 40px;
+  padding: 12px;
+  border: 1px solid #333;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 0 0 0.5px #444;
+}
+.screen {
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== SCR-001 スタート画面 ===== */
+.s1 {
+  height: 540px;
+  background: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.s1-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 55% at 50% 72%, rgba(139,90,20,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.card-icon {
+  width: 62px; height: 92px;
+  background: #1a1a1a;
+  border: 1.5px solid #8b6914;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 22px;
+}
+.card-icon-inner {
+  width: 52px; height: 78px;
+  background: #2a1f08;
+  border-radius: 5px;
+  border: 1px solid #5c4510;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+}
+.s1-title {
+  font-size: 23px; font-weight: 500;
+  color: #e8c97e;
+  letter-spacing: 0.14em;
+  margin-bottom: 5px;
+}
+.s1-sub {
+  font-size: 11px; color: #6a5030;
+  letter-spacing: 0.22em;
+  margin-bottom: 38px;
+}
+.s1-btn {
+  width: 208px; padding: 12px 0;
+  border-radius: 8px;
+  font-size: 14px; font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: block;
+  text-align: center;
+  margin-bottom: 10px;
+  border: none;
+}
+.s1-btn-primary { background: #c8993a; color: #1a0e00; }
+.s1-btn-secondary {
+  background: transparent; color: #c8993a;
+  border: 1px solid #7a5a20; font-size: 13px;
+}
+.s1-footer {
+  position: absolute; bottom: 18px;
+  font-size: 10px; color: #c0b8a8;
+  letter-spacing: 0.06em;
+}
+
+/* ===== SCR-002 ルール説明画面 ===== */
+.s2 {
+  height: 620px;
+  background: #0d0d0d;
+  display: flex; flex-direction: column;
+}
+.s2-header {
+  background: #100e06;
+  padding: 12px 16px 0;
+  border-bottom: 0.5px solid #2a2010;
+  flex-shrink: 0;
+}
+.s2-header-top {
+  display: flex; align-items: center;
+  margin-bottom: 10px;
+}
+.back-btn {
+  background: none; border: none;
+  color: #c8993a; font-size: 13px; cursor: pointer;
+}
+.s2-header-title {
+  font-size: 15px; font-weight: 500;
+  color: #e8c97e; flex: 1; text-align: center;
+}
+.tabs { display: flex; }
+.tab {
+  flex: 1; padding: 7px 4px;
+  font-size: 11px; color: #6a5030;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+.tab.active { color: #c8993a; border-bottom-color: #c8993a; }
+.s2-body { flex: 1; overflow-y: auto; padding: 10px 12px; }
+.s2-body::-webkit-scrollbar { width: 3px; }
+.s2-body::-webkit-scrollbar-track { background: transparent; }
+.s2-body::-webkit-scrollbar-thumb { background: #2a2010; border-radius: 2px; }
+.rule-section { margin-bottom: 14px; }
+.rule-section-title {
+  font-size: 11px; color: #c8993a; font-weight: 500;
+  margin-bottom: 8px;
+  border-left: 3px solid #c8993a;
+  padding-left: 7px;
+}
+.yaku-row {
+  border-bottom: 0.5px solid #1e1808;
+  padding: 7px 0;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.yaku-top {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.yaku-name { font-size: 12px; color: #d4b870; font-weight: 500; min-width: 48px; }
+.yaku-cond { font-size: 10px; color: #7a6040; flex: 1; padding: 0 6px; }
+.yaku-pt { font-size: 12px; color: #c8993a; font-weight: 500; min-width: 36px; text-align: right; }
+.yaku-cards { display: flex; gap: 4px; padding-left: 2px; }
+.yaku-card-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.yaku-card-img { width: 28px; height: 42px; border-radius: 3px; object-fit: cover; border: 0.5px solid #3a2a10; background: #1a1208; }
+.yaku-card-name { font-size: 7px; color: #5a4a30; text-align: center; line-height: 1.2; max-width: 32px; }
+
+/* ===== SCR-003 ゲーム画面 ===== */
+.s3 {
+  height: 760px;
+  background: #0d1a0a;
+  display: flex; flex-direction: column;
+  font-size: 11px;
+}
+.s3-header {
+  background: rgba(0,0,0,0.6);
+  padding: 7px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 0.5px solid #1a2a18;
+  flex-shrink: 0;
+}
+.s3-title { font-size: 13px; font-weight: 500; color: #b8d090; }
+.s3-meta { font-size: 10px; color: #5a7050; }
+.s3-icons { display: flex; gap: 10px; }
+.s3-icon { font-size: 17px; color: #7a9070; }
+
+/* ===== 局数選択（スタート画面） ===== */
+.s1-rounds-label {
+  font-size: 10px; color: #7a6040;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.s1-rounds-opts {
+  display: flex; gap: 8px;
+  margin-bottom: 20px;
+}
+.s1-round-btn {
+  width: 96px; padding: 9px 0;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer; text-align: center;
+  background: transparent; color: #c8993a;
+  border: 1px solid #5a3a10;
+  transition: background 0.15s, border-color 0.15s;
+}
+.s1-round-btn.active {
+  background: #2a1f08;
+  border-color: #c8993a;
+}
+.s1-round-sub { font-size: 9px; color: #7a5a20; margin-top: 2px; }
+
+/* ===== ゲーム中断確認ダイアログ ===== */
+.quit-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  z-index: 200;
+}
+.quit-modal {
+  background: #161006;
+  border-radius: 14px;
+  padding: 22px 18px;
+  width: 100%;
+  border: 0.5px solid #3a2a10;
+  text-align: center;
+}
+.quit-modal-title {
+  font-size: 15px; font-weight: 500;
+  color: #e8c97e; margin-bottom: 8px;
+}
+.quit-modal-desc {
+  font-size: 12px; color: #7a6040;
+  line-height: 1.8; margin-bottom: 18px;
+}
+.quit-modal-btns { display: flex; gap: 8px; }
+.quit-btn {
+  flex: 1; padding: 10px 0;
+  border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer;
+}
+.quit-btn-ok { background: #c8993a; color: #1a0e00; border: none; }
+.quit-btn-cancel {
+  background: transparent; color: #9a8060;
+  border: 0.5px solid #3a2a10;
+}
+
+/* CPU取り札エリア */
+.cpu-area {
+  background: rgba(0,0,0,0.3);
+  padding: 5px 10px;
+  border-bottom: 0.5px solid #1a2a18;
+  flex-shrink: 0;
+}
+.cpu-header {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 4px;
+}
+.cpu-name { font-size: 10px; color: #8aaa78; font-weight: 500; }
+.cpu-pts { font-size: 10px; color: #c8993a; }
+.turn-badge {
+  font-size: 9px;
+  background: #2a3a28; color: #80c090;
+  border-radius: 4px; padding: 1px 5px;
+  border: 0.5px solid #3a5a38;
+}
+/* 取り札エリア：2段固定レイアウト */
+.cap-area-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cap-row1 { display: flex; gap: 6px; } /* 光・種・短冊 */
+.cap-row2 { display: flex; gap: 6px; } /* カスのみ */
+.cap-categories { display: flex; gap: 8px; }
+.cap-cat { display: flex; flex-direction: column; gap: 2px; }
+.cap-cat-label { font-size: 8px; color: #4a6040; }
+.cap-cards { display: flex; gap: 2px; flex-wrap: wrap; max-width: 72px; }
+.cap-kas-cards { display: flex; gap: 2px; flex-wrap: wrap; }
+.mini-card { width: 16px; height: 24px; border-radius: 2px; flex-shrink: 0; }
+.mc-pica  { background: #2a1f08; border: 0.5px solid #5c4510; }
+.mc-tane  { background: #0a1a20; border: 0.5px solid #1a4050; }
+.mc-zaku  { background: #1a0a1a; border: 0.5px solid #4a1a4a; }
+.mc-kas   { background: #1a2a18; border: 0.5px solid #2a4028; }
+.mc-empty { background: transparent; border: 0.5px dashed #2a3028; }
+
+/* 場札・山札 */
+.mid-zone {
+  display: flex; gap: 8px;
+  padding: 5px 10px;
+  flex-shrink: 0;
+  border-bottom: 0.5px solid #1a2a18;
+}
+.yamafuda {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  flex-shrink: 0; justify-content: flex-start;
+  padding-top: 14px;
+}
+.yama-card {
+  width: 32px; height: 46px;
+  background: #1a1a2a; border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; color: #5a5a8a;
+}
+.yama-count { font-size: 9px; color: #5a7050; }
+.field-zone { flex: 1; }
+.field-title { font-size: 9px; color: #5a7050; margin-bottom: 3px; }
+.field-row { display: flex; gap: 3px; margin-bottom: 3px; }
+.field-card { width: 28px; height: 40px; border-radius: 3px; flex-shrink: 0; }
+.fc-m1 { background: #2a0a08; border: 0.5px solid #6a2018; }
+.fc-m2 { background: #082a08; border: 0.5px solid #1a6020; }
+.fc-m3 { background: #08182a; border: 0.5px solid #18406a; }
+.fc-m4 { background: #1a1808; border: 0.5px solid #4a4010; }
+.fc-m5 { background: #200818; border: 0.5px solid #601840; }
+.fc-m6 { background: #0a1a20; border: 0.5px solid #1a5060; }
+.fc-discard {
+  background: transparent; border: 0.5px dashed #3a3a3a;
+  display: flex; align-items: center; justify-content: center;
+}
+.fc-empty { background: transparent; border: 0.5px dashed #1e2a1c; }
+
+/* ステータス */
+.s3-status {
+  background: rgba(0,0,0,0.5);
+  padding: 4px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 0.5px solid #1a2a18;
+  flex-shrink: 0;
+}
+.status-txt { font-size: 11px; color: #8aaa78; }
+
+/* プレイヤー手札 */
+.player-hand {
+  background: rgba(0,0,0,0.4);
+  padding: 6px 10px;
+  flex-shrink: 0;
+}
+.hand-label { font-size: 9px; color: #5a7050; margin-bottom: 4px; }
+.hand-cards { display: flex; gap: 4px; justify-content: center; }
+.hand-card { width: 32px; height: 46px; border-radius: 4px; }
+.hc-sel { background: #2a2808; border: 1.5px solid #c8993a; }
+.hc-c1  { background: #3a1208; border: 0.5px solid #8a3020; }
+.hc-c2  { background: #083a08; border: 0.5px solid #208020; }
+.hc-c3  { background: #08182a; border: 0.5px solid #2050a0; }
+.hc-def { background: #1a3a20; border: 0.5px solid #2a5030; }
+
+/* プレイヤー取り札 */
+.player-cap {
+  background: rgba(0,0,0,0.3);
+  padding: 5px 10px;
+  border-top: 0.5px solid #1a2a18;
+  flex-shrink: 0;
+}
+
+/* ===== SCR-003 背景テーマ ===== */
+
+/* 黒漆 */
+.theme-kuronuri { background-image: url('images/backgrounds/bg_kuronuri.webp'); background-size: cover; background-position: center top; }
+.theme-kuronuri .s3-header { background: rgba(0,0,0,0.5); border-bottom-color: rgba(139,105,20,0.4); }
+.theme-kuronuri .s3-title { color: #e8c97e; }
+.theme-kuronuri .s3-meta { color: #8a7040; }
+.theme-kuronuri .s3-icon { color: #c8993a; }
+.theme-kuronuri .cpu-area { background: rgba(0,0,0,0.45); border-bottom-color: rgba(139,105,20,0.3); }
+.theme-kuronuri .cpu-name { color: #d4b870; }
+.theme-kuronuri .cpu-pts { color: #c8993a; }
+.theme-kuronuri .turn-badge { background: rgba(42,58,40,0.8); color: #80c090; border-color: #3a5a38; }
+.theme-kuronuri .cap-cat-label { color: #7a6530; }
+.theme-kuronuri .mid-zone { border-bottom-color: rgba(139,105,20,0.3); }
+.theme-kuronuri .yama-card { background: rgba(20,20,40,0.7); border-color: #3a3a5a; color: #5a5a8a; }
+.theme-kuronuri .yama-count { color: #8a7040; }
+.theme-kuronuri .field-title { color: #8a7040; }
+.theme-kuronuri .s3-status { background: rgba(0,0,0,0.5); border-color: rgba(139,105,20,0.3); }
+.theme-kuronuri .status-txt { color: #d4b870; }
+.theme-kuronuri .player-hand { background: rgba(0,0,0,0.4); }
+.theme-kuronuri .hand-label { color: #8a7040; }
+.theme-kuronuri .player-cap { background: rgba(0,0,0,0.35); border-top-color: rgba(139,105,20,0.3); }
+
+/* 若草 */
+.theme-wakakusa { background-image: url('images/backgrounds/bg_wakakusa.webp'); background-size: cover; background-position: center top; }
+.theme-wakakusa .s3-header { background: rgba(60,80,30,0.55); border-bottom-color: rgba(80,100,40,0.4); }
+.theme-wakakusa .s3-title { color: #1a3010; }
+.theme-wakakusa .s3-meta { color: #3a5020; }
+.theme-wakakusa .s3-icon { color: #2a5018; }
+.theme-wakakusa .cpu-area { background: rgba(80,100,40,0.35); border-bottom-color: rgba(60,80,30,0.3); }
+.theme-wakakusa .cpu-name { color: #1a3a10; }
+.theme-wakakusa .cpu-pts { color: #5a3a10; }
+.theme-wakakusa .turn-badge { background: rgba(30,60,15,0.7); color: #1a4a08; border-color: rgba(30,60,15,0.5); }
+.theme-wakakusa .cap-cat-label { color: #3a5a20; }
+.theme-wakakusa .mc-pica { background: rgba(60,40,10,0.6); border: 0.5px solid rgba(120,80,20,0.6); }
+.theme-wakakusa .mc-tane { background: rgba(10,40,50,0.5); border: 0.5px solid rgba(20,80,100,0.5); }
+.theme-wakakusa .mc-zaku { background: rgba(50,10,50,0.4); border: 0.5px solid rgba(100,20,100,0.4); }
+.theme-wakakusa .mc-kas  { background: rgba(20,50,10,0.5); border: 0.5px solid rgba(40,100,20,0.4); }
+.theme-wakakusa .mid-zone { border-bottom-color: rgba(60,80,30,0.3); }
+.theme-wakakusa .yama-card { background: rgba(40,60,20,0.5); border-color: rgba(60,90,30,0.6); color: #2a4a10; }
+.theme-wakakusa .yama-count { color: #3a5a20; }
+.theme-wakakusa .field-title { color: #3a5a20; }
+.theme-wakakusa .s3-status { background: rgba(60,80,30,0.45); border-color: rgba(60,90,30,0.3); }
+.theme-wakakusa .status-txt { color: #1a3a10; }
+.theme-wakakusa .player-hand { background: rgba(50,70,25,0.35); }
+.theme-wakakusa .hand-label { color: #3a5a20; }
+.theme-wakakusa .hc-sel { border-color: #5a3a08; }
+.theme-wakakusa .player-cap { background: rgba(50,70,25,0.3); border-top-color: rgba(60,90,30,0.3); }
+
+/* 白木 */
+.theme-shiraki { background-image: url('images/backgrounds/bg_shiraki.webp'); background-size: cover; background-position: center top; }
+.theme-shiraki .s3-header { background: rgba(240,230,210,0.65); border-bottom-color: rgba(180,160,120,0.4); }
+.theme-shiraki .s3-title { color: #3a2a10; }
+.theme-shiraki .s3-meta { color: #7a6040; }
+.theme-shiraki .s3-icon { color: #6a4a20; }
+.theme-shiraki .cpu-area { background: rgba(240,230,210,0.55); border-bottom-color: rgba(180,160,120,0.3); }
+.theme-shiraki .cpu-name { color: #3a2a10; }
+.theme-shiraki .cpu-pts { color: #7a4a10; }
+.theme-shiraki .turn-badge { background: rgba(180,160,120,0.4); color: #3a2a10; border-color: rgba(140,120,80,0.5); }
+.theme-shiraki .cap-cat-label { color: #7a6040; }
+.theme-shiraki .mc-pica { background: rgba(80,50,10,0.4); border: 0.5px solid rgba(140,100,30,0.5); }
+.theme-shiraki .mc-tane { background: rgba(10,40,60,0.3); border: 0.5px solid rgba(20,80,120,0.4); }
+.theme-shiraki .mc-zaku { background: rgba(60,10,60,0.3); border: 0.5px solid rgba(120,20,120,0.4); }
+.theme-shiraki .mc-kas  { background: rgba(30,60,10,0.3); border: 0.5px solid rgba(60,120,20,0.4); }
+.theme-shiraki .mid-zone { border-bottom-color: rgba(180,160,120,0.3); }
+.theme-shiraki .yama-card { background: rgba(200,185,160,0.5); border-color: rgba(160,140,100,0.6); color: #5a4a30; }
+.theme-shiraki .yama-count { color: #7a6040; }
+.theme-shiraki .field-title { color: #7a6040; }
+.theme-shiraki .s3-status { background: rgba(240,230,210,0.55); border-color: rgba(180,160,120,0.3); }
+.theme-shiraki .status-txt { color: #3a2a10; }
+.theme-shiraki .player-hand { background: rgba(230,218,196,0.5); }
+.theme-shiraki .hand-label { color: #7a6040; }
+.theme-shiraki .hc-sel { border-color: #8a4a10; }
+.theme-shiraki .player-cap { background: rgba(230,218,196,0.45); border-top-color: rgba(180,160,120,0.3); }
+
+/* ===== 精算モーダル ===== */
+.modal-screen {
+  background: #0d1a0a;
+}
+.s3-modal-wrap {
+  background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center;
+  padding: 12px;
+}
+.seisan-modal {
+  background: #161006;
+  border-radius: 14px;
+  padding: 14px 10px;
+  width: 100%;
+  border: 0.5px solid #3a2a10;
+}
+.seisan-title {
+  font-size: 14px; font-weight: 500;
+  color: #e8c97e; text-align: center;
+  margin-bottom: 10px;
+}
+.seisan-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 10px; table-layout: fixed;
+}
+.seisan-table th {
+  color: #7a6040; font-weight: 500;
+  text-align: center; padding: 4px 2px;
+  border-bottom: 0.5px solid #2a2010;
+  font-size: 10px;
+}
+.seisan-table td {
+  color: #c8b080; text-align: center;
+  padding: 3px 2px;
+  border-bottom: 0.5px solid #1a1408;
+  vertical-align: top;
+  line-height: 1.6;
+}
+.row-label { color: #5a4a30 !important; text-align: left !important; font-size: 10px; }
+.yaku-badge {
+  display: inline-block;
+  background: #2a1f08; color: #c8993a;
+  border-radius: 3px; padding: 1px 3px; font-size: 8px;
+}
+.fuke-badge {
+  display: inline-block;
+  background: #2a0808; color: #d06060;
+  border-radius: 3px; padding: 1px 3px; font-size: 8px;
+}
+.banner-row td { padding: 4px 2px; }
+.banner-cell {
+  background: #1a0a0a; border: 0.5px solid #4a1a1a;
+  border-radius: 4px; color: #d06060;
+  font-size: 9px; padding: 3px 6px; text-align: center;
+}
+.seisan-arrow { font-size: 9px; line-height: 1.6; }
+.s-pay  { color: #d06060; }
+.s-recv { color: #5a9a60; }
+.s-even { color: #5a5a50; }
+.final-row td {
+  font-size: 11px; font-weight: 500;
+  color: #e8c97e;
+  border-top: 1px solid #3a2a10;
+  padding-top: 5px;
+}
+.cumul-row td {
+  font-size: 10px; color: #90c080;
+  border-top: 0.5px solid #2a3a20;
+  background: rgba(20,40,10,0.4);
+}
+.ok-btn {
+  width: 100%; margin-top: 10px; padding: 9px;
+  background: #c8993a; color: #1a0e00;
+  border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+}
+
+/* ===== SCR-004 設定画面 ===== */
+.s4-screen {
+  height: 580px;
+  background: rgba(13,26,10,0.6);
+}
+.s4-overlay {
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.s4-modal {
+  background: #161006;
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+}
+.s4-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.s4-modal-title { font-size: 15px; font-weight: 500; color: #e8c97e; }
+.close-btn {
+  font-size: 18px; color: #7a6040;
+  background: none; border: none; cursor: pointer;
+}
+.setting-row { margin-bottom: 12px; }
+.setting-label { font-size: 11px; color: #7a6040; margin-bottom: 5px; }
+.setting-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.opt-btn {
+  font-size: 11px; padding: 5px 10px;
+  border-radius: 6px;
+  background: #0d0d0d;
+  border: 0.5px solid #2a2010;
+  color: #9a8060; cursor: pointer;
+}
+.opt-btn.active {
+  background: #2a1f08;
+  border-color: #c8993a;
+  color: #c8993a;
+}
+.setting-divider { height: 0.5px; background: #2a2010; margin: 4px 0 12px; }
+</style>
+</head>
+<body>
+
+<h1>花合わせ（HANA AWASE）　モック画面　v1.0</h1>
+
+<div class="screens-grid">
+
+  <!-- SCR-001 スタート画面 -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-001　スタート画面</div>
+    <div class="phone"><div class="screen s1">
+      <div class="s1-glow"></div>
+      <div class="card-icon"><div class="card-icon-inner">🀄</div></div>
+      <div class="s1-title">花合わせ</div>
+      <div class="s1-sub">HANA AWASE</div>
+      <div class="s1-rounds-label">— 対戦形式 —</div>
+      <div class="s1-rounds-opts">
+        <button class="s1-round-btn active">
+          半年戦<br><span class="s1-round-sub">6局</span>
+        </button>
+        <button class="s1-round-btn">
+          1年戦<br><span class="s1-round-sub">12局</span>
+        </button>
+      </div>
+      <button class="s1-btn s1-btn-primary">ゲーム開始</button>
+      <button class="s1-btn s1-btn-secondary">ルール説明</button>
+      <button class="s1-btn s1-btn-secondary">設定</button>
+      <div class="s1-footer">v0.0.9　© 2026 Hitonomigi Inc.</div>
+    </div></div>
+  </div>
+
+  <!-- SCR-002 ルール説明画面 -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-002　ルール説明画面（役一覧タブ）</div>
+    <div class="phone"><div class="screen s2">
+      <div class="s2-header">
+        <div class="s2-header-top">
+          <button class="back-btn">← 戻る</button>
+          <div class="s2-header-title">ルール説明</div>
+          <div style="width:40px"></div>
+        </div>
+        <div class="tabs">
+          <div class="tab">基本</div>
+          <div class="tab">札一覧</div>
+          <div class="tab active">役一覧</div>
+          <div class="tab">操作</div>
+        </div>
+      </div>
+      <div class="s2-body">
+
+        <!-- 光役 -->
+        <div class="rule-section">
+          <div class="rule-section-title">光役</div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">五光</span><span class="yaku-cond">光札5枚すべて</span><span class="yaku-pt">50点</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_01_matsu_pica_1.png" alt="松に鶴"><div class="yaku-card-name">松に鶴</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_03_sakura_pica_1.png" alt="桜に幕"><div class="yaku-card-name">桜に幕</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_08_susuki_pica_1.png" alt="芒に月"><div class="yaku-card-name">芒に月</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_11_yanagi_pica_1.png" alt="雨に人"><div class="yaku-card-name">雨に人</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_12_kiri_pica_1.png" alt="桐に鳳凰"><div class="yaku-card-name">桐に鳳凰</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">四光</span><span class="yaku-cond">雨人を含まない光4枚</span><span class="yaku-pt">40点</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_01_matsu_pica_1.png" alt="松に鶴"><div class="yaku-card-name">松に鶴</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_03_sakura_pica_1.png" alt="桜に幕"><div class="yaku-card-name">桜に幕</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_08_susuki_pica_1.png" alt="芒に月"><div class="yaku-card-name">芒に月</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_12_kiri_pica_1.png" alt="桐に鳳凰"><div class="yaku-card-name">桐に鳳凰</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">雨四光</span><span class="yaku-cond">三光＋雨に人</span><span class="yaku-pt">40点</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_01_matsu_pica_1.png" alt="松に鶴"><div class="yaku-card-name">松に鶴</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_08_susuki_pica_1.png" alt="芒に月"><div class="yaku-card-name">芒に月</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_12_kiri_pica_1.png" alt="桐に鳳凰"><div class="yaku-card-name">桐に鳳凰</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_11_yanagi_pica_1.png" alt="雨に人"><div class="yaku-card-name">雨に人</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">三光</span><span class="yaku-cond">松鶴・桐鳳凰・芒月</span><span class="yaku-pt">30点</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_01_matsu_pica_1.png" alt="松に鶴"><div class="yaku-card-name">松に鶴</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_08_susuki_pica_1.png" alt="芒に月"><div class="yaku-card-name">芒に月</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_12_kiri_pica_1.png" alt="桐に鳳凰"><div class="yaku-card-name">桐に鳳凰</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 短冊役 -->
+        <div class="rule-section">
+          <div class="rule-section-title">短冊役</div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">赤短</span><span class="yaku-cond">松・梅・桜の短冊3枚</span><span class="yaku-pt">30点〜</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_01_matsu_zaku_1.png" alt="松の短冊"><div class="yaku-card-name">松の短冊</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_02_ume_zaku_1.png" alt="梅の短冊"><div class="yaku-card-name">梅の短冊</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_03_sakura_zaku_1.png" alt="桜の短冊"><div class="yaku-card-name">桜の短冊</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">青短</span><span class="yaku-cond">牡丹・菊・紅葉の短冊3枚</span><span class="yaku-pt">30点〜</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_06_botan_zaku_1.png" alt="牡丹の短冊"><div class="yaku-card-name">牡丹の短冊</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_09_kiku_zaku_1.png" alt="菊の短冊"><div class="yaku-card-name">菊の短冊</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_10_momiji_zaku_1.png" alt="紅葉の短冊"><div class="yaku-card-name">紅葉の短冊</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- その他の役 -->
+        <div class="rule-section">
+          <div class="rule-section-title">その他の役</div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">猪鹿蝶</span><span class="yaku-cond">萩猪・紅葉鹿・牡丹蝶</span><span class="yaku-pt">15点</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_07_hagi_tane_1.png" alt="萩に猪"><div class="yaku-card-name">萩に猪</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_10_momiji_tane_1.png" alt="紅葉に鹿"><div class="yaku-card-name">紅葉に鹿</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_06_botan_tane_1.png" alt="牡丹に蝶"><div class="yaku-card-name">牡丹に蝶</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">月見酒</span><span class="yaku-cond">芒月＋菊盃</span><span class="yaku-pt">10点</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_08_susuki_pica_1.png" alt="芒に月"><div class="yaku-card-name">芒に月</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_09_kiku_tane_1.png" alt="菊に盃"><div class="yaku-card-name">菊に盃</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">花見酒</span><span class="yaku-cond">桜幕＋菊盃</span><span class="yaku-pt">10点</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_03_sakura_pica_1.png" alt="桜に幕"><div class="yaku-card-name">桜に幕</div></div>
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_09_kiku_tane_1.png" alt="菊に盃"><div class="yaku-card-name">菊に盃</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">カス</span><span class="yaku-cond">カス13枚以上（以降+10点）</span><span class="yaku-pt">10点〜</span></div>
+            <div class="yaku-cards">
+              <div class="yaku-card-wrap"><img class="yaku-card-img" src="images/original/card_01_matsu_kas_1.png" alt="カス"><div class="yaku-card-name">カス×13</div></div>
+            </div>
+          </div>
+
+          <div class="yaku-row">
+            <div class="yaku-top"><span class="yaku-name">フケ</span><span class="yaku-cond">取り点が基準点以下</span><span class="yaku-pt">80点</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- SCR-003 ゲーム画面：黒漆 -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-003　ゲーム画面（黒漆）</div>
+    <div class="phone"><div class="screen s3 theme-kuronuri">
+
+      <div class="s3-header">
+        <div class="s3-title">花合わせ</div>
+        <div class="s3-meta">3月／12月</div>
+        <div class="s3-icons">
+          <i class="ti ti-home s3-icon" aria-hidden="true" title="スタートへ戻る"></i>
+          <i class="ti ti-book s3-icon" aria-hidden="true"></i>
+          <i class="ti ti-settings s3-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <!-- CPU1 -->
+      <div class="cpu-area">
+        <div class="cpu-header">
+          <span class="cpu-name">👑 親　CPU1</span>
+          <span class="cpu-pts">取り点 42点</span>
+          <span class="turn-badge">手番中</span>
+        </div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+          <div class="cap-cat">
+            <div class="cap-cat-label">光</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+            </div>
+          </div>
+          <div class="cap-cat">
+            <div class="cap-cat-label">種</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+            </div>
+          </div>
+          <div class="cap-cat">
+            <div class="cap-cat-label">短冊</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+            </div>
+          </div>
+          </div>
+          <div class="cap-row2">
+          <div class="cap-cat">
+            <div class="cap-cat-label">カス</div>
+            <div class="cap-kas-cards">
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CPU2 -->
+      <div class="cpu-area">
+        <div class="cpu-header">
+          <span class="cpu-name">胴二　CPU2</span>
+          <span class="cpu-pts">取り点 28点</span>
+        </div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+          <div class="cap-cat">
+            <div class="cap-cat-label">光</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+            </div>
+          </div>
+          <div class="cap-cat">
+            <div class="cap-cat-label">種</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+            </div>
+          </div>
+          <div class="cap-cat">
+            <div class="cap-cat-label">短冊</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+            </div>
+          </div>
+          </div>
+          <div class="cap-row2">
+          <div class="cap-cat">
+            <div class="cap-cat-label">カス</div>
+            <div class="cap-kas-cards">
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 場札・山札（3段） -->
+      <div class="mid-zone">
+        <div class="yamafuda">
+          <div class="yama-card">山</div>
+          <div class="yama-count">18枚</div>
+        </div>
+        <div class="field-zone">
+          <div class="field-title">場札</div>
+          <div class="field-row">
+            <div class="field-card fc-m1"></div>
+            <div class="field-card fc-m2"></div>
+            <div class="field-card fc-m3"></div>
+            <div class="field-card fc-m4"></div>
+            <div class="field-card fc-discard"><span style="font-size:11px;color:#3a3a3a">🗑</span></div>
+          </div>
+          <div class="field-row">
+            <div class="field-card fc-m5"></div>
+            <div class="field-card fc-m6"></div>
+            <div class="field-card fc-m1"></div>
+            <div class="field-card fc-m3"></div>
+            <div class="field-card fc-empty"></div>
+          </div>
+          <div class="field-row">
+            <div class="field-card fc-empty"></div>
+            <div class="field-card fc-empty"></div>
+            <div class="field-card fc-empty"></div>
+            <div class="field-card fc-empty"></div>
+            <div class="field-card fc-empty"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ステータス -->
+      <div class="s3-status">
+        <span class="status-txt">ビキ　あなた　取り点 <span style="color:#c8993a">15点</span></span>
+        <span style="font-size:9px;color:#5a4a30">基準 25点</span>
+      </div>
+
+      <!-- プレイヤー手札 -->
+      <div class="player-hand">
+        <div class="hand-label">あなたの手札</div>
+        <div class="hand-cards">
+          <div class="hand-card hc-c1"></div>
+          <div class="hand-card hc-sel"></div>
+          <div class="hand-card hc-c2"></div>
+          <div class="hand-card hc-c3"></div>
+          <div class="hand-card hc-c1"></div>
+          <div class="hand-card hc-def"></div>
+          <div class="hand-card hc-def"></div>
+        </div>
+      </div>
+
+      <!-- プレイヤー取り札 -->
+      <div class="player-cap">
+        <div class="hand-label">あなたの取り札</div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+          <div class="cap-cat">
+            <div class="cap-cat-label">光</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+              <div class="mini-card mc-pica"></div>
+            </div>
+          </div>
+          <div class="cap-cat">
+            <div class="cap-cat-label">種</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+              <div class="mini-card mc-tane"></div>
+            </div>
+          </div>
+          <div class="cap-cat">
+            <div class="cap-cat-label">短冊</div>
+            <div class="cap-cards">
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+              <div class="mini-card mc-zaku"></div>
+            </div>
+          </div>
+          </div>
+          <div class="cap-row2">
+          <div class="cap-cat">
+            <div class="cap-cat-label">カス</div>
+            <div class="cap-kas-cards">
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+              <div class="mini-card mc-kas"></div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+    </div></div>
+  </div>
+
+  <!-- SCR-003 ゲーム画面：若草 -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-003　ゲーム画面（若草）</div>
+    <div class="phone"><div class="screen s3 theme-wakakusa">
+      <div class="s3-header">
+        <div class="s3-title">花合わせ</div>
+        <div class="s3-meta">3月／12月</div>
+        <div class="s3-icons">
+          <i class="ti ti-home s3-icon" aria-hidden="true" title="スタートへ戻る"></i>
+          <i class="ti ti-book s3-icon" aria-hidden="true"></i>
+          <i class="ti ti-settings s3-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="cpu-area">
+        <div class="cpu-header">
+          <span class="cpu-name">👑 親　CPU1</span>
+          <span class="cpu-pts">取り点 42点</span>
+          <span class="turn-badge">手番中</span>
+        </div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+            <div class="cap-cat"><div class="cap-cat-label">光</div><div class="cap-cards"><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">種</div><div class="cap-cards"><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">短冊</div><div class="cap-cards"><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div></div></div>
+          </div>
+          <div class="cap-row2">
+            <div class="cap-cat"><div class="cap-cat-label">カス</div><div class="cap-kas-cards"><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cpu-area">
+        <div class="cpu-header">
+          <span class="cpu-name">胴二　CPU2</span>
+          <span class="cpu-pts">取り点 28点</span>
+        </div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+            <div class="cap-cat"><div class="cap-cat-label">光</div><div class="cap-cards"><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">種</div><div class="cap-cards"><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">短冊</div><div class="cap-cards"><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div></div></div>
+          </div>
+          <div class="cap-row2">
+            <div class="cap-cat"><div class="cap-cat-label">カス</div><div class="cap-kas-cards"><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="mid-zone">
+        <div class="yamafuda"><div class="yama-card">山</div><div class="yama-count">18枚</div></div>
+        <div class="field-zone">
+          <div class="field-title">場札</div>
+          <div class="field-row"><div class="field-card fc-m1"></div><div class="field-card fc-m2"></div><div class="field-card fc-m3"></div><div class="field-card fc-m4"></div><div class="field-card fc-discard"><span style="font-size:11px;color:#3a3a3a">🗑</span></div></div>
+          <div class="field-row"><div class="field-card fc-m5"></div><div class="field-card fc-m6"></div><div class="field-card fc-m1"></div><div class="field-card fc-m3"></div><div class="field-card fc-empty"></div></div>
+          <div class="field-row"><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div></div>
+        </div>
+      </div>
+      <div class="s3-status">
+        <span class="status-txt">ビキ　あなた　取り点 <span style="color:#6a3a08">15点</span></span>
+        <span style="font-size:9px;color:#3a5a20">基準 25点</span>
+      </div>
+      <div class="player-hand">
+        <div class="hand-label">あなたの手札</div>
+        <div class="hand-cards">
+          <div class="hand-card hc-c1"></div><div class="hand-card hc-sel"></div><div class="hand-card hc-c2"></div><div class="hand-card hc-c3"></div><div class="hand-card hc-c1"></div><div class="hand-card hc-def"></div><div class="hand-card hc-def"></div>
+        </div>
+      </div>
+      <div class="player-cap">
+        <div class="hand-label">あなたの取り札</div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+            <div class="cap-cat"><div class="cap-cat-label">光</div><div class="cap-cards"><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">種</div><div class="cap-cards"><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">短冊</div><div class="cap-cards"><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div></div></div>
+          </div>
+          <div class="cap-row2">
+            <div class="cap-cat"><div class="cap-cat-label">カス</div><div class="cap-kas-cards"><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- SCR-003 ゲーム画面：白木 -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-003　ゲーム画面（白木）</div>
+    <div class="phone"><div class="screen s3 theme-shiraki">
+      <div class="s3-header">
+        <div class="s3-title">花合わせ</div>
+        <div class="s3-meta">3月／12月</div>
+        <div class="s3-icons">
+          <i class="ti ti-home s3-icon" aria-hidden="true" title="スタートへ戻る"></i>
+          <i class="ti ti-book s3-icon" aria-hidden="true"></i>
+          <i class="ti ti-settings s3-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="cpu-area">
+        <div class="cpu-header">
+          <span class="cpu-name">👑 親　CPU1</span>
+          <span class="cpu-pts">取り点 42点</span>
+          <span class="turn-badge">手番中</span>
+        </div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+            <div class="cap-cat"><div class="cap-cat-label">光</div><div class="cap-cards"><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">種</div><div class="cap-cards"><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">短冊</div><div class="cap-cards"><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div></div></div>
+          </div>
+          <div class="cap-row2">
+            <div class="cap-cat"><div class="cap-cat-label">カス</div><div class="cap-kas-cards"><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cpu-area">
+        <div class="cpu-header">
+          <span class="cpu-name">胴二　CPU2</span>
+          <span class="cpu-pts">取り点 28点</span>
+        </div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+            <div class="cap-cat"><div class="cap-cat-label">光</div><div class="cap-cards"><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">種</div><div class="cap-cards"><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">短冊</div><div class="cap-cards"><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div></div></div>
+          </div>
+          <div class="cap-row2">
+            <div class="cap-cat"><div class="cap-cat-label">カス</div><div class="cap-kas-cards"><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="mid-zone">
+        <div class="yamafuda"><div class="yama-card">山</div><div class="yama-count">18枚</div></div>
+        <div class="field-zone">
+          <div class="field-title">場札</div>
+          <div class="field-row"><div class="field-card fc-m1"></div><div class="field-card fc-m2"></div><div class="field-card fc-m3"></div><div class="field-card fc-m4"></div><div class="field-card fc-discard"><span style="font-size:11px;color:#3a3a3a">🗑</span></div></div>
+          <div class="field-row"><div class="field-card fc-m5"></div><div class="field-card fc-m6"></div><div class="field-card fc-m1"></div><div class="field-card fc-m3"></div><div class="field-card fc-empty"></div></div>
+          <div class="field-row"><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div><div class="field-card fc-empty"></div></div>
+        </div>
+      </div>
+      <div class="s3-status">
+        <span class="status-txt">ビキ　あなた　取り点 <span style="color:#8a4a10">15点</span></span>
+        <span style="font-size:9px;color:#7a6040">基準 25点</span>
+      </div>
+      <div class="player-hand">
+        <div class="hand-label">あなたの手札</div>
+        <div class="hand-cards">
+          <div class="hand-card hc-c1"></div><div class="hand-card hc-sel"></div><div class="hand-card hc-c2"></div><div class="hand-card hc-c3"></div><div class="hand-card hc-c1"></div><div class="hand-card hc-def"></div><div class="hand-card hc-def"></div>
+        </div>
+      </div>
+      <div class="player-cap">
+        <div class="hand-label">あなたの取り札</div>
+        <div class="cap-area-inner">
+          <div class="cap-row1">
+            <div class="cap-cat"><div class="cap-cat-label">光</div><div class="cap-cards"><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div><div class="mini-card mc-pica"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">種</div><div class="cap-cards"><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div><div class="mini-card mc-tane"></div></div></div>
+            <div class="cap-cat"><div class="cap-cat-label">短冊</div><div class="cap-cards"><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div><div class="mini-card mc-zaku"></div></div></div>
+          </div>
+          <div class="cap-row2">
+            <div class="cap-cat"><div class="cap-cat-label">カス</div><div class="cap-kas-cards"><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div><div class="mini-card mc-kas"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 精算モーダル ① 通常（役あり・フケあり） -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-003　精算モーダル ① 通常</div>
+    <div class="phone"><div class="screen modal-screen">
+      <div class="s3-modal-wrap">
+        <div class="seisan-modal">
+          <div class="seisan-title">精算　3局目</div>
+          <table class="seisan-table">
+            <thead>
+              <tr>
+                <th class="row-label" style="width:30%"></th>
+                <th>ビキ<br><span style="font-size:8px;color:#5a4a30">あなた</span></th>
+                <th>👑 親<br><span style="font-size:8px;color:#5a4a30">CPU1</span></th>
+                <th>胴二<br><span style="font-size:8px;color:#5a4a30">CPU2</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">取り点</td>
+                <td>10点</td><td>42点</td><td>28点</td>
+              </tr>
+              <tr>
+                <td class="row-label">役</td>
+                <td><span class="fuke-badge">フケ</span><br><span style="color:#d06060">−80点</span></td>
+                <td><span class="yaku-badge">猪鹿蝶</span><br><span style="color:#c8993a">+15点</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td class="row-label">精算</td>
+                <td class="seisan-arrow">
+                  <div class="s-pay">CPU1へ 60点 →</div>
+                  <div class="s-pay">CPU2へ 20点 →</div>
+                </td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">→ 60点 あなたから</div>
+                  <div class="s-pay">CPU2へ 15点 →</div>
+                </td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">→ 20点 あなたから</div>
+                  <div class="s-recv">→ 15点 CPU1から</div>
+                </td>
+              </tr>
+              <tr class="final-row">
+                <td class="row-label" style="color:#7a6040;font-size:10px">最終得点</td>
+                <td style="color:#d06060">−70点</td>
+                <td style="color:#e8c97e">+2点</td>
+                <td style="color:#d06060">−32点</td>
+              </tr>
+              <tr class="cumul-row">
+                <td class="row-label" style="color:#4a7040;font-size:10px">累計点</td>
+                <td style="color:#d06060">−112点</td>
+                <td style="color:#90c080">+18点</td>
+                <td style="color:#d06060">−44点</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="ok-btn">次の局へ</button>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 精算モーダル ② 雨流れ発生時 -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-003　精算モーダル ② 雨流れ</div>
+    <div class="phone"><div class="screen modal-screen">
+      <div class="s3-modal-wrap">
+        <div class="seisan-modal">
+          <div class="seisan-title">精算　7局目</div>
+          <table class="seisan-table">
+            <thead>
+              <tr>
+                <th class="row-label" style="width:30%"></th>
+                <th>胴二<br><span style="font-size:8px;color:#5a4a30">あなた</span></th>
+                <th>ビキ<br><span style="font-size:8px;color:#5a4a30">CPU1</span></th>
+                <th>👑 親<br><span style="font-size:8px;color:#5a4a30">CPU2</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">取り点</td>
+                <td>35点</td><td>20点</td><td>65点</td>
+              </tr>
+              <tr>
+                <td class="row-label">役</td>
+                <td><span class="yaku-badge">月見酒</span><br><span style="color:#c8993a">+10点</span></td>
+                <td>—</td>
+                <td><span class="yaku-badge">三光</span><br><span style="color:#c8993a">+30点</span></td>
+              </tr>
+              <tr class="banner-row">
+                <td colspan="4"><div class="banner-cell">☔ 雨流れ：全員の役が無効</div></td>
+              </tr>
+              <tr>
+                <td class="row-label">精算</td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">CPU1から 5点 ←</div>
+                  <div class="s-pay">CPU2へ 30点 →</div>
+                </td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">← 5点 あなたへ</div>
+                  <div class="s-pay">CPU2へ 25点 →</div>
+                </td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">→ 30点 あなたから</div>
+                  <div class="s-recv">→ 25点 CPU1から</div>
+                </td>
+              </tr>
+              <tr class="final-row">
+                <td class="row-label" style="color:#7a6040;font-size:10px">最終得点</td>
+                <td style="color:#d06060">−45点</td>
+                <td style="color:#d06060">−60点</td>
+                <td style="color:#e8c97e">+5点</td>
+              </tr>
+              <tr class="cumul-row">
+                <td class="row-label" style="color:#4a7040;font-size:10px">累計点</td>
+                <td style="color:#d06060">−38点</td>
+                <td style="color:#d06060">−92点</td>
+                <td style="color:#90c080">+130点</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="ok-btn">次の局へ</button>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 精算モーダル ③ 最終局（12局目） -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-003　精算モーダル ③ 最終局</div>
+    <div class="phone"><div class="screen modal-screen">
+      <div class="s3-modal-wrap">
+        <div class="seisan-modal">
+          <div class="seisan-title">精算　12局目</div>
+          <table class="seisan-table">
+            <thead>
+              <tr>
+                <th class="row-label" style="width:30%"></th>
+                <th>👑 親<br><span style="font-size:8px;color:#5a4a30">あなた</span></th>
+                <th>胴二<br><span style="font-size:8px;color:#5a4a30">CPU1</span></th>
+                <th>ビキ<br><span style="font-size:8px;color:#5a4a30">CPU2</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">取り点</td>
+                <td>55点</td><td>30点</td><td>15点</td>
+              </tr>
+              <tr>
+                <td class="row-label">役</td>
+                <td><span class="yaku-badge">赤短</span><br><span style="color:#c8993a">+30点</span></td>
+                <td>—</td>
+                <td><span class="fuke-badge">フケ</span><br><span style="color:#d06060">−80点</span></td>
+              </tr>
+              <tr>
+                <td class="row-label">精算</td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">CPU1から 5点 ←</div>
+                  <div class="s-recv">CPU2から 40点 ←</div>
+                </td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">← 5点 あなたへ</div>
+                  <div class="s-even">差額なし（CPU2）</div>
+                </td>
+                <td class="seisan-arrow">
+                  <div class="s-recv">← 40点 あなたへ</div>
+                  <div class="s-even">差額なし（CPU1）</div>
+                </td>
+              </tr>
+              <tr class="final-row">
+                <td class="row-label" style="color:#7a6040;font-size:10px">最終得点</td>
+                <td style="color:#90c080">+30点</td>
+                <td style="color:#d06060">−50点</td>
+                <td style="color:#d06060">−80点</td>
+              </tr>
+              <tr class="cumul-row">
+                <td class="row-label" style="color:#4a7040;font-size:10px">累計点</td>
+                <td style="color:#90c080">+88点</td>
+                <td style="color:#d06060">−42点</td>
+                <td style="color:#d06060">−46点</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="ok-btn">結果を見る</button>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- SCR-004 設定画面 -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-004　設定画面（オーバーレイ）</div>
+    <div class="phone"><div class="screen s4-screen">
+      <div class="s4-overlay">
+        <div class="s4-modal">
+          <div class="s4-modal-header">
+            <div class="s4-modal-title">設定</div>
+            <button class="close-btn"><i class="ti ti-x" aria-hidden="true"></i></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">花札デザイン</div>
+            <div class="setting-opts">
+              <button class="opt-btn active">オリジナル</button>
+              <button class="opt-btn">アート調</button>
+            </div>
+          </div>
+          <div class="setting-divider"></div>
+          <div class="setting-row">
+            <div class="setting-label">背景</div>
+            <div class="setting-opts">
+              <button class="opt-btn active">黒漆</button>
+              <button class="opt-btn">若草</button>
+              <button class="opt-btn">白木</button>
+            </div>
+          </div>
+          <div class="setting-divider"></div>
+          <div class="setting-row">
+            <div class="setting-label">アニメーション速度</div>
+            <div class="setting-opts">
+              <button class="opt-btn">速い</button>
+              <button class="opt-btn active">普通</button>
+              <button class="opt-btn">遅い</button>
+            </div>
+          </div>
+          <div class="setting-divider"></div>
+          <div class="setting-row">
+            <div class="setting-label">効果音 / BGM</div>
+            <div class="setting-opts">
+              <button class="opt-btn active">SE ON</button>
+              <button class="opt-btn">SE OFF</button>
+              <button class="opt-btn active">BGM ON</button>
+              <button class="opt-btn">BGM OFF</button>
+            </div>
+          </div>
+          <div class="setting-divider"></div>
+          <div class="setting-row">
+            <div class="setting-label">CPU強さ</div>
+            <div class="setting-opts">
+              <button class="opt-btn">弱い</button>
+              <button class="opt-btn active">普通</button>
+              <button class="opt-btn">強い</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- SCR-003 ゲーム中断確認ダイアログ -->
+  <div class="screen-block">
+    <div class="screen-label">SCR-003　ゲーム中断確認ダイアログ</div>
+    <div class="phone"><div class="screen modal-screen">
+      <div class="s3-modal-wrap">
+        <div class="quit-modal">
+          <div class="quit-modal-title">ゲームを中断しますか？</div>
+          <div class="quit-modal-desc">
+            ゲームを途中でやめてスタート画面に戻ります。<br>
+            現在のゲームの進行状況は失われ、最初からになります。
+          </div>
+          <div class="quit-modal-btns">
+            <button class="quit-btn quit-btn-cancel">キャンセル</button>
+            <button class="quit-btn quit-btn-ok">スタートへ戻る</button>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+</div><!-- /screens-grid -->
+</body>
+</html>
