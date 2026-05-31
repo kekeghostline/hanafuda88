@@ -1006,7 +1006,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.14　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.15　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1084,42 +1084,47 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
       <div class="tab-panel" id="rule-tab-2">
         <div class="rule-section">
           <div class="rule-section-title">光役</div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">五光</span><span class="yaku-cond">光札5枚すべて</span><span class="yaku-pt">50点</span></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">五光</span><span class="yaku-cond">光札5枚すべて（松に鶴・桜に幕・芒に月・雨に人・桐に鳳凰）</span><span class="yaku-pt">50点</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_01_matsu_pica_1.png')"></div><div class="yaku-card-name">松に鶴</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_03_sakura_pica_1.png')"></div><div class="yaku-card-name">桜に幕</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_08_susuki_pica_1.png')"></div><div class="yaku-card-name">芒に月</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_11_yanagi_pica_1.png')"></div><div class="yaku-card-name">雨に人</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_12_kiri_pica_1.png')"></div><div class="yaku-card-name">桐に鳳凰</div></div></div></div>
           <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">四光</span><span class="yaku-cond">雨に人を含まない光4枚</span><span class="yaku-pt">40点</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_01_matsu_pica_1.png')"></div><div class="yaku-card-name">松に鶴</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_03_sakura_pica_1.png')"></div><div class="yaku-card-name">桜に幕</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_08_susuki_pica_1.png')"></div><div class="yaku-card-name">芒に月</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_12_kiri_pica_1.png')"></div><div class="yaku-card-name">桐に鳳凰</div></div></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">雨四光</span><span class="yaku-cond">三光＋雨に人の4枚</span><span class="yaku-pt">40点</span></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">雨四光</span><span class="yaku-cond">松に鶴・芒に月・桐に鳳凰・雨に人の4枚</span><span class="yaku-pt">40点</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_01_matsu_pica_1.png')"></div><div class="yaku-card-name">松に鶴</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_08_susuki_pica_1.png')"></div><div class="yaku-card-name">芒に月</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_12_kiri_pica_1.png')"></div><div class="yaku-card-name">桐に鳳凰</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_11_yanagi_pica_1.png')"></div><div class="yaku-card-name">雨に人</div></div></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">三光</span><span class="yaku-cond">松鶴・桐鳳凰・芒月の3枚</span><span class="yaku-pt">30点</span></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">三光</span><span class="yaku-cond">松に鶴・芒に月・桐に鳳凰の3枚</span><span class="yaku-pt">30点</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_01_matsu_pica_1.png')"></div><div class="yaku-card-name">松に鶴</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_08_susuki_pica_1.png')"></div><div class="yaku-card-name">芒に月</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_12_kiri_pica_1.png')"></div><div class="yaku-card-name">桐に鳳凰</div></div></div></div>
         </div>
         <div class="rule-section">
           <div class="rule-section-title">短冊役</div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">赤短</span><span class="yaku-cond">松・梅・桜の短冊3枚</span><span class="yaku-pt">30点〜</span></div>
-          <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_01_matsu_zaku_1.png')"></div><div class="yaku-card-name">松の短冊</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_02_ume_zaku_1.png')"></div><div class="yaku-card-name">梅の短冊</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_03_sakura_zaku_1.png')"></div><div class="yaku-card-name">桜の短冊</div></div></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">青短</span><span class="yaku-cond">牡丹・菊・紅葉の短冊3枚</span><span class="yaku-pt">30点〜</span></div>
-          <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_06_botan_zaku_1.png')"></div><div class="yaku-card-name">牡丹の短冊</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_09_kiku_zaku_1.png')"></div><div class="yaku-card-name">菊の短冊</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_10_momiji_zaku_1.png')"></div><div class="yaku-card-name">紅葉の短冊</div></div></div></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">赤短</span><span class="yaku-cond">松・梅・桜の短冊3枚（松に赤短・梅に赤短・桜に赤短）</span><span class="yaku-pt">30点〜</span></div>
+          <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_01_matsu_zaku_1.png')"></div><div class="yaku-card-name">松に赤短</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_02_ume_zaku_1.png')"></div><div class="yaku-card-name">梅に赤短</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_03_sakura_zaku_1.png')"></div><div class="yaku-card-name">桜に赤短</div></div></div></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">青短</span><span class="yaku-cond">牡丹・菊・紅葉の短冊3枚（牡丹に青短・菊に青短・紅葉に青短）</span><span class="yaku-pt">30点〜</span></div>
+          <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_06_botan_zaku_1.png')"></div><div class="yaku-card-name">牡丹に青短</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_09_kiku_zaku_1.png')"></div><div class="yaku-card-name">菊に青短</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_10_momiji_zaku_1.png')"></div><div class="yaku-card-name">紅葉に青短</div></div></div></div>
+          <div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">➕ <strong>加点ルール（赤短・青短共通）：</strong>規定の3枚に加え、短冊札を追加で取るたびに +10点。</div>
         </div>
         <div class="rule-section">
           <div class="rule-section-title">その他の役</div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">猪鹿蝶</span><span class="yaku-cond">萩猪・紅葉鹿・牡丹蝶</span><span class="yaku-pt">15点</span></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">猪鹿蝶</span><span class="yaku-cond">萩に猪・紅葉に鹿・牡丹に蝶の3枚</span><span class="yaku-pt">15点</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_07_hagi_tane_1.png')"></div><div class="yaku-card-name">萩に猪</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_10_momiji_tane_1.png')"></div><div class="yaku-card-name">紅葉に鹿</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_06_botan_tane_1.png')"></div><div class="yaku-card-name">牡丹に蝶</div></div></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">月見酒</span><span class="yaku-cond">芒月＋菊盃</span><span class="yaku-pt">10点</span></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">月見酒</span><span class="yaku-cond">芒に月＋菊に盃</span><span class="yaku-pt">10点</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_08_susuki_pica_1.png')"></div><div class="yaku-card-name">芒に月</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_09_kiku_tane_1.png')"></div><div class="yaku-card-name">菊に盃</div></div></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">花見酒</span><span class="yaku-cond">桜幕＋菊盃</span><span class="yaku-pt">10点</span></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">花見酒</span><span class="yaku-cond">桜に幕＋菊に盃</span><span class="yaku-pt">10点</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_03_sakura_pica_1.png')"></div><div class="yaku-card-name">桜に幕</div></div><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_09_kiku_tane_1.png')"></div><div class="yaku-card-name">菊に盃</div></div></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">カス</span><span class="yaku-cond">カス13枚以上（以降1枚+10点）</span><span class="yaku-pt">10点〜</span></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">カス</span><span class="yaku-cond">カス13枚以上（菊に盃はカス1枚として加算）</span><span class="yaku-pt">10点〜</span></div>
           <div class="yaku-cards"><div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('https://kekeghostline.github.io/hanafuda88/images/original/card_01_matsu_kas_1.png')"></div><div class="yaku-card-name">カス×13</div></div></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">フケ</span><span class="yaku-cond">取り点が手番基準点以下</span><span class="yaku-pt">80点</span></div></div>
+          <div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">➕ <strong>カス加点ルール：</strong>13枚を超えるごとに +10点。菊に盃はカス1枚として計算に含む。</div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">フケ</span><span class="yaku-cond">取り点が手番の基準点以下</span><span class="yaku-pt">80点</span></div></div>
+          <div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">💡 <strong>フケについて：</strong>他の役と同時に成立した場合、その役点にフケの80点が加算されます。</div>
         </div>
         <div class="rule-section">
           <div class="rule-section-title">特殊ルール</div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">雨流れ</span><span class="yaku-cond">1人が柳4枚すべて取得 → 全員役無効</span><span class="yaku-pt">—</span></div></div>
-          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">役流れ</span><span class="yaku-cond">3人全員がフケ以外の役あり → 役無効</span><span class="yaku-pt">—</span></div></div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">雨流れ</span><span class="yaku-cond">1人が11月の柳札4枚すべてを取得</span><span class="yaku-pt">—</span></div></div>
+          <div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">→ 全員のでき役点が無効になります。（フケは除く）</div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">三役流れ</span><span class="yaku-cond">3人全員にフケ以外のでき役が成立</span><span class="yaku-pt">—</span></div></div>
+          <div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">→ 全員のでき役点が無効になります。（フケは除く）</div>
         </div>
       </div>
 
-      <!-- 操作方法タブ -->
+            <!-- 操作方法タブ -->
       <div class="tab-panel" id="rule-tab-3">
         <div class="rule-section">
           <div class="rule-section-title">手札の操作</div>
@@ -1166,7 +1171,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.14</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.15</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
