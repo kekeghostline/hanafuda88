@@ -658,6 +658,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 #scr-game.bg-wakakusa .yaku-badge    { color: #fff8e0; }
 #scr-game.bg-wakakusa .fuke-badge-sm { color: #ffe0e0; }
 
+/* 若草・白木: ボタン文字色を明るく（暗い--goldに対するコントラスト確保） */
+#scr-game.bg-wakakusa .g-action-btn-primary,
+#scr-game.bg-shiraki  .g-action-btn-primary { color: #f0e8d0; }
+#scr-game.bg-wakakusa .ok-btn,
+#scr-game.bg-shiraki  .ok-btn               { color: #f0e8d0; }
+
 /* ボタンバー */
 .g-btn-bar {
   background: rgba(0,0,0,0.35);
@@ -1006,7 +1012,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.0　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.1　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1171,7 +1177,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.0</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.1</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1628,17 +1634,20 @@ const G = (() => {
     `;
     document.body.appendChild(ghost);
 
-    // 16ms待ってから遷移（Safariで確実に初期フレームを描画させる）
-    setTimeout(() => {
-      ghost.style.transition = `
-        left    ${dur}ms cubic-bezier(.4,0,.2,1),
-        top     ${dur}ms cubic-bezier(.4,0,.2,1),
-        opacity ${Math.round(dur * 0.3)}ms ${Math.round(dur * 0.7)}ms ease
-      `;
-      ghost.style.left    = `${destLeft}px`;
-      ghost.style.top     = `${destTop}px`;
-      ghost.style.opacity = '0';
-    }, 16);
+    // rAF×2でリフロー完了を確実に待ってからトランジション起動
+    // （16ms固定より確実: ブラウザが実際に描画フレームを2回消化してから開始）
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        ghost.style.transition = `
+          left    ${dur}ms cubic-bezier(.4,0,.2,1),
+          top     ${dur}ms cubic-bezier(.4,0,.2,1),
+          opacity ${Math.round(dur * 0.3)}ms ${Math.round(dur * 0.7)}ms ease
+        `;
+        ghost.style.left    = `${destLeft}px`;
+        ghost.style.top     = `${destTop}px`;
+        ghost.style.opacity = '0';
+      });
+    });
 
     setTimeout(() => {
       ghost.remove();
@@ -1951,13 +1960,14 @@ const G = (() => {
      画像差し替え時はここの BASE_URL とロジックのみ変更する
      ============================================================ */
   const IMG_BASE = 'https://kekeghostline.github.io/hanafuda88/images';
-  const IMG_BACK = `${IMG_BASE}/original/card_back.png`;
 
   function _cardImg(card, faceDown = false) {
     if (!card || faceDown) {
+      const _design = cfg.hana_design || 'original';
+      const _ext    = _design === 'artistic' ? 'webp' : 'png';
       return {
         cls: 'mc-back',
-        bgImg: `url('${IMG_BACK}')`,
+        bgImg: `url('${IMG_BASE}/${_design}/card_back.${_ext}')`,
         alt: '裏面',
       };
     }
