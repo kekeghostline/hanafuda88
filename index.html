@@ -1006,7 +1006,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.0.12　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.0.13　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1030,42 +1030,48 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
       <div class="tab-panel active" id="rule-tab-0">
         <div class="rule-section">
           <div class="rule-section-title">ゲーム概要</div>
-          <div class="rule-text">3人制の花合わせです。プレイヤー1人とCPU2人で12局を戦い、累計得点を競います。</div>
+          <div class="rule-text">3人で行うカードゲームです。プレイヤー1人とCPU2人で半年戦（6局）または1年戦（12局）を戦い、累計得点が最も高い人の勝利です。</div>
         </div>
         <div class="rule-section">
-          <div class="rule-section-title">基本数値</div>
+          <div class="rule-section-title">準備・配札</div>
+          <div class="rule-text">花札48枚を使用します。各プレイヤーに手札を配り、残りは山札として中央に置きます。</div>
           <table class="rule-table">
             <tr><th>項目</th><th>内容</th></tr>
             <tr><td>花札枚数</td><td>48枚</td></tr>
             <tr><td>手札</td><td>各7枚</td></tr>
             <tr><td>場札</td><td>6枚</td></tr>
             <tr><td>山札</td><td>21枚</td></tr>
-            <tr><td>局数</td><td>12局制</td></tr>
-            <tr><td>基準点</td><td>80点</td></tr>
+            <tr><td>回戦数</td><td>12回戦 または 6回戦</td></tr>
+            <tr><td>基礎点</td><td>80点</td></tr>
           </table>
         </div>
         <div class="rule-section">
-          <div class="rule-section-title">手番ラベル</div>
+          <div class="rule-section-title">進行順序</div>
+          <div class="rule-text">各回、手番は 親 → 胴二 → ビキ の順に行います。親は毎回交代し、12回戦で全員が均等に親を担当します。</div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">手番の流れ</div>
+          <div class="rule-text">① 手札から1枚出し、場の札と合わせて取る（合わなければ場に置く）<br>② 山札から1枚めくり、場の札と合わせて取る（合わなければ場に置く）<br>③ 手札と山札がなくなるまで続けます</div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">得点</div>
+          <div class="rule-text">各回の得点は 札点＋でき役点 で計算します。取り終えた時点で成立している役の点数が加算されます。途中で役ができてもそのままゲームを続行します（こいこいはありません）。</div>
+          <div class="rule-text" style="margin-top:6px">各回の得点から基礎点80点を差し引いた差分が実際の得点になります。80点ちょうどの場合は ±0点 です。</div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">手番・フケ基準点</div>
           <table class="rule-table">
-            <tr><th>順番</th><th>ラベル</th><th>フケ基準</th></tr>
+            <tr><th>手番</th><th>名称</th><th>フケ基準点</th></tr>
             <tr><td>1番手</td><td>👑 親</td><td>15点以下</td></tr>
             <tr><td>2番手</td><td>胴二</td><td>20点以下</td></tr>
             <tr><td>3番手</td><td>ビキ</td><td>25点以下</td></tr>
           </table>
         </div>
         <div class="rule-section">
-          <div class="rule-section-title">取り点（札種別）</div>
-          <table class="rule-table">
-            <tr><th>種別</th><th>点数</th></tr>
-            <tr><td>光（ひかり）</td><td>20点</td></tr>
-            <tr><td>種（たね）</td><td>10点</td></tr>
-            <tr><td>短冊（たんざく）</td><td>5点</td></tr>
-            <tr><td>カス</td><td>0点</td></tr>
-          </table>
-        </div>
-        <div class="rule-section">
-          <div class="rule-section-title">柳（雨）の特殊ルール</div>
-          <div class="rule-text">柳を1枚でも取ったプレイヤーは、柳の取り点を0点としてフケ判定します。フケが不成立だった場合は通常の点数に戻ります。</div>
+          <div class="rule-section-title">特殊ルール</div>
+          <div class="rule-text"><strong>三役流れ：</strong>3人全員にでき役が成立した場合、その回のでき役点は全員無効になります。（札点はそのまま有効です）</div>
+          <div class="rule-text" style="margin-top:6px"><strong>雨流れ：</strong>11月の柳札（雨札）4枚すべてを1人が取った場合、その回のでき役点は全員無効になります。（札点はそのまま有効です）</div>
+          <div class="rule-text" style="margin-top:6px"><strong>フケ：</strong>あえて点を取らない特殊な役です。手番ごとに基準点が設定されており、その点以下であれば成立します。三役流れ・雨流れが発生してもフケは無効になりません。</div>
         </div>
       </div>
 
@@ -1160,7 +1166,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.12</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.0.13</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
