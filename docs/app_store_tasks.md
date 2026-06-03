@@ -1,6 +1,6 @@
 # App Store 公開タスク一覧
 
-花合わせ（HANA AWASE）v0.0.1 — © 2026 Hitonomigi Inc.
+花合わせ（HANA AWASE）v0.1.1 — © 2026 Hitonomigi Inc.
 
 ---
 
