@@ -10,8 +10,8 @@
 | :---- | :---- | :---- | :---- |
 | 1 | デバッグログ削除 | `startTurn`・`cpuPlay`・`afterDraw` の `console.log` を除去 | \[x\] コメントアウト済み・対応完了 |
 | 2 | 月不一致バグ根本修正 | `fmSafe()` の暫定対処を恒久修正 | \[-\] 様子見（暫定対処で安定中） |
-| 3 | SEファイル用意 | `sounds/` 配下の6ファイル（`se_take.mp3` 等）を準備 | \[ \] |
-| 4 | BGMファイル用意 | BGMモジュール対応のMP3/M4Aを追加 | \[ \] |
+| 3 | SEファイル用意 | `sounds/se_take.mp3`（カードを取る） \`sounds/se\_discard.mp3\`（捨てる） \`sounds/se\_draw.mp3\`（山札めくり） \`sounds/se\_yaku.mp3\`（役成立・フケ） \`sounds/se\_seisan.mp3\`（精算モーダル） \`sounds/se\_btn.mp3\`（ボタンタップ） | \[ \] |
+| 4 | BGMファイル用意 | `sounds/bgm_main.mp3`（ループ再生・volume 0.4） | \[ \] |
 
 ---
 
