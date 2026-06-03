@@ -1,6 +1,6 @@
 # App Store 公開タスク一覧
 
-花合わせ（HANA AWASE）v0.1.1 — © 2026 Hitonomigi Inc.
+花合わせ（HANA AWASE）v0.0.1 — © 2026 Hitonomigi Inc.
 
 ---
 
@@ -8,8 +8,8 @@
 
 | \# | タスク | 詳細 | 状態 |
 | :---- | :---- | :---- | :---- |
-| 1 | デバッグログ削除 | `startTurn`・`cpuPlay`・`afterDraw` の `console.log` を除去 | \[close \] |
-| 2 | 月不一致バグ根本修正 | `fmSafe()` の暫定対処を恒久修正 | \[ \] |
+| 1 | デバッグログ削除 | `startTurn`・`cpuPlay`・`afterDraw` の `console.log` を除去 | \[x\] コメントアウト済み・対応完了 |
+| 2 | 月不一致バグ根本修正 | `fmSafe()` の暫定対処を恒久修正 | \[-\] 様子見（暫定対処で安定中） |
 | 3 | SEファイル用意 | `sounds/` 配下の6ファイル（`se_take.mp3` 等）を準備 | \[ \] |
 | 4 | BGMファイル用意 | BGMモジュール対応のMP3/M4Aを追加 | \[ \] |
 
