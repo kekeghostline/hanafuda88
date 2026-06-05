@@ -207,14 +207,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ===== 手番トースト ===== */
 .turn-toast {
   position: absolute; z-index: 7900;
-  top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.72);
-  border: 1px solid var(--gold);
+  top: 50%;
+  left: calc(var(--yama-width, 54px) + 10px);
+  transform: translateY(-50%);
+  background: rgba(20,15,5,0.88);
+  border: 1px solid #c89920;
   border-radius: 8px;
   padding: 8px 22px;
-  font-size: clamp(14px, 4vw, 20px);
+  font-size: clamp(13px, 3.5vw, 18px);
   font-weight: 600; letter-spacing: 0.1em;
-  color: var(--gold-light);
+  color: #f5d97a;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -588,6 +591,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 6px 10px;
   flex-shrink: 0;
   border-bottom: 0.5px solid var(--border-dim);
+  position: relative;
 }
 .yamafuda {
   display: flex; flex-direction: column;
@@ -1039,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.5　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.6　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1172,7 +1176,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.5</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.6</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1473,8 +1477,12 @@ const G = (() => {
      animTurnToast — 手番切り替わりトースト表示
      ============================================================ */
   function animTurnToast(pi, cb) {
-    const screen = document.getElementById('scr-game');
-    if (!screen) { cb?.(); return; }
+    const container = document.querySelector('.mid-zone');
+    if (!container) { cb?.(); return; }
+    // mid-zoneをposition:relativeに（CSS側で設定済み想定だがJS保険）
+    if (getComputedStyle(container).position === 'static') {
+      container.style.position = 'relative';
+    }
     const names = ['あなたの手番', 'CPU1の手番', 'CPU2の手番'];
     const spd = _spd();
     const holdMs = spd * 1.2;
@@ -1482,7 +1490,7 @@ const G = (() => {
     const el = document.createElement('div');
     el.className = 'turn-toast turn-toast-enter';
     el.textContent = names[pi] || `Player${pi}の手番`;
-    screen.appendChild(el);
+    container.appendChild(el);
     setTimeout(() => {
       el.classList.remove('turn-toast-enter');
       el.classList.add('turn-toast-leave');
@@ -1619,9 +1627,11 @@ const G = (() => {
     if (to.width === 0 || to.height === 0) { cb(); return; }
     if (!fromRight && (from.width === 0 || from.height === 0)) { cb(); return; }
 
-    // カードサイズはtoEl（場札スロット）から取得して統一
-    const cardW = to.width;
-    const cardH = to.height;
+    // カードサイズはfromElから取得（toElが大きい場合に拡大されるのを防ぐ）
+    // ただしfromElが大きなエリア要素の場合はmini-cardサイズ(30x45)を使用
+    const isAreaEl = from.width > 80 || from.height > 80;
+    const cardW = isAreaEl ? 30 : Math.min(from.width,  to.width);
+    const cardH = isAreaEl ? 45 : Math.min(from.height, to.height);
 
     // 開始位置
     const startLeft = fromRight
@@ -2757,15 +2767,35 @@ const G = (() => {
         // 1枚マッチ → 合う場札へスライド
         const toEl = document.getElementById(`fc-${matches[0]}`);
         const _exec = () => {
+          const takenField = st.field[matches[0]];
+          const takenCards = [drawn, takenField, ...(takenField.stacked || [])];
           st.caps[pi].push(drawn);
-          st.caps[pi].push(st.field[matches[0]]);
-          if (st.field[matches[0]].stacked) st.caps[pi].push(...st.field[matches[0]].stacked);
+          st.caps[pi].push(takenField);
+          if (takenField.stacked) st.caps[pi].push(...takenField.stacked);
           st.field[matches[0]] = null;
-          render();
-          checkNagare();
-          animYakuFlash(pi, st.caps[pi], () => {
-            afterDraw(pi, drawn, matches[0]);
-          });
+          // CPU: 取り札スライドアニメ
+          if (pi !== 0) {
+            const capEl = document.getElementById(`cap-area-${pi}`);
+            const spd = _spd();
+            let done = 0;
+            takenCards.forEach((card, i) => {
+              setTimeout(() => {
+                animCardFly(toEl || yamaEl, capEl, _cardImg(card).bgImg, () => {
+                  done++;
+                  if (done === takenCards.length) {
+                    render(); checkNagare();
+                    animYakuFlash(pi, st.caps[pi], () => { afterDraw(pi, drawn, matches[0]); });
+                  }
+                }, false);
+              }, i * Math.round(spd * 0.3));
+            });
+          } else {
+            render();
+            checkNagare();
+            animYakuFlash(pi, st.caps[pi], () => {
+              afterDraw(pi, drawn, matches[0]);
+            });
+          }
         };
         if (yamaEl && toEl) {
           animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
@@ -2801,14 +2831,26 @@ const G = (() => {
           const chosen = matches[0];
           const toEl = document.getElementById(`fc-${chosen}`);
           const _exec = () => {
+            const takenField = st.field[chosen];
+            const takenCards = [drawn, takenField, ...(takenField.stacked || [])];
             st.caps[pi].push(drawn);
-            st.caps[pi].push(st.field[chosen]);
-            if (st.field[chosen].stacked) st.caps[pi].push(...st.field[chosen].stacked);
+            st.caps[pi].push(takenField);
+            if (takenField.stacked) st.caps[pi].push(...takenField.stacked);
             st.field[chosen] = null;
-            render();
-            checkNagare();
-            animYakuFlash(pi, st.caps[pi], () => {
-              afterDraw(pi, drawn, chosen);
+            // CPU: 取り札スライドアニメ
+            const capEl = document.getElementById(`cap-area-${pi}`);
+            const spd = _spd();
+            let done = 0;
+            takenCards.forEach((card, i) => {
+              setTimeout(() => {
+                animCardFly(toEl || yamaEl, capEl, _cardImg(card).bgImg, () => {
+                  done++;
+                  if (done === takenCards.length) {
+                    render(); checkNagare();
+                    animYakuFlash(pi, st.caps[pi], () => { afterDraw(pi, drawn, chosen); });
+                  }
+                }, false);
+              }, i * Math.round(spd * 0.3));
             });
           };
           if (yamaEl && toEl) {
