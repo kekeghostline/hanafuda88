@@ -427,7 +427,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 13px;
 }
 .card-list-thumb {
-  width: 38px; height: 57px;
+  width: 57px; height: 86px;
   border-radius: 3px;
   flex-shrink: 0;
 }
@@ -449,7 +449,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .yaku-cards { display: flex; gap: 5px; padding-left: 2px; flex-wrap: wrap; }
 .yaku-card-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .yaku-card-img {
-  width: 30px; height: 45px;
+  width: 57px; height: 86px;
   border-radius: 3px;
   border: 0.5px solid var(--border);
   background: #1a1208;
@@ -535,8 +535,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .cap-cards.stacked {
   display: block;
   position: relative;
-  width: 60px;
-  height: 38px;
+  width: 66px;
+  height: 45px;
   flex-shrink: 0;
 }
 .cap-cards.stacked .mini-card {
@@ -544,7 +544,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   top: 0;
 }
 .mini-card {
-  width: 24px; height: 36px; border-radius: 3px; flex-shrink: 0;
+  width: 30px; height: 45px; border-radius: 3px; flex-shrink: 0;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -1012,7 +1012,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.2　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.3　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1177,7 +1177,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.2</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.3</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1705,7 +1705,7 @@ const G = (() => {
       cumScore: [0,0,0], phase: 'idle', parentIdx: 0,
     };
     showScreen('scr-game');
-    render();
+    renderBtns();
     BGM.play();
   }
 
