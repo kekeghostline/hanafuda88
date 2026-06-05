@@ -226,12 +226,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ===== 手番エリアハイライト ===== */
 .cpu-area.turn-active {
-  border-left: 3px solid var(--gold);
-  background: rgba(200,153,58,0.08);
+  border-left: 4px solid var(--gold);
+  background: rgba(200,153,58,0.22);
 }
 .player-cap.turn-active {
-  border-left: 3px solid var(--gold);
-  background: rgba(200,153,58,0.08);
+  border-left: 4px solid var(--gold);
+  background: rgba(200,153,58,0.22);
 }
 
 /* ===== 役成立フラッシュ ===== */
@@ -546,7 +546,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 4px; padding: 1px 5px;
   border: 0.5px solid var(--badge-fuke-border);
 }
-.cap-area-inner { display: flex; flex-direction: column; }
+.cap-area-inner { display: flex; flex-direction: column; min-height: 100px; }
 .cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
 /* 取り札2段レイアウト */
 .cap-row1 { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -747,7 +747,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* プレイヤー取り札 */
 .player-cap {
   background: rgba(0,0,0,0.3);
-  padding: 5px 10px;
+  padding: 5px 10px 10px;
   border-top: 0.5px solid var(--border-dim);
   flex-shrink: 0;
 }
@@ -1043,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.7　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.8　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1176,7 +1176,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.7</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.8</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
