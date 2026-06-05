@@ -1043,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.9　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.10　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1176,7 +1176,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.9</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.10</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -2324,11 +2324,12 @@ const G = (() => {
         : document.getElementById(`cap-area-${pi}`);
       if (areaEl) areaEl.classList.toggle('turn-active', isActiveTurn);
 
-      // フケ圏バッジ（取り点がフケ基準点以下）
+      // フケ圏バッジ（フケ判定点＝柳0点がフケ基準点以下）
       const fbEl = document.getElementById(`fuke-badge-${pi}`);
       if (fbEl) {
         const fukeBase = FUKE_BASE[rank];
-        fbEl.style.display = pts <= fukeBase && st.roundNo > 0 ? 'inline-block' : 'none';
+        const { pts: fkPts } = calcScore(st.caps[pi], true);
+        fbEl.style.display = fkPts <= fukeBase && st.roundNo > 0 ? 'inline-block' : 'none';
       }
 
       // 取り札カード描画（光/種/短冊を1段目、カスを2段目に分離）
