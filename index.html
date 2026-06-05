@@ -204,6 +204,33 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .nagare-flash-enter { animation: yaku-flash-in 0.32s cubic-bezier(.17,.67,.45,1.3) forwards; }
 .nagare-flash-leave { animation: yaku-flash-out 0.36s ease-in forwards; }
 
+/* ===== 手番トースト ===== */
+.turn-toast {
+  position: absolute; z-index: 7900;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.72);
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 8px 22px;
+  font-size: clamp(14px, 4vw, 20px);
+  font-weight: 600; letter-spacing: 0.1em;
+  color: var(--gold-light);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.turn-toast-enter { animation: yaku-flash-in 0.25s cubic-bezier(.17,.67,.45,1.3) forwards; }
+.turn-toast-leave { animation: yaku-flash-out 0.28s ease-in forwards; }
+
+/* ===== 手番エリアハイライト ===== */
+.cpu-area.turn-active {
+  border-left: 3px solid var(--gold);
+  background: rgba(200,153,58,0.08);
+}
+.player-cap.turn-active {
+  border-left: 3px solid var(--gold);
+  background: rgba(200,153,58,0.08);
+}
+
 /* ===== 役成立フラッシュ ===== */
 .yaku-flash {
   position: absolute; inset: 0; z-index: 8000;
@@ -1012,7 +1039,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.4　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.5　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1145,7 +1172,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.4</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.5</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1441,6 +1468,27 @@ const G = (() => {
 
   const SPEED = { fast: 150, normal: 300, slow: 500 };
   function _spd() { return SPEED[cfg.hana_speed] || 300; }
+
+  /* ============================================================
+     animTurnToast — 手番切り替わりトースト表示
+     ============================================================ */
+  function animTurnToast(pi, cb) {
+    const screen = document.getElementById('scr-game');
+    if (!screen) { cb?.(); return; }
+    const names = ['あなたの手番', 'CPU1の手番', 'CPU2の手番'];
+    const spd = _spd();
+    const holdMs = spd * 1.2;
+    const outMs  = 280;
+    const el = document.createElement('div');
+    el.className = 'turn-toast turn-toast-enter';
+    el.textContent = names[pi] || `Player${pi}の手番`;
+    screen.appendChild(el);
+    setTimeout(() => {
+      el.classList.remove('turn-toast-enter');
+      el.classList.add('turn-toast-leave');
+      setTimeout(() => { el.remove(); cb?.(); }, outMs);
+    }, holdMs);
+  }
 
   /* ============================================================
      animYakuFlash — 役成立フラッシュ表示
@@ -2256,11 +2304,15 @@ const G = (() => {
         ptsEl.innerHTML = `取り点 ${pts}点${yakuBadges}`;
       }
 
-      // 手番バッジ
+      // 手番バッジ＋エリアハイライト
+      const isActiveTurn = (st.phase === 'play' || st.phase === 'draw') && currentPlayer === pi;
       const tbEl = document.getElementById(`turn-badge-${pi}`);
-      if (tbEl) tbEl.style.display =
-        (st.phase === 'play' || st.phase === 'draw') && currentPlayer === pi
-          ? 'inline-block' : 'none';
+      if (tbEl) tbEl.style.display = isActiveTurn ? 'inline-block' : 'none';
+      // エリアハイライト
+      const areaEl = pi === 0
+        ? document.querySelector('.player-cap')
+        : document.getElementById(`cap-area-${pi}`);
+      if (areaEl) areaEl.classList.toggle('turn-active', isActiveTurn);
 
       // フケ圏バッジ（取り点がフケ基準点以下）
       const fbEl = document.getElementById(`fuke-badge-${pi}`);
@@ -2553,9 +2605,31 @@ const G = (() => {
     // 飛翔元・先
     const fromEl = pi === 0
       ? document.getElementById(`hc-${handIdx}`)
-      : document.getElementById(`cap-area-${pi}`);  // CPU: 取り札エリア右端を飛翔元に
+      : document.getElementById(`cap-area-${pi}`);
     const toEl   = document.getElementById(`fc-${slotIdx}`);
     const bgImg  = _cardImg(handCard).bgImg;
+
+    // CPU取り時: 取得カード（最大4枚）を取り札エリアへスライドするアニメ
+    const _animCpuSlide = (afterCb) => {
+      if (pi === 0) { afterCb(); return; } // プレイヤーは既存アニメのみ
+      const takenCards = [handCard, fieldCard];
+      if (fieldCard.stacked) takenCards.push(...fieldCard.stacked);
+      const capEl = document.getElementById(`cap-area-${pi}`);
+      if (!capEl) { afterCb(); return; }
+      const spd = _spd();
+      const interval = Math.round(spd * 0.3);
+      let done = 0;
+      takenCards.forEach((card, i) => {
+        setTimeout(() => {
+          const srcEl = document.getElementById(`fc-${slotIdx}`) || toEl;
+          const cardImg = _cardImg(card).bgImg;
+          animCardFly(srcEl || capEl, capEl, cardImg, () => {
+            done++;
+            if (done === takenCards.length) afterCb();
+          }, false);
+        }, i * interval);
+      });
+    };
 
     const _exec = () => {
       st.caps[pi].push(handCard);
@@ -2563,16 +2637,32 @@ const G = (() => {
       if (fieldCard.stacked) st.caps[pi].push(...fieldCard.stacked);
       st.hands[pi].splice(handIdx, 1);
       st.field[slotIdx] = null;
-      render();
-      checkNagare();
-      animYakuFlash(pi, st.caps[pi], () => {
-        setTimeout(() => autoDraw(pi), _spd());
+
+      // CPU: 取り札スライドアニメ後にrender
+      _animCpuSlide(() => {
+        render();
+        checkNagare();
+        animYakuFlash(pi, st.caps[pi], () => {
+          setTimeout(() => autoDraw(pi), _spd());
+        });
       });
     };
 
-    if (fromEl && toEl) {
-      if (pi === 0) fromEl.style.opacity = '0'; // 手札のみ非表示（yamaは触らない）
-      animCardFly(fromEl, toEl, bgImg, _exec, pi !== 0);
+    // CPU: 場札を一瞬ハイライトしてから飛翔
+    if (pi !== 0 && toEl) {
+      toEl.style.boxShadow = '0 0 0 3px var(--gold), 0 0 12px rgba(200,153,58,0.6)';
+      toEl.style.transition = 'box-shadow 0.15s';
+      setTimeout(() => {
+        toEl.style.boxShadow = '';
+        if (fromEl && toEl) {
+          animCardFly(fromEl, toEl, bgImg, _exec, true);
+        } else {
+          _exec();
+        }
+      }, Math.round(_spd() * 0.4));
+    } else if (fromEl && toEl) {
+      if (pi === 0) fromEl.style.opacity = '0';
+      animCardFly(fromEl, toEl, bgImg, _exec, false);
     } else {
       _exec();
     }
@@ -3369,8 +3459,10 @@ const G = (() => {
     const hand = st.hands[pi];
     if (hand.length === 0) { afterDraw(pi, null, -1); return; }
 
+    // 手番トースト表示してから実行
+    animTurnToast(pi, () => {
     const level = cfg.hana_cpu || 'normal';
-    let chosen; // { handIdx, slotIdx } or { handIdx, discard:true }
+    let chosen;
 
     if (level === 'easy') {
       chosen = _cpuEasy(pi);
@@ -3387,6 +3479,7 @@ const G = (() => {
       SE.play('take');
       _doTake(pi, chosen.handIdx, chosen.slotIdx);
     }
+    });
   }
 
   /* ============================================================
