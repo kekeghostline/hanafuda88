@@ -1043,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.8　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.9　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1176,7 +1176,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.8</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.9</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -2295,7 +2295,7 @@ const G = (() => {
       const rank = _rankOf(pi);
       const label = TURN_LABELS[rank];
       const name  = PLAYER_NAMES[pi];
-      const { pts } = calcScore(st.caps[pi], true);
+      const { pts } = calcScore(st.caps[pi], false);
 
       // 名前ラベル（局開始時に設定、手番が変わっても固定・全員にラベル表示）
       const nameEl = document.getElementById(pi === 0 ? 'cap-name-0' : `cap-name-${pi}`);
@@ -2920,17 +2920,8 @@ const G = (() => {
       isFuke[pi] = fkPts[pi] <= base;
     }
 
-    // フケ不成立の場合は柳点を戻す
+    // フケ判定に関わらず、最終取り点は常に柳点込みで計算
     const finalRawPts = rawPts.slice();
-    for (let pi = 0; pi < 3; pi++) {
-      if (!isFuke[pi]) {
-        // フケでなければ柳点を通常通り計算済み → rawPts がそのまま使える
-        finalRawPts[pi] = rawPts[pi];
-      } else {
-        // フケなので柳0点のまま
-        finalRawPts[pi] = fkPts[pi];
-      }
-    }
 
     // --- 2. 役計算 ---
     const yakuResults = [
