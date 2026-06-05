@@ -1043,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.6　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.7　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1176,7 +1176,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.6</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.7</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1470,8 +1470,8 @@ const G = (() => {
     parentIdx:   0,
   };
 
-  const SPEED = { fast: 150, normal: 300, slow: 500 };
-  function _spd() { return SPEED[cfg.hana_speed] || 300; }
+  const SPEED = { fast: 250, normal: 350, slow: 500 };
+  function _spd() { return SPEED[cfg.hana_speed] || 350; }
 
   /* ============================================================
      animTurnToast — 手番切り替わりトースト表示
@@ -1645,7 +1645,7 @@ const G = (() => {
     const destLeft = to.left + to.width  / 2 - cardW / 2;
     const destTop  = to.top  + to.height / 2 - cardH / 2;
 
-    const dur = _spd() === 150 ? 240 : _spd() === 500 ? 520 : 360;
+    const dur = _spd() === 250 ? 360 : _spd() === 500 ? 520 : 400;
 
     _animating = true;
 
@@ -2743,7 +2743,7 @@ const G = (() => {
     }
 
     // めくり後に少し見せてからスライド
-    const revealMs = _spd() === 150 ? 240 : _spd() === 500 ? 520 : 360;
+    const revealMs = _spd() === 250 ? 360 : _spd() === 500 ? 520 : 400;
 
     setTimeout(() => {
       if (matches.length === 0) {
