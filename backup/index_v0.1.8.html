@@ -1,0 +1,3927 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>花合わせ（HANA AWASE）</title>
+<style>
+/* ===== CSS変数 ===== */
+:root {
+  --bg:          #0d0d0d;
+  --bg-game:     #0d1a0a;
+  --bg-panel:    rgba(0,0,0,0.45);
+  --bg-card:     #161006;
+  --border:      #2a2010;
+  --border-dim:  #1a2a18;
+  --gold:        #c8993a;
+  --gold-light:  #e8c97e;
+  --gold-dark:   #7a5a20;
+  --red:         #e88080;
+  --green:       #a0d090;
+  --text:        #c8b080;
+  --text-dim:    #7a6040;
+  --text-faint:  #4a3a20;
+  --text-game:   #8aaa78;
+  --text-game-dim: #5a7050;
+
+  /* カード色 */
+  --mc-pica: #2a1f08;
+  --mc-pica-b: #5c4510;
+  --mc-tane: #0a1a20;
+  --mc-tane-b: #1a4050;
+  --mc-zaku: #1a0a1a;
+  --mc-zaku-b: #4a1a4a;
+  --mc-kas:  #1a2a18;
+  --mc-kas-b: #2a4028;
+
+  /* バッジ色 */
+  --badge-turn-bg:     #2a3a28;
+  --badge-turn-text:   #80c090;
+  --badge-turn-border: #3a5a38;
+  --badge-fuke-bg:     #2a0808;
+  --badge-fuke-border: #5a1818;
+  --badge-yaku-bg:     #2a1f08;
+  --badge-yaku-text:   #f0d890;
+  --badge-fuke-text:   #f0a0a0;
+  --cumul-bg:          rgba(20,40,10,0.4);
+  --modal-title:       var(--gold-light);
+  --modal-text:        var(--text);
+  --modal-text-dim:    var(--text-dim);
+
+  --radius-phone: 36px;
+  --radius-screen: 24px;
+  --transition: 0.22s ease;
+}
+
+/* ===== 背景テーマ別フォント色 ===== */
+#scr-game.bg-wakakusa {
+  --text:          #2a1a08;
+  --text-dim:      #4a3010;
+  --text-faint:    #6a5030;
+  --text-game:     #1a3a08;
+  --text-game-dim: #2a5010;
+  --gold:          #7a4a00;
+  --gold-light:    #3d2200;
+  --green:         #90d878;
+  --red:           #e87878;
+  --badge-turn-bg:     rgba(10,50,10,0.75);
+  --badge-turn-text:   #d0f0b0;
+  --badge-turn-border: #5aaa38;
+  --badge-fuke-bg:     rgba(60,10,10,0.75);
+  --badge-fuke-border: #aa2828;
+  --badge-yaku-bg:     rgba(60,40,0,0.75);
+  --badge-yaku-text:   #fff8e0;
+  --badge-fuke-text:   #ffe0e0;
+  --cumul-bg:          rgba(20,40,10,0.35);
+  --modal-title:       #e8c97e;
+  --modal-text:        #f0e8d0;
+  --modal-text-dim:    #c8b090;
+}
+#scr-game.bg-shiraki {
+  --text:          #3a2a10;
+  --text-dim:      #5a4020;
+  --text-faint:    #7a6040;
+  --text-game:     #2a3a10;
+  --text-game-dim: #3a5018;
+  --gold:          #7a3a00;
+  --gold-light:    #3d1f00;
+  --green:         #90d878;
+  --red:           #e87878;
+  --badge-turn-bg:     rgba(20,60,10,0.82);
+  --badge-turn-text:   #d8f0b0;
+  --badge-turn-border: #5a9030;
+  --badge-fuke-bg:     rgba(80,15,15,0.82);
+  --badge-fuke-border: #aa2828;
+  --badge-yaku-bg:     rgba(80,50,0,0.82);
+  --badge-yaku-text:   #fff8e0;
+  --badge-fuke-text:   #ffe0e0;
+  --cumul-bg:          rgba(180,160,100,0.15);
+  --modal-title:       #e8c97e;
+  --modal-text:        #f0e8d0;
+  --modal-text-dim:    #c8b090;
+}
+
+/* ===== リセット ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, 'Hiragino Sans', 'Helvetica Neue', sans-serif;
+  background: #000;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* ===== フォン枠 ===== */
+#app {
+  width: 100vw;
+  height: 100dvh;
+  background: var(--bg);
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== 画面共通 ===== */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.screen.active { display: flex; }
+
+/* ===== ローディング画面 ===== */
+#scr-loading {
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.loading-icon {
+  width: 62px; height: 92px;
+  background: #1a1a1a;
+  border: 1.5px solid var(--gold);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.loading-icon-inner {
+  width: 52px; height: 78px;
+  background: #2a1f08;
+  border-radius: 5px;
+  border: 1px solid #5c4510;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+}
+.loading-spinner {
+  width: 28px; height: 28px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== 流れバナー（対局中常時表示） ===== */
+#nagare-banner {
+  display: none;
+  align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  z-index: 10;
+}
+#nagare-banner.active { display: flex; }
+#nagare-banner.ame  { background: rgba(10,20,80,0.85); color: #a8c8ff; border-bottom: 0.5px solid #3a5aaa; }
+#nagare-banner.yaku { background: rgba(50,10,80,0.85); color: #d0a8ff; border-bottom: 0.5px solid #7a3aaa; }
+
+/* ===== 流れフラッシュ ===== */
+.nagare-flash {
+  position: absolute; inset: 0; z-index: 8100;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none; gap: 6px;
+}
+.nagare-flash-name {
+  font-size: clamp(26px, 8vw, 40px); font-weight: 700;
+  letter-spacing: 0.14em; white-space: nowrap;
+}
+.nagare-flash-sub {
+  font-size: clamp(12px, 3.5vw, 17px); font-weight: 500;
+  letter-spacing: 0.06em; opacity: 0.85;
+}
+.nagare-flash-bg { position: absolute; inset: 0; }
+.nagare-flash.ame .nagare-flash-name { color: #b0d0ff; text-shadow: 0 0 24px rgba(80,120,255,0.7); }
+.nagare-flash.ame .nagare-flash-sub  { color: #80a8e8; }
+.nagare-flash.ame .nagare-flash-bg   { background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(40,60,200,0.2) 0%, transparent 70%); }
+.nagare-flash.yaku .nagare-flash-name { color: #d8b0ff; text-shadow: 0 0 24px rgba(160,80,255,0.7); }
+.nagare-flash.yaku .nagare-flash-sub  { color: #b080e8; }
+.nagare-flash.yaku .nagare-flash-bg   { background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(100,30,200,0.2) 0%, transparent 70%); }
+.nagare-flash-enter { animation: yaku-flash-in 0.32s cubic-bezier(.17,.67,.45,1.3) forwards; }
+.nagare-flash-leave { animation: yaku-flash-out 0.36s ease-in forwards; }
+
+/* ===== 手番トースト ===== */
+.turn-toast {
+  position: absolute; z-index: 7900;
+  top: 50%;
+  left: calc(var(--yama-width, 54px) + 10px);
+  transform: translateY(-50%);
+  background: rgba(20,15,5,0.88);
+  border: 1px solid #c89920;
+  border-radius: 8px;
+  padding: 8px 22px;
+  font-size: clamp(13px, 3.5vw, 18px);
+  font-weight: 600; letter-spacing: 0.1em;
+  color: #f5d97a;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.turn-toast-enter { animation: yaku-flash-in 0.25s cubic-bezier(.17,.67,.45,1.3) forwards; }
+.turn-toast-leave { animation: yaku-flash-out 0.28s ease-in forwards; }
+
+/* ===== 手番エリアハイライト ===== */
+.cpu-area.turn-active {
+  border-left: 4px solid var(--gold);
+  background: rgba(200,153,58,0.22);
+}
+.player-cap.turn-active {
+  border-left: 4px solid var(--gold);
+  background: rgba(200,153,58,0.22);
+}
+
+/* ===== 役成立フラッシュ ===== */
+.yaku-flash {
+  position: absolute; inset: 0; z-index: 8000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+  gap: 8px;
+}
+.yaku-flash-name {
+  font-size: clamp(28px, 9vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #f5d860;
+  -webkit-text-stroke: 1.2px rgba(255,255,255,0.55);
+  text-shadow:
+    1px  1px 0 rgba(0,0,0,0.85),
+   -1px -1px 0 rgba(0,0,0,0.85),
+    1px -1px 0 rgba(0,0,0,0.85),
+   -1px  1px 0 rgba(0,0,0,0.85),
+    0    0  18px rgba(220,170,40,0.9),
+    0    0  50px rgba(220,170,40,0.45);
+  white-space: nowrap;
+}
+.yaku-flash-pts {
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+.yaku-flash-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 50%,
+    rgba(180,130,20,0.18) 0%, transparent 70%);
+}
+@keyframes yaku-flash-in {
+  0%   { opacity: 0; transform: scale(0.55); }
+  60%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes yaku-flash-out {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+.yaku-flash-enter {
+  animation: yaku-flash-in 0.32s cubic-bezier(.17,.67,.45,1.3) forwards;
+}
+.yaku-flash-leave {
+  animation: yaku-flash-out 0.36s ease-in forwards;
+}
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(200,153,58,0); }
+  50%      { box-shadow: 0 0 14px 4px rgba(200,153,58,0.25); }
+}
+
+/* ===== SCR-001 スタート画面 ===== */
+#scr-start {
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+}
+.s1-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 55% at 50% 72%, rgba(139,90,20,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.s1-card-icon {
+  width: 72px; height: 108px;
+  border-radius: 10px;
+  margin-bottom: 22px;
+  box-shadow: 0 0 24px rgba(200,153,58,0.25);
+  background-image: url('https://kekeghostline.github.io/hanafuda88/images/original/card_back.png');
+  background-size: cover;
+  background-position: center;
+  border: 1.5px solid var(--gold);
+}
+.s1-card-inner { display: none; }
+.s1-title {
+  font-size: 28px; font-weight: 600;
+  color: var(--gold-light);
+  letter-spacing: 0.14em;
+  margin-bottom: 4px;
+}
+.s1-sub {
+  font-size: 13px; color: var(--gold-dark);
+  letter-spacing: 0.26em;
+  margin-bottom: 42px;
+}
+.s1-btn {
+  width: 216px; padding: 13px 0;
+  border-radius: 9px;
+  font-size: 16px; font-weight: 500;
+  letter-spacing: 0.06em;
+  display: block;
+  text-align: center;
+  margin-bottom: 10px;
+  transition: opacity var(--transition), transform var(--transition);
+}
+.s1-btn:active { opacity: 0.75; transform: scale(0.97); }
+.s1-btn-primary { background: var(--gold); color: #1a0e00; }
+.s1-btn-secondary {
+  background: transparent; color: var(--gold);
+  border: 1px solid var(--gold-dark);
+  font-size: 15px;
+}
+.s1-footer {
+  font-size: 12px; color: #cccccc;
+  letter-spacing: 0.06em;
+  margin-top: 28px;
+  padding-bottom: 24px;
+  text-align: center;
+}
+
+/* ===== 局数選択 ===== */
+.s1-rounds-label {
+  font-size: 11px; color: var(--text-dim);
+  letter-spacing: 0.1em; margin-bottom: 8px;
+}
+.s1-rounds-opts {
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+.s1-round-btn {
+  display: flex; flex-direction: column; align-items: center;
+  width: 96px; padding: 10px 0;
+  border-radius: 9px; font-size: 14px; font-weight: 500;
+  letter-spacing: 0.04em;
+  background: transparent; color: var(--gold);
+  border: 1px solid var(--gold-dark);
+  transition: background var(--transition), border-color var(--transition);
+}
+.s1-round-btn.active {
+  background: #2a1f08; border-color: var(--gold);
+}
+.s1-round-btn:active { opacity: 0.75; }
+.s1-round-sub {
+  font-size: 10px; color: var(--text-dim); margin-top: 2px;
+}
+
+/* ===== SCR-002 ルール説明画面 ===== */
+#scr-rules {
+  background: var(--bg);
+}
+.s2-header {
+  background: #100e06;
+  padding: 14px 16px 0;
+  border-bottom: 0.5px solid var(--border);
+  flex-shrink: 0;
+}
+.s2-header-top {
+  display: flex; align-items: center;
+  margin-bottom: 10px;
+}
+.back-btn {
+  color: var(--gold); font-size: 15px;
+  padding: 4px 0;
+  transition: opacity var(--transition);
+}
+.back-btn:active { opacity: 0.6; }
+.s2-header-title {
+  font-size: 18px; font-weight: 500;
+  color: var(--gold-light); flex: 1; text-align: center;
+}
+.tabs { display: flex; }
+.tab {
+  flex: 1; padding: 8px 4px;
+  font-size: 13px; color: var(--text-dim);
+  text-align: center;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition), border-color var(--transition);
+}
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.s2-body {
+  flex: 1; overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+/* タブパネル */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* 基本ルールタブ */
+.rule-section { margin-bottom: 16px; }
+.rule-section-title {
+  font-size: 13px; color: var(--gold); font-weight: 500;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--gold);
+  padding-left: 7px;
+}
+.rule-text {
+  font-size: 14px; color: var(--text); line-height: 1.8;
+}
+.rule-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; color: var(--text);
+  margin-top: 6px;
+}
+.rule-table th {
+  color: var(--text-dim); font-weight: 500;
+  text-align: left; padding: 4px 6px;
+  border-bottom: 0.5px solid var(--border);
+}
+.rule-table td {
+  padding: 5px 6px;
+  border-bottom: 0.5px solid var(--border-dim);
+  line-height: 1.5;
+}
+
+/* 札一覧タブ */
+.card-list-month { margin-bottom: 14px; }
+.card-list-month-title {
+  font-size: 13px; color: var(--gold); font-weight: 500;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--gold);
+  padding-left: 7px;
+}
+.card-list-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0;
+  border-bottom: 0.5px solid var(--border-dim);
+  font-size: 13px;
+}
+.card-list-thumb {
+  width: 57px; height: 86px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.card-list-name { flex: 1; color: var(--text); }
+.card-list-type { color: var(--text-dim); min-width: 28px; text-align: center; }
+.card-list-pt   { color: var(--gold); min-width: 28px; text-align: right; font-weight: 500; }
+
+/* 役一覧タブ */
+.yaku-row {
+  display: flex; flex-direction: column;
+  padding: 8px 0;
+  border-bottom: 0.5px solid #1e1808;
+  gap: 6px;
+}
+.yaku-name { font-size: 15px; color: var(--gold-light); font-weight: 500; min-width: 56px; }
+.yaku-cond { font-size: 13px; color: var(--text-dim); flex: 1; padding: 0 6px; }
+.yaku-pt   { font-size: 15px; color: var(--gold); font-weight: 500; min-width: 44px; text-align: right; }
+.yaku-top { display: flex; justify-content: space-between; align-items: center; }
+.yaku-cards { display: flex; gap: 5px; padding-left: 2px; flex-wrap: wrap; }
+.yaku-card-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.yaku-card-img {
+  width: 57px; height: 86px;
+  border-radius: 3px;
+  border: 0.5px solid var(--border);
+  background: #1a1208;
+  background-size: cover;
+  background-position: center;
+}
+.yaku-card-name { font-size: 8px; color: var(--text-dim); text-align: center; line-height: 1.2; max-width: 34px; }
+
+/* 操作方法タブ */
+.op-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 0; border-bottom: 0.5px solid var(--border-dim);
+}
+.op-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
+.op-text { font-size: 14px; color: var(--text); line-height: 1.7; }
+.op-text strong { color: var(--gold-light); font-weight: 500; }
+
+/* ===== SCR-003 ゲーム画面 ===== */
+#scr-game {
+  background: var(--bg-game);
+  font-size: 13px;
+}
+
+/* ゲームヘッダー */
+.g-header {
+  background: rgba(0,0,0,0.6);
+  padding: 8px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 0.5px solid var(--border-dim);
+  flex-shrink: 0;
+}
+.g-title { font-size: 16px; font-weight: 600; color: var(--text-game); letter-spacing: 0.06em; }
+.g-meta  { font-size: 12px; color: var(--text-game-dim); }
+.g-icons { display: flex; gap: 12px; }
+.g-icon-btn {
+  font-size: 22px; color: var(--text-game-dim);
+  transition: color var(--transition);
+  line-height: 1;
+}
+.g-icon-btn:active { color: var(--gold); }
+
+/* CPU取り札エリア */
+.cpu-area {
+  background: rgba(0,0,0,0.3);
+  padding: 5px 10px;
+  border-bottom: 0.5px solid var(--border-dim);
+  flex-shrink: 0;
+}
+.cpu-header {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 4px;
+}
+.cpu-name { font-size: 12px; color: var(--text-game); font-weight: 500; }
+.cpu-pts  { font-size: 12px; color: var(--gold); }
+.turn-badge {
+  font-size: 11px;
+  background: var(--badge-turn-bg); color: var(--badge-turn-text);
+  border-radius: 4px; padding: 1px 5px;
+  border: 0.5px solid var(--badge-turn-border);
+}
+.fuke-badge-sm {
+  font-size: 11px;
+  background: var(--badge-fuke-bg); color: var(--badge-fuke-text);
+  border-radius: 4px; padding: 1px 5px;
+  border: 0.5px solid var(--badge-fuke-border);
+}
+.cap-area-inner { display: flex; flex-direction: column; min-height: 100px; }
+.cap-categories { display: flex; gap: 8px; flex-wrap: wrap; }
+/* 取り札2段レイアウト */
+.cap-row1 { display: flex; gap: 6px; flex-wrap: wrap; }
+.cap-row2 { display: flex; gap: 6px; margin-top: 3px; }
+.cap-cat { display: flex; flex-direction: column; gap: 2px; }
+.cap-cat-label { font-size: 11px; color: var(--text-game-dim); }
+.cap-cards {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  min-width: 28px;
+  min-height: 38px;
+}
+/* 4枚以上は重ね表示モード（JSでdata-stack属性付与） */
+.cap-cards.stacked {
+  display: block;
+  position: relative;
+  width: 66px;
+  height: 45px;
+  flex-shrink: 0;
+}
+.cap-cards.stacked .mini-card {
+  position: absolute;
+  top: 0;
+}
+.mini-card {
+  width: 30px; height: 45px; border-radius: 3px; flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.mc-pica { background-color: var(--mc-pica); border: 0.5px solid var(--mc-pica-b); }
+.mc-tane { background-color: var(--mc-tane); border: 0.5px solid var(--mc-tane-b); }
+.mc-zaku { background-color: var(--mc-zaku); border: 0.5px solid var(--mc-zaku-b); }
+.mc-kas  { background-color: var(--mc-kas);  border: 0.5px solid var(--mc-kas-b);  }
+.mc-empty { background: transparent; border: 0.5px dashed #2a3028; }
+
+/* 場札・山札ゾーン */
+.mid-zone {
+  display: flex; gap: 8px;
+  padding: 6px 10px;
+  flex-shrink: 0;
+  border-bottom: 0.5px solid var(--border-dim);
+  position: relative;
+}
+.yamafuda {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  flex-shrink: 0;
+  padding-top: 14px;
+}
+.yama-card {
+  width: 34px; height: 50px;
+  background: #1a1a2a; border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text-game-dim);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.yama-count { font-size: 11px; color: var(--text-game-dim); }
+.field-zone { flex: 1; }
+.field-title { font-size: 11px; color: var(--text-game-dim); margin-bottom: 3px; }
+#field-cards {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto auto;
+  gap: 2px;
+}
+.field-card {
+  width: 100%; aspect-ratio: 2/3;
+  border-radius: 3px;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.field-card.fc-empty {
+  background-color: transparent;
+  border: 0.5px dashed #1e2a1c;
+}
+.field-card.fc-discard {
+  background: transparent;
+  border: 0.5px dashed #3a3a3a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text-game-dim);
+}
+.field-card.highlight {
+  box-shadow: 0 0 0 2px var(--gold);
+  transform: translateY(-2px);
+}
+
+/* 3枚重ねスロット */
+.fc-stacked-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+}
+.fc-stacked-wrap .fc-stack-card {
+  position: absolute; inset: 0;
+  border-radius: 3px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%; height: 100%;
+}
+.fc-stacked-wrap .fc-stack-card:nth-child(1) {
+  transform: translate(-3px, -3px) rotate(-4deg);
+  z-index: 1;
+}
+.fc-stacked-wrap .fc-stack-card:nth-child(2) {
+  transform: translate(2px, -1px) rotate(2deg);
+  z-index: 2;
+}
+.fc-stacked-wrap .fc-stack-card:nth-child(3) {
+  transform: translate(0, 0) rotate(0deg);
+  z-index: 3;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+.fc-stacked-wrap.highlight .fc-stack-card:nth-child(3) {
+  box-shadow: 0 0 0 2px var(--gold), 2px 2px 6px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+}
+
+#scr-game.bg-wakakusa .g-title,
+#scr-game.bg-shiraki  .g-title  { color: #f0ead0; }
+#scr-game.bg-wakakusa .g-meta,
+#scr-game.bg-shiraki  .g-meta   { color: #d8d0b0; }
+#scr-game.bg-wakakusa .g-icon-btn,
+#scr-game.bg-shiraki  .g-icon-btn { color: #d8d0b0; }
+
+/* 若草: 手札・取り札エリアの文字色を明るく調整 */
+#scr-game.bg-wakakusa .hand-label    { color: #f0ead0; }
+#scr-game.bg-wakakusa .cpu-name      { color: #f0ead0; }
+#scr-game.bg-wakakusa .cpu-pts       { color: #e8c060; }
+#scr-game.bg-wakakusa .cap-cat-label { color: #d0c8a0; }
+#scr-game.bg-wakakusa .yaku-badge    { color: #fff8e0; }
+#scr-game.bg-wakakusa .fuke-badge-sm { color: #ffe0e0; }
+
+/* 若草・白木: ボタン文字色を明るく（暗い--goldに対するコントラスト確保） */
+#scr-game.bg-wakakusa .g-action-btn-primary,
+#scr-game.bg-shiraki  .g-action-btn-primary { color: #f0e8d0; }
+#scr-game.bg-wakakusa .ok-btn,
+#scr-game.bg-shiraki  .ok-btn               { color: #f0e8d0; }
+
+/* ボタンバー */
+.g-btn-bar {
+  background: rgba(0,0,0,0.35);
+  padding: 5px 10px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border-bottom: 0.5px solid var(--border-dim);
+  flex-shrink: 0;
+}
+.g-action-btn {
+  padding: 6px 16px;
+  border-radius: 7px; font-size: 14px; font-weight: 500;
+  transition: opacity var(--transition), transform var(--transition);
+}
+.g-action-btn:active { opacity: 0.75; transform: scale(0.96); }
+.g-action-btn-primary { background: var(--gold); color: #1a0e00; }
+.g-action-btn-secondary {
+  background: transparent; color: var(--gold);
+  border: 1px solid var(--gold-dark);
+}
+.g-action-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+/* プレイヤー手札 */
+.player-hand {
+  background: rgba(0,0,0,0.4);
+  padding: 6px 10px;
+  flex-shrink: 0;
+}
+.hand-label { font-size: 11px; color: var(--text-game-dim); margin-bottom: 4px; }
+#player-cards {
+  display: flex; gap: 4px; justify-content: center; flex-wrap: nowrap;
+}
+.hand-card {
+  flex: 1; max-width: 42px;
+  aspect-ratio: 2/3;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.hand-card:active { transform: translateY(-3px); }
+.hand-card.selected {
+  transform: translateY(-6px);
+  box-shadow: 0 0 0 2px var(--gold), 0 4px 12px rgba(200,153,58,0.4);
+}
+.hand-card.disabled { opacity: 0.4; pointer-events: none; }
+
+/* プレイヤー取り札 */
+.player-cap {
+  background: rgba(0,0,0,0.3);
+  padding: 5px 10px 10px;
+  border-top: 0.5px solid var(--border-dim);
+  flex-shrink: 0;
+}
+
+/* ===== SCR-004 設定画面（オーバーレイ） ===== */
+#scr-settings {
+  background: rgba(0,0,0,0.72);
+  justify-content: flex-end;
+}
+.s4-modal {
+  background: #161006;
+  border-radius: 20px 20px 0 0;
+  padding: 18px 16px calc(28px + env(safe-area-inset-bottom, 0px));
+  border-top: 0.5px solid var(--border);
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+#scr-settings.active .s4-modal { transform: translateY(0); }
+.s4-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.s4-title { font-size: 18px; font-weight: 500; color: var(--gold-light); }
+.close-btn { font-size: 24px; color: var(--text-dim); transition: color var(--transition); }
+.close-btn:active { color: var(--gold); }
+.setting-row { margin-bottom: 14px; }
+.setting-label { font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+.setting-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.opt-btn {
+  font-size: 14px; padding: 6px 12px;
+  border-radius: 7px;
+  background: #0d0d0d;
+  border: 0.5px solid var(--border);
+  color: var(--text-dim);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+.opt-btn.active {
+  background: #2a1f08;
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.opt-btn:active { opacity: 0.75; }
+.setting-divider { height: 0.5px; background: var(--border); margin: 2px 0 14px; }
+
+/* ===== 精算モーダル ===== */
+#seisan-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 14px;
+  z-index: 100;
+}
+#seisan-overlay.active { display: flex; }
+.seisan-modal {
+  background: #161006;
+  border-radius: 14px;
+  padding: 16px 10px;
+  width: 100%;
+  border: 0.5px solid #3a2a10;
+  max-height: 90%;
+  overflow-y: auto;
+}
+.seisan-title {
+  font-size: 17px; font-weight: 500;
+  color: var(--modal-title); text-align: center;
+  margin-bottom: 12px;
+}
+.seisan-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; table-layout: fixed;
+}
+.seisan-table th {
+  color: var(--modal-text-dim); font-weight: 500;
+  text-align: center; padding: 4px 2px;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 12px;
+}
+.seisan-table td {
+  color: var(--modal-text); text-align: center;
+  padding: 3px 2px;
+  border-bottom: 0.5px solid var(--border-dim);
+  vertical-align: top;
+  line-height: 1.7;
+  font-size: 11px;
+}
+.seisan-arrow div { white-space: nowrap; font-size: 10px; }
+.row-label { color: var(--text-faint) !important; text-align: left !important; font-size: 12px; }
+.yaku-badge {
+  display: inline-block;
+  background: var(--badge-yaku-bg); color: var(--badge-yaku-text);
+  border-radius: 3px; padding: 1px 4px; font-size: 8px;
+}
+.fuke-badge {
+  display: inline-block;
+  background: var(--badge-fuke-bg); color: var(--badge-fuke-text);
+  border-radius: 3px; padding: 1px 4px; font-size: 8px;
+}
+.banner-cell {
+  background: var(--badge-fuke-bg); border: 0.5px solid var(--badge-fuke-border);
+  border-radius: 4px; color: var(--red);
+  font-size: 11px; padding: 4px 6px; text-align: center;
+}
+.s-pay  { color: var(--red); }
+.s-recv { color: var(--green); }
+.s-even { color: var(--text-faint); }
+.final-row td {
+  font-size: 14px; font-weight: 500; color: var(--gold-light);
+  border-top: 1px solid var(--border); padding-top: 5px;
+}
+.cumul-row td {
+  font-size: 12px; color: var(--green);
+  border-top: 0.5px solid var(--border-dim);
+  background: var(--cumul-bg);
+}
+.ok-btn {
+  width: 100%; margin-top: 12px; padding: 10px;
+  background: var(--gold); color: #1a0e00;
+  border-radius: 9px;
+  font-size: 16px; font-weight: 500;
+}
+.ok-btn:active { opacity: 0.8; }
+
+/* ===== 交換フェーズモーダル ===== */
+#exchange-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+#exchange-overlay.active { display: flex; }
+.exchange-modal {
+  background: #161006;
+  border-radius: 14px;
+  padding: 20px 16px;
+  width: 100%;
+  border: 0.5px solid var(--border);
+  text-align: center;
+}
+.exchange-title {
+  font-size: 17px; font-weight: 500;
+  color: var(--gold-light); margin-bottom: 8px;
+}
+.exchange-desc {
+  font-size: 14px; color: var(--text-dim); margin-bottom: 16px;
+  line-height: 1.7;
+}
+.exchange-cards {
+  display: flex; justify-content: center; gap: 6px;
+  margin-bottom: 18px;
+}
+.exchange-card {
+  width: 44px; height: 66px;
+  border-radius: 5px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.exchange-btns { display: flex; gap: 8px; }
+.exchange-btn {
+  flex: 1; padding: 10px 0;
+  border-radius: 8px; font-size: 15px; font-weight: 500;
+}
+.exchange-btn-do   { background: var(--gold); color: #1a0e00; }
+.exchange-btn-skip { background: transparent; color: var(--gold); border: 1px solid var(--gold-dark); }
+
+/* ===== 場札選択モーダル（山札2枚マッチ）===== */
+#field-select-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+#field-select-overlay.active { display: flex; }
+.field-select-modal {
+  background: #161006;
+  border-radius: 14px;
+  padding: 20px 16px;
+  width: 100%;
+  border: 0.5px solid var(--border);
+  text-align: center;
+}
+.field-select-title {
+  font-size: 16px; font-weight: 500;
+  color: var(--gold-light); margin-bottom: 8px;
+}
+.field-select-desc {
+  font-size: 14px; color: var(--text-dim); margin-bottom: 14px;
+}
+.field-select-cards {
+  display: flex; justify-content: center; gap: 10px;
+}
+.field-select-card {
+  width: 56px; height: 84px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, transform 0.15s;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.field-select-card:hover, .field-select-card:active {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+}
+
+/* ===== メッセージトースト ===== */
+#toast {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0.8);
+  background: rgba(10,6,0,0.92);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 22px; font-weight: 600;
+  color: var(--gold-light);
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 200;
+  text-align: center;
+  white-space: nowrap;
+}
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%,-50%) scale(1);
+}
+
+/* ===== 確認ダイアログ ===== */
+#confirm-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.72);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 28px;
+  z-index: 300;
+}
+#confirm-overlay.active { display: flex; }
+.confirm-modal {
+  background: #161006;
+  border-radius: 14px;
+  padding: 22px 18px;
+  width: 100%;
+  border: 0.5px solid var(--border);
+  text-align: center;
+}
+.confirm-title { font-size: 17px; color: var(--gold-light); margin-bottom: 8px; font-weight: 500; }
+.confirm-desc  { font-size: 14px; color: var(--text-dim); margin-bottom: 18px; line-height: 1.7; }
+.confirm-btns  { display: flex; gap: 8px; }
+.confirm-btn {
+  flex: 1; padding: 10px 0;
+  border-radius: 8px; font-size: 15px; font-weight: 500;
+}
+.confirm-btn-ok   { background: var(--gold); color: #1a0e00; }
+.confirm-btn-cancel { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+
+/* スクロールバー非表示 */
+::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ローディング -->
+  <div id="scr-loading" class="screen active">
+    <div class="loading-icon"><div class="loading-icon-inner">🀄</div></div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- SCR-001 スタート画面 -->
+  <div id="scr-start" class="screen">
+    <div class="s1-glow"></div>
+    <div class="s1-card-icon"></div>
+    <div class="s1-title">花合わせ</div>
+    <div class="s1-sub">HANA AWASE</div>
+    <!-- 局数選択 -->
+    <div class="s1-rounds-label">— 対戦形式 —</div>
+    <div class="s1-rounds-opts">
+      <button class="s1-round-btn active" id="round-btn-6" onclick="G.setRounds(6,this)">
+        半年戦<span class="s1-round-sub">6局</span>
+      </button>
+      <button class="s1-round-btn" id="round-btn-12" onclick="G.setRounds(12,this)">
+        1年戦<span class="s1-round-sub">12局</span>
+      </button>
+    </div>
+    <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
+    <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
+    <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
+    <div class="s1-footer">v0.1.8　© 2026 Hitonomigi Inc.</div>
+  </div>
+
+  <!-- SCR-002 ルール説明画面 -->
+  <div id="scr-rules" class="screen">
+    <div class="s2-header">
+      <div class="s2-header-top">
+        <button class="back-btn" onclick="G.hideRules()">← 戻る</button>
+        <div class="s2-header-title">ルール説明</div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="G.switchRuleTab(0)">基本</div>
+        <div class="tab" onclick="G.switchRuleTab(1)">札一覧</div>
+        <div class="tab" onclick="G.switchRuleTab(2)">役一覧</div>
+        <div class="tab" onclick="G.switchRuleTab(3)">操作</div>
+      </div>
+    </div>
+    <div class="s2-body">
+
+      <!-- 基本ルールタブ -->
+      <div class="tab-panel active" id="rule-tab-0">
+        <div class="rule-section">
+          <div class="rule-section-title">ゲーム概要</div>
+          <div class="rule-text">3人で行うカードゲームです。プレイヤー1人とCPU2人で半年戦（6局）または1年戦（12局）を戦い、累計得点が最も高い人の勝利です。</div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">準備・配札</div>
+          <div class="rule-text">花札48枚を使用します。各プレイヤーに手札を配り、残りは山札として中央に置きます。</div>
+          <table class="rule-table">
+            <tr><th>項目</th><th>内容</th></tr>
+            <tr><td>花札枚数</td><td>48枚</td></tr>
+            <tr><td>手札</td><td>各7枚</td></tr>
+            <tr><td>場札</td><td>6枚</td></tr>
+            <tr><td>山札</td><td>21枚</td></tr>
+            <tr><td>回戦数</td><td>12回戦 または 6回戦</td></tr>
+            <tr><td>基礎点</td><td>80点</td></tr>
+          </table>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">進行順序</div>
+          <div class="rule-text">各回、手番は 親 → 胴二 → ビキ の順に行います。親は毎回交代し、12回戦で全員が均等に親を担当します。</div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">手番の流れ</div>
+          <div class="rule-text">① 手札から1枚出し、場の札と合わせて取る（合わなければ場に置く）<br>② 山札から1枚めくり、場の札と合わせて取る（合わなければ場に置く）<br>③ 手札と山札がなくなるまで続けます</div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">得点</div>
+          <div class="rule-text">各回の得点は 札点＋でき役点 で計算します。取り終えた時点で成立している役の点数が加算されます。途中で役ができてもそのままゲームを続行します（こいこいはありません）。</div>
+          <div class="rule-text" style="margin-top:6px">各回の得点から基礎点80点を差し引いた差分が実際の得点になります。80点ちょうどの場合は ±0点 です。</div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">手番・フケ基準点</div>
+          <table class="rule-table">
+            <tr><th>手番</th><th>名称</th><th>フケ基準点</th></tr>
+            <tr><td>1番手</td><td>👑 親</td><td>15点以下</td></tr>
+            <tr><td>2番手</td><td>胴二</td><td>20点以下</td></tr>
+            <tr><td>3番手</td><td>ビキ</td><td>25点以下</td></tr>
+          </table>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">特殊ルール</div>
+          <div class="rule-text"><strong>三役流れ：</strong>3人全員にでき役が成立した場合、その回のでき役点は全員無効になります。（札点はそのまま有効です）</div>
+          <div class="rule-text" style="margin-top:6px"><strong>雨流れ：</strong>11月の柳札（雨札）4枚すべてを1人が取った場合、その回のでき役点は全員無効になります。（札点はそのまま有効です）</div>
+          <div class="rule-text" style="margin-top:6px"><strong>フケ：</strong>あえて点を取らない特殊な役です。手番ごとに基準点が設定されており、その点以下であれば成立します。三役流れ・雨流れが発生してもフケは無効になりません。</div>
+        </div>
+      </div>
+
+      <!-- 札一覧タブ -->
+      <div class="tab-panel" id="rule-tab-1">
+        <div id="card-list-container"><!-- JS で描画 --></div>
+      </div>
+
+      <!-- 役一覧タブ -->
+      <div class="tab-panel" id="rule-tab-2">
+        <div id="yaku-list-container"><!-- JS で描画 --></div>
+        <div class="rule-section">
+          <div class="rule-section-title">特殊ルール</div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">雨流れ</span><span class="yaku-cond">1人が11月の柳札4枚すべてを取得</span><span class="yaku-pt">—</span></div></div>
+          <div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">→ 全員のでき役点が無効になります。（フケは除く）</div>
+          <div class="yaku-row"><div class="yaku-top"><span class="yaku-name">三役流れ</span><span class="yaku-cond">3人全員にフケ以外のでき役が成立</span><span class="yaku-pt">—</span></div></div>
+          <div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">→ 全員のでき役点が無効になります。（フケは除く）</div>
+        </div>
+      </div>
+
+            <!-- 操作方法タブ -->
+      <div class="tab-panel" id="rule-tab-3">
+        <div class="rule-section">
+          <div class="rule-section-title">手札の操作</div>
+          <div class="op-row">
+            <div class="op-icon">👆</div>
+            <div class="op-text"><strong>手札タップ</strong><br>カードを選択状態にします。合う場札がハイライトされます。</div>
+          </div>
+          <div class="op-row">
+            <div class="op-icon">✨</div>
+            <div class="op-text"><strong>ハイライト場札タップ</strong><br>選択した手札で場札を取ります。取り札エリアへ移動します。</div>
+          </div>
+          <div class="op-row">
+            <div class="op-icon">🗑</div>
+            <div class="op-text"><strong>捨てるゾーンタップ</strong><br>手札を場に捨てます。合う場札がない場合のみ有効です。</div>
+          </div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">山札めくり</div>
+          <div class="op-row">
+            <div class="op-icon">🎴</div>
+            <div class="op-text"><strong>自動めくり</strong><br>手札操作の後、山札が自動的にめくられます。同月の場札があれば自動取得します。</div>
+          </div>
+        </div>
+        <div class="rule-section">
+          <div class="rule-section-title">ヘッダーボタン</div>
+          <div class="op-row">
+            <div class="op-icon">📖</div>
+            <div class="op-text"><strong>ルール説明</strong><br>このルール説明画面を表示します。</div>
+          </div>
+          <div class="op-row">
+            <div class="op-icon">⚙️</div>
+            <div class="op-text"><strong>設定</strong><br>デザイン・サウンド・CPU強さなどを変更できます。</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCR-003 ゲーム画面 -->
+  <div id="scr-game" class="screen">
+
+    <!-- ヘッダー -->
+    <div class="g-header">
+      <div class="g-title">花合わせ</div>
+      <div class="g-meta" id="g-round-label">—局／12局</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.8</div>
+      <div class="g-icons">
+        <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
+        <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
+        <button class="g-icon-btn" onclick="G.toggleSettings(true)" title="設定">⚙️</button>
+      </div>
+    </div>
+
+    <!-- CPU1 取り札エリア -->
+    <div class="cpu-area" id="cap-area-1">
+      <div class="cpu-header">
+        <span class="cpu-name" id="cap-name-1">—　CPU1</span>
+        <span class="cpu-pts" id="cap-pts-1">取り点 —</span>
+        <span class="turn-badge" id="turn-badge-1" style="display:none">手番中</span>
+        <span class="fuke-badge-sm" id="fuke-badge-1" style="display:none">フケ圏</span>
+      </div>
+      <div class="cap-area-inner" id="cap-cards-1"></div>
+    </div>
+
+    <!-- CPU2 取り札エリア -->
+    <div class="cpu-area" id="cap-area-2">
+      <div class="cpu-header">
+        <span class="cpu-name" id="cap-name-2">—　CPU2</span>
+        <span class="cpu-pts" id="cap-pts-2">取り点 —</span>
+        <span class="turn-badge" id="turn-badge-2" style="display:none">手番中</span>
+        <span class="fuke-badge-sm" id="fuke-badge-2" style="display:none">フケ圏</span>
+      </div>
+      <div class="cap-area-inner" id="cap-cards-2"></div>
+    </div>
+
+    <!-- 場札・山札ゾーン -->
+    <div id="nagare-banner"></div>
+    <div class="mid-zone">
+      <div class="yamafuda">
+        <div class="yama-card" id="yama-card-img">山</div>
+        <div class="yama-count" id="yama-count">0枚</div>
+      </div>
+      <div class="field-zone">
+        <div class="field-title">場札</div>
+        <div id="field-cards"></div>
+      </div>
+    </div>
+
+
+
+    <!-- ボタンバー -->
+    <div class="g-btn-bar" id="g-btn-bar">
+      <button class="g-action-btn g-action-btn-primary" id="btn-start-round" onclick="G.startRound()">局を開始</button>
+    </div>
+
+    <!-- プレイヤー手札 -->
+    <div class="player-hand">
+      <div class="hand-label">あなたの手札</div>
+      <div id="player-cards"></div>
+    </div>
+
+    <!-- プレイヤー取り札 -->
+    <div class="player-cap">
+      <div class="hand-label">
+        <span id="cap-name-0"></span>の取り札
+        <span class="cpu-pts" id="cap-pts-0" style="margin-left:8px">取り点 —</span>
+        <span class="turn-badge" id="turn-badge-0" style="display:none;margin-left:4px">手番中</span>
+        <span class="fuke-badge-sm" id="fuke-badge-0" style="display:none;margin-left:4px">フケ圏</span>
+      </div>
+      <div class="cap-area-inner" id="cap-cards-0"></div>
+    </div>
+
+    <!-- 精算モーダル -->
+    <div id="seisan-overlay">
+      <div class="seisan-modal" id="seisan-modal-content"></div>
+    </div>
+
+    <!-- 交換フェーズモーダル -->
+    <div id="exchange-overlay">
+      <div class="exchange-modal" id="exchange-modal-content"></div>
+    </div>
+
+    <!-- 場札選択モーダル -->
+    <div id="field-select-overlay">
+      <div class="field-select-modal" id="field-select-content"></div>
+    </div>
+
+  </div>
+
+  <!-- SCR-004 設定画面（オーバーレイ） -->
+  <div id="scr-settings" class="screen">
+    <div style="flex:1" onclick="G.toggleSettings(false)"></div>
+    <div class="s4-modal">
+      <div class="s4-header">
+        <div class="s4-title">設定</div>
+        <button class="close-btn" onclick="G.toggleSettings(false)">✕</button>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">花札デザイン</div>
+        <div class="setting-opts" id="opt-design">
+          <button class="opt-btn active" data-val="original" onclick="G.setS('hana_design','original',this)">オリジナル</button>
+          <button class="opt-btn" data-val="artistic" onclick="G.setS('hana_design','artistic',this)">アート調</button>
+        </div>
+      </div>
+      <div class="setting-divider"></div>
+      <div class="setting-row">
+        <div class="setting-label">背景</div>
+        <div class="setting-opts" id="opt-bg">
+          <button class="opt-btn active" data-val="kuronuri" onclick="G.setS('hana_bg','kuronuri',this)">黒漆</button>
+          <button class="opt-btn" data-val="wakakusa" onclick="G.setS('hana_bg','wakakusa',this)">若草</button>
+          <button class="opt-btn" data-val="shiraki" onclick="G.setS('hana_bg','shiraki',this)">白木</button>
+        </div>
+      </div>
+      <div class="setting-divider"></div>
+      <div class="setting-row">
+        <div class="setting-label">アニメーション速度</div>
+        <div class="setting-opts" id="opt-speed">
+          <button class="opt-btn" data-val="fast" onclick="G.setS('hana_speed','fast',this)">速い</button>
+          <button class="opt-btn active" data-val="normal" onclick="G.setS('hana_speed','normal',this)">普通</button>
+          <button class="opt-btn" data-val="slow" onclick="G.setS('hana_speed','slow',this)">遅い</button>
+        </div>
+      </div>
+      <div class="setting-divider"></div>
+      <div class="setting-row">
+        <div class="setting-label">効果音 / BGM</div>
+        <div class="setting-opts">
+          <button class="opt-btn active" id="opt-se-on"  onclick="G.setS('hana_se','on',this,'hana_se')">SE ON</button>
+          <button class="opt-btn"        id="opt-se-off" onclick="G.setS('hana_se','off',this,'hana_se')">SE OFF</button>
+          <button class="opt-btn active" id="opt-bgm-on"  onclick="G.setS('hana_bgm','on',this,'hana_bgm')">BGM ON</button>
+          <button class="opt-btn"        id="opt-bgm-off" onclick="G.setS('hana_bgm','off',this,'hana_bgm')">BGM OFF</button>
+        </div>
+      </div>
+      <div class="setting-divider"></div>
+      <div class="setting-row">
+        <div class="setting-label">CPU強さ</div>
+        <div class="setting-opts" id="opt-cpu">
+          <button class="opt-btn" data-val="easy" onclick="G.setS('hana_cpu','easy',this)">弱い</button>
+          <button class="opt-btn active" data-val="normal" onclick="G.setS('hana_cpu','normal',this)">普通</button>
+          <button class="opt-btn" data-val="hard" onclick="G.setS('hana_cpu','hard',this)">強い</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- トースト -->
+  <div id="toast"></div>
+
+  <!-- 確認ダイアログ -->
+  <div id="confirm-overlay">
+    <div class="confirm-modal">
+      <div class="confirm-title" id="confirm-title">確認</div>
+      <div class="confirm-desc"  id="confirm-desc"></div>
+      <div class="confirm-btns">
+        <button class="confirm-btn confirm-btn-cancel" id="confirm-cancel">キャンセル</button>
+        <button class="confirm-btn confirm-btn-ok"     id="confirm-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+'use strict';
+
+/* ============================================================
+   CARDS — 48枚カード定義
+   命名規則: card_{月2桁}_{花名}_{札種}_{枝番}.png
+   札種: pica(光) / tane(種) / zaku(短冊) / kas(カス)
+   取り点: pica=20 / tane=10 / zaku=5 / kas=0
+   ============================================================ */
+const CARDS = (() => {
+  // 月定義: [月番号, 花名(ファイル名用), 月名(表示用)]
+  const MONTHS = [
+    [1,  'matsu',   '松'],
+    [2,  'ume',     '梅'],
+    [3,  'sakura',  '桜'],
+    [4,  'fuji',    '藤'],
+    [5,  'ayame',   '菖蒲'],
+    [6,  'botan',   '牡丹'],
+    [7,  'hagi',    '萩'],
+    [8,  'susuki',  '芒'],
+    [9,  'kiku',    '菊'],
+    [10, 'momiji',  '紅葉'],
+    [11, 'yanagi',  '柳（雨札）'],
+    [12, 'kiri',    '桐'],
+  ];
+
+  // 各月のカード構成: [type, 枝番, 札名]
+  // type: pica/tane/zaku/kas
+  const MONTH_CARDS = {
+    1:  [['pica',1,'松に鶴'],   ['zaku',1,'松に赤短'], ['kas',1,'松のカス'], ['kas',2,'松のカス']],
+    2:  [['tane',1,'梅に鶯'],   ['zaku',1,'梅に赤短'], ['kas',1,'梅のカス'], ['kas',2,'梅のカス']],
+    3:  [['pica',1,'桜に幕'],   ['zaku',1,'桜に赤短'], ['kas',1,'桜のカス'], ['kas',2,'桜のカス']],
+    4:  [['tane',1,'藤にホトトギス'], ['zaku',1,'藤に短冊'], ['kas',1,'藤のカス'], ['kas',2,'藤のカス']],
+    5:  [['tane',1,'菖蒲に八橋'],    ['zaku',1,'菖蒲に短冊'], ['kas',1,'菖蒲のカス'], ['kas',2,'菖蒲のカス']],
+    6:  [['tane',1,'牡丹に蝶'],      ['zaku',1,'牡丹に青短'], ['kas',1,'牡丹のカス'], ['kas',2,'牡丹のカス']],
+    7:  [['tane',1,'萩に猪'],        ['zaku',1,'萩に短冊'],   ['kas',1,'萩のカス'],   ['kas',2,'萩のカス']],
+    8:  [['pica',1,'芒に月'],        ['tane',1,'芒に雁'],     ['kas',1,'芒のカス'],   ['kas',2,'芒のカス']],
+    9:  [['tane',1,'菊に盃'],        ['zaku',1,'菊に青短'],   ['kas',1,'菊のカス'],   ['kas',2,'菊のカス']],
+    10: [['tane',1,'紅葉に鹿'],      ['zaku',1,'紅葉に青短'], ['kas',1,'紅葉のカス'], ['kas',2,'紅葉のカス']],
+    11: [['pica',1,'雨に人'],        ['tane',1,'雨にツバメ'], ['zaku',1,'雨に短冊'],  ['kas',1,'柳のカス']],
+    12: [['pica',1,'桐に鳳凰'],      ['kas',1,'桐のカス'],    ['kas',2,'桐のカス'],   ['kas',3,'桐のカス']],
+  };
+
+  // 点数マップ
+  const PTS = { pica: 20, tane: 10, zaku: 5, kas: 0 };
+
+  // 全48枚を生成
+  const all = [];
+  let id = 0;
+  for (const [month, hana, monthName] of MONTHS) {
+    const mm = String(month).padStart(2, '0');
+    for (const [type, num, name] of MONTH_CARDS[month]) {
+      all.push({
+        id,
+        month,
+        monthName,
+        hana,
+        type,
+        num,
+        name,
+        pts: PTS[type],
+        // ファイル名: card_{月2桁}_{花名}_{札種}_{枝番}.png
+        file: `card_${mm}_${hana}_${type}_${num}.png`,
+      });
+      id++;
+    }
+  }
+
+  // 柳（11月）4枚のIDセット（雨流れ判定用）
+  const YANAGI_IDS = new Set(all.filter(c => c.month === 11).map(c => c.id));
+
+  // 役判定に使う特定カードのID（名前引き）
+  function find(month, type, num = 1) {
+    return all.find(c => c.month === month && c.type === type && c.num === num);
+  }
+  const SPECIAL = {
+    matsu_pica:  find(1,  'pica').id,   // 松に鶴
+    kiri_pica:   find(12, 'pica').id,   // 桐に鳳凰
+    susuki_pica: find(8,  'pica').id,   // 芒に月
+    yanagi_pica: find(11, 'pica').id,   // 雨に人
+    sakura_pica: find(3,  'pica').id,   // 桜に幕
+    kiku_tane:   find(9,  'tane').id,   // 菊に盃
+    hagi_tane:   find(7,  'tane').id,   // 萩に猪
+    momiji_tane: find(10, 'tane').id,   // 紅葉に鹿
+    botan_tane:  find(6,  'tane').id,   // 牡丹に蝶
+    // 赤短（松・梅・桜の短冊）
+    matsu_zaku:  find(1,  'zaku').id,
+    ume_zaku:    find(2,  'zaku').id,
+    sakura_zaku: find(3,  'zaku').id,
+    // 青短（牡丹・菊・紅葉の短冊）
+    botan_zaku:  find(6,  'zaku').id,
+    kiku_zaku:   find(9,  'zaku').id,
+    momiji_zaku: find(10, 'zaku').id,
+  };
+
+  return { all, YANAGI_IDS, SPECIAL, PTS };
+})();
+
+/* ============================================================
+   G — メインオブジェクト（Step1: 画面制御のみ）
+   ============================================================ */
+const G = (() => {
+
+  /* ---------- 設定デフォルト値 ---------- */
+  const DEFAULTS = {
+    hana_design:  'original',
+    hana_bg:      'kuronuri',
+    hana_speed:   'normal',
+    hana_se:      'on',
+    hana_bgm:     'on',
+    hana_cpu:     'normal',
+    hana_rounds:  '6',
+  };
+
+  /* ---------- 内部状態 ---------- */
+  let cfg = {};           // 現在の設定値
+  let _settingsFrom = 'start';
+  let _rulesFrom    = 'start';
+  let _settingsDirty = false;
+  let _cfgSnapshot = {};
+  let _toastTimer = null;
+  let _confirmCb = null;
+
+  /* ---------- ゲーム状態 ---------- */
+  let G_state = {
+    hands:       [[], [], []],
+    caps:        [[], [], []],
+    field:       [],
+    deck:        [],
+    turnOrder:   [0, 1, 2],
+    turnIdx:     0,
+    roundNo:     0,
+    totalRounds: 6,
+    cumScore:    [0, 0, 0],
+    phase:       'idle',
+    parentIdx:   0,
+  };
+
+  const SPEED = { fast: 250, normal: 350, slow: 500 };
+  function _spd() { return SPEED[cfg.hana_speed] || 350; }
+
+  /* ============================================================
+     animTurnToast — 手番切り替わりトースト表示
+     ============================================================ */
+  function animTurnToast(pi, cb) {
+    const container = document.querySelector('.mid-zone');
+    if (!container) { cb?.(); return; }
+    // mid-zoneをposition:relativeに（CSS側で設定済み想定だがJS保険）
+    if (getComputedStyle(container).position === 'static') {
+      container.style.position = 'relative';
+    }
+    const names = ['あなたの手番', 'CPU1の手番', 'CPU2の手番'];
+    const spd = _spd();
+    const holdMs = spd * 1.2;
+    const outMs  = 280;
+    const el = document.createElement('div');
+    el.className = 'turn-toast turn-toast-enter';
+    el.textContent = names[pi] || `Player${pi}の手番`;
+    container.appendChild(el);
+    setTimeout(() => {
+      el.classList.remove('turn-toast-enter');
+      el.classList.add('turn-toast-leave');
+      setTimeout(() => { el.remove(); cb?.(); }, outMs);
+    }, holdMs);
+  }
+
+  /* ============================================================
+     animYakuFlash — 役成立フラッシュ表示
+     局中にカード取得のたびに呼ぶ。同一局内で同じ役は1度だけ表示。
+     _shownYakuKeys: 今局で既に表示した役キーのSet（startRoundでリセット）
+     ============================================================ */
+  let _shownYakuKeys = new Set();
+
+  function animYakuFlash(pi, caps, cb) {
+    const newYaku = calcYakuLive(caps);
+    if (newYaku.length === 0) { cb?.(); return; }
+
+    const unseen = newYaku.filter(n => !_shownYakuKeys.has(n));
+    if (unseen.length === 0) { cb?.(); return; }
+
+    unseen.forEach(n => _shownYakuKeys.add(n));
+
+    const speedMs = { fast: 1100, normal: 1400, slow: 2000 };
+    const totalMs = speedMs[cfg.hana_speed] || 1400;
+    const holdMs  = totalMs * 0.62;
+    const outMs   = totalMs * 0.28;
+
+    const screen = document.getElementById('scr-game');
+    if (!screen) { cb?.(); return; }
+
+    unseen.forEach((name, i) => {
+      const isLast = i === unseen.length - 1;
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'yaku-flash yaku-flash-enter';
+        el.innerHTML = `
+          <div class="yaku-flash-bg"></div>
+          <div class="yaku-flash-name">${name}</div>`;
+        screen.appendChild(el);
+
+        SE.play('yaku');
+
+        setTimeout(() => {
+          el.classList.remove('yaku-flash-enter');
+          el.classList.add('yaku-flash-leave');
+          el.style.animationDuration = `${outMs}ms`;
+          setTimeout(() => {
+            el.remove();
+            if (isLast) cb?.(); // 最後の役が消えたらコールバック
+          }, outMs);
+        }, holdMs);
+      }, i * (totalMs * 0.55));
+    });
+  }
+
+  /* ============================================================
+     checkNagare — 雨流れ・役流れをリアルタイム検知
+     ============================================================ */
+  function checkNagare() {
+    const st = G_state;
+    if (st.nagare) return; // 既に確定済み
+
+    // 雨流れ: 1人が柳4枚すべて取得
+    for (let pi = 0; pi < 3; pi++) {
+      if (st.caps[pi].filter(c => CARDS.YANAGI_IDS.has(c.id)).length === 4) {
+        st.nagare = 'ame';
+        _animNagareFlash('ame');
+        _updateNagareBanner();
+        return;
+      }
+    }
+
+    // 役流れ: 3人全員が役あり（calcYakuLiveで判定）
+    if ([0,1,2].every(pi => calcYakuLive(st.caps[pi]).length > 0)) {
+      st.nagare = 'yaku';
+      _animNagareFlash('yaku');
+      _updateNagareBanner();
+    }
+  }
+
+  function _updateNagareBanner() {
+    const el = document.getElementById('nagare-banner');
+    if (!el) return;
+    const nagare = G_state.nagare;
+    if (!nagare) {
+      el.className = '';
+      el.textContent = '';
+      return;
+    }
+    el.className = 'active ' + nagare;
+    el.textContent = nagare === 'ame'
+      ? '☔ 雨流れ発生中 — 全員の役が無効になります'
+      : '🌊 役流れ発生中 — 全員の役が無効になります';
+  }
+
+  function _animNagareFlash(type) {
+    const screen = document.getElementById('scr-game');
+    if (!screen) return;
+    const speedMs = { fast: 1100, normal: 1400, slow: 2000 };
+    const totalMs = speedMs[cfg.hana_speed] || 1400;
+    const holdMs  = totalMs * 0.65;
+    const outMs   = totalMs * 0.28;
+    const label   = type === 'ame' ? '☔ 雨流れ' : '🌊 役流れ';
+    const el = document.createElement('div');
+    el.className = `nagare-flash ${type} nagare-flash-enter`;
+    el.innerHTML = `<div class="nagare-flash-bg"></div>
+      <div class="nagare-flash-name">${label}</div>
+      <div class="nagare-flash-sub">全員の役が無効になります</div>`;
+    screen.appendChild(el);
+    SE.play('yaku');
+    setTimeout(() => {
+      el.classList.remove('nagare-flash-enter');
+      el.classList.add('nagare-flash-leave');
+      el.style.animationDuration = `${outMs}ms`;
+      setTimeout(() => el.remove(), outMs);
+    }, holdMs);
+  }
+
+  /* ============================================================
+     animCardFly — カード飛翔アニメーション（⑤）
+     fromEl: 飛翔元要素, toEl: 飛翔先要素, bgImg: カード画像(url(...))
+     cb: 完了コールバック
+     ============================================================ */
+  let _animating = false;
+
+  function animCardFly(fromEl, toEl, bgImg, cb, fromRight = false) {
+    if (!fromEl || !toEl) { cb(); return; }
+
+    const from = fromEl.getBoundingClientRect();
+    const to   = toEl.getBoundingClientRect();
+
+    // 要素が画面外または非表示なら即コールバック
+    if (to.width === 0 || to.height === 0) { cb(); return; }
+    if (!fromRight && (from.width === 0 || from.height === 0)) { cb(); return; }
+
+    // カードサイズはfromElから取得（toElが大きい場合に拡大されるのを防ぐ）
+    // ただしfromElが大きなエリア要素の場合はmini-cardサイズ(30x45)を使用
+    const isAreaEl = from.width > 80 || from.height > 80;
+    const cardW = isAreaEl ? 30 : Math.min(from.width,  to.width);
+    const cardH = isAreaEl ? 45 : Math.min(from.height, to.height);
+
+    // 開始位置
+    const startLeft = fromRight
+      ? from.right - cardW   // エリア右端
+      : from.left + from.width  / 2 - cardW / 2;
+    const startTop = fromRight
+      ? from.top  + from.height / 2 - cardH / 2
+      : from.top  + from.height / 2 - cardH / 2;
+
+    // 終了位置（toElの中心）
+    const destLeft = to.left + to.width  / 2 - cardW / 2;
+    const destTop  = to.top  + to.height / 2 - cardH / 2;
+
+    const dur = _spd() === 250 ? 360 : _spd() === 500 ? 520 : 400;
+
+    _animating = true;
+
+    const ghost = document.createElement('div');
+    ghost.style.cssText = `
+      position:fixed; z-index:9999; pointer-events:none;
+      width:${cardW}px; height:${cardH}px;
+      left:${startLeft}px; top:${startTop}px;
+      background-image:${bgImg};
+      background-size:cover; background-position:center;
+      border-radius:4px;
+    `;
+    document.body.appendChild(ghost);
+
+    // rAF×2でリフロー完了を確実に待ってからトランジション起動
+    // （16ms固定より確実: ブラウザが実際に描画フレームを2回消化してから開始）
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        ghost.style.transition = `
+          left    ${dur}ms cubic-bezier(.4,0,.2,1),
+          top     ${dur}ms cubic-bezier(.4,0,.2,1),
+          opacity ${Math.round(dur * 0.3)}ms ${Math.round(dur * 0.7)}ms ease
+        `;
+        ghost.style.left    = `${destLeft}px`;
+        ghost.style.top     = `${destTop}px`;
+        ghost.style.opacity = '0';
+      });
+    });
+
+    setTimeout(() => {
+      ghost.remove();
+      _animating = false;
+      cb();
+    }, dur + 80);
+  }
+
+  /* ============================================================
+     画面切り替えユーティリティ
+     ============================================================ */
+  function showOv(id) {
+    document.getElementById(id).classList.add('active');
+  }
+  function hideOv(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ============================================================
+     init — アプリ起動
+     ============================================================ */
+  function init() {
+    // LocalStorage 読み込み
+    loadSettings();
+    applySettings();
+
+    // 局数ボタンのUIを初期化
+    const savedRounds = cfg.hana_rounds || '6';
+    document.querySelectorAll('.s1-round-btn').forEach(btn => {
+      const rounds = btn.id === 'round-btn-6' ? '6' : '12';
+      btn.classList.toggle('active', rounds === savedRounds);
+    });
+
+    // ローディング → 画像プリロード後スタート画面へ
+    _preloadImages(() => {
+      showScreen('scr-start');
+    });
+  }
+
+  /* ============================================================
+     画面遷移
+     ============================================================ */
+  function startGame() {
+    SE.play('btn');
+    // ゲーム状態をリセット（累計点・局数など）
+    const rounds = parseInt(cfg.hana_rounds || '6', 10);
+    G_state = {
+      hands: [[],[],[]], caps: [[],[],[]], field: [], deck: [],
+      turnOrder: [0,1,2], turnIdx: 0, roundNo: 0,
+      totalRounds: rounds,
+      cumScore: [0,0,0], phase: 'idle', parentIdx: 0,
+    };
+    showScreen('scr-game');
+    renderBtns();
+    BGM.play();
+  }
+
+  function showRules(from) {
+    SE.play('btn');
+    _rulesFrom = from;
+    showScreen('scr-rules');
+    // デフォルトタブ
+    switchRuleTab(0);
+    // 札一覧を初回のみ描画
+    _renderCardList();
+    // 役一覧を描画（artStyle反映のため毎回）
+    _renderYakuList();
+    // 左スワイプで戻る
+    _attachRulesSwipe();
+  }
+
+  function _attachRulesSwipe() {
+    const el = document.getElementById('scr-rules');
+    if (!el || el._swipeAttached) return;
+    el._swipeAttached = true;
+    let sx = 0;
+    el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+    el.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      if (dx > 60) G.hideRules();
+    }, { passive: true });
+  }
+
+  function hideRules() {
+    SE.play('btn');
+    showScreen(_rulesFrom === 'game' ? 'scr-game' : 'scr-start');
+  }
+
+  function showStartSettings() {
+    SE.play('btn');
+    _settingsFrom = 'start';
+    _openSettings();
+  }
+
+  function toggleSettings(open) {
+    if (open) {
+      SE.play('btn');
+      _settingsFrom = document.getElementById('scr-game').classList.contains('active')
+        ? 'game' : 'start';
+      _openSettings();
+    } else {
+      _closeSettings();
+    }
+  }
+
+  function _openSettings() {
+    _cfgSnapshot = Object.assign({}, cfg);
+    _settingsDirty = false;
+    showScreen('scr-settings');
+    // アニメーション用：次フレームでクラス付与済み状態にする
+    requestAnimationFrame(() => {
+      document.getElementById('scr-settings').classList.add('active');
+    });
+  }
+
+  function _closeSettings() {
+    if (_settingsDirty) {
+      _confirm(
+        '設定を保存しますか？',
+        '変更した設定を保存して閉じます。',
+        () => {
+          saveSettings();
+          applySettings();
+          _doCloseSettings();
+        },
+        () => {
+          // キャンセル → 変更を破棄
+          cfg = Object.assign({}, _cfgSnapshot);
+          applySettingsUI();
+          _doCloseSettings();
+        }
+      );
+    } else {
+      _doCloseSettings();
+    }
+  }
+
+  function _doCloseSettings() {
+    showScreen(_settingsFrom === 'game' ? 'scr-game' : 'scr-start');
+  }
+
+  /* ============================================================
+     goHome — ゲーム中からスタート画面へ戻る
+     局が進行中の場合は確認ダイアログを表示
+     ============================================================ */
+  function goHome() {
+    SE.play('btn');
+    const st = G_state;
+    if (st.phase === 'idle' || st.roundNo === 0) {
+      _resetToStart();
+      return;
+    }
+    _confirm(
+      'ゲームを中断しますか？',
+      'スタート画面に戻ります。現在のゲームの進行状況は失われ、最初からになります。',
+      () => { _resetToStart(); },
+      null
+    );
+  }
+
+  function _resetToStart() {
+    BGM.stop();
+    G_state = {
+      hands: [[],[],[]], caps: [[],[],[]], field: [], deck: [],
+      turnOrder: [0,1,2], turnIdx: 0, roundNo: 0,
+      totalRounds: 6,
+      cumScore: [0,0,0], phase: 'idle', parentIdx: 0,
+    };
+    showScreen('scr-start');
+  }
+
+  /* ============================================================
+     setRounds — スタート画面で局数を選択
+     ============================================================ */
+  function setRounds(rounds, btn) {
+    SE.play('btn');
+    cfg.hana_rounds = String(rounds);
+    document.querySelectorAll('.s1-round-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  /* ============================================================
+     ルールタブ切り替え
+     ============================================================ */
+  function switchRuleTab(idx) {
+    document.querySelectorAll('.tabs .tab').forEach((t, i) => {
+      t.classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.tab-panel').forEach((p, i) => {
+      p.classList.toggle('active', i === idx);
+    });
+  }
+
+  /* ============================================================
+     設定
+     ============================================================ */
+  function loadSettings() {
+    for (const [k, def] of Object.entries(DEFAULTS)) {
+      const v = localStorage.getItem(k);
+      cfg[k] = v !== null ? v : def;
+    }
+  }
+
+  function saveSettings() {
+    for (const [k, v] of Object.entries(cfg)) {
+      localStorage.setItem(k, v);
+    }
+  }
+
+  function applySettings() {
+    applyBg();
+    BGM.applyVolume();
+    applySettingsUI();
+  }
+
+  function applyBg() {
+    const el = document.getElementById('scr-game');
+    if (!el) return;
+    const name = cfg.hana_bg || 'kuronuri';
+    const url  = IMG_BASE + '/backgrounds/bg_' + name + '.webp';
+    const fallback = { kuronuri:'#0d0d0d', wakakusa:'#0a1a08', shiraki:'#1a1810' };
+    el.style.backgroundImage    = "url('" + url + "')";
+    el.style.backgroundSize     = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.style.backgroundColor    = fallback[name] || fallback.kuronuri;
+    el.classList.remove('bg-kuronuri', 'bg-wakakusa', 'bg-shiraki');
+    el.classList.add('bg-' + name);
+  }
+
+  function applySettingsUI() {
+    // 各設定グループのactive更新
+    _syncOptGroup('opt-design', 'hana_design');
+    _syncOptGroup('opt-bg',     'hana_bg');
+    _syncOptGroup('opt-speed',  'hana_speed');
+    _syncOptGroup('opt-cpu',    'hana_cpu');
+    // SE/BGM トグル
+    _syncToggle('opt-se-on',  'opt-se-off',  cfg.hana_se  === 'on');
+    _syncToggle('opt-bgm-on', 'opt-bgm-off', cfg.hana_bgm === 'on');
+  }
+
+  function _syncOptGroup(groupId, cfgKey) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    group.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.val === cfg[cfgKey]);
+    });
+  }
+
+  function _syncToggle(onId, offId, isOn) {
+    document.getElementById(onId)?.classList.toggle('active', isOn);
+    document.getElementById(offId)?.classList.toggle('active', !isOn);
+  }
+
+  // 設定ボタンから呼ばれる汎用setter
+  function setS(key, val, btn, toggleKey) {
+    cfg[key] = val;
+    _settingsDirty = true;
+
+    if (toggleKey) {
+      // SE/BGM はトグルペア
+      if (key === 'hana_se') {
+        _syncToggle('opt-se-on', 'opt-se-off', val === 'on');
+      } else if (key === 'hana_bgm') {
+        _syncToggle('opt-bgm-on', 'opt-bgm-off', val === 'on');
+        BGM.applyVolume();
+      }
+    } else {
+      // ラジオ系グループ
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // 即時反映するもの
+      if (key === 'hana_bg') applyBg();
+    }
+    SE.play('btn');
+  }
+
+  /* ============================================================
+     トースト
+     ============================================================ */
+  function showToast(msg, duration = 1600) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    if (_toastTimer) clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.classList.remove('show'), duration);
+  }
+
+  /* ============================================================
+     確認ダイアログ
+     ============================================================ */
+  function _confirm(title, desc, onOk, onCancel) {
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-desc').textContent  = desc;
+    showOv('confirm-overlay');
+    document.getElementById('confirm-ok').onclick = () => {
+      hideOv('confirm-overlay');
+      if (onOk) onOk();
+    };
+    document.getElementById('confirm-cancel').onclick = () => {
+      hideOv('confirm-overlay');
+      if (onCancel) onCancel();
+    };
+  }
+
+  /* ============================================================
+     _cardImg — 画像URL・CSSクラスを返す（画像管理の一元化）
+     画像差し替え時はここの BASE_URL とロジックのみ変更する
+     ============================================================ */
+  const IMG_BASE = 'https://kekeghostline.github.io/hanafuda88/images';
+
+  function _cardImg(card, faceDown = false) {
+    if (!card || faceDown) {
+      const _design = cfg.hana_design || 'original';
+      const _ext    = _design === 'artistic' ? 'webp' : 'png';
+      return {
+        cls: 'mc-back',
+        bgImg: `url('${IMG_BASE}/${_design}/card_back.${_ext}')`,
+        alt: '裏面',
+      };
+    }
+    const design = cfg.hana_design || 'original';
+    const ext    = design === 'artistic' ? 'webp' : 'png';
+    const url    = `${IMG_BASE}/${design}/${card.file.replace(/\.\w+$/, '')}.${ext}`;
+    const typeClass = { pica:'mc-pica', tane:'mc-tane', zaku:'mc-zaku', kas:'mc-kas' };
+    return {
+      cls:   typeClass[card.type] || 'mc-kas',
+      bgImg: `url('${url}')`,
+      alt:   card.name,
+    };
+  }
+
+  // 裏面画像URL（山札表示用）
+  function _backImg() {
+    const design = cfg.hana_design || 'original';
+    const ext    = design === 'artistic' ? 'webp' : 'png';
+    return `url('${IMG_BASE}/${design}/card_back.${ext}')`;
+  }
+
+  /* ============================================================
+     shuf — 配列をFisher-Yatesでシャッフル（破壊的）
+     ============================================================ */
+  function shuf(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  /* ============================================================
+     役一覧描画（SCR-002 役一覧タブ）artStyle に応じて毎回再描画
+     ============================================================ */
+  function _renderYakuList() {
+    const container = document.getElementById('yaku-list-container');
+    if (!container) return;
+    const design = cfg.hana_design || 'original';
+    const ext    = design === 'artistic' ? 'webp' : 'png';
+    const base   = IMG_BASE + '/' + design + '/';
+
+    function cardHtml(file, name) {
+      const url = base + file.replace(/\.\w+$/, '') + '.' + ext;
+      return `<div class="yaku-card-wrap"><div class="yaku-card-img" style="background-image:url('${url}')"></div><div class="yaku-card-name">${name}</div></div>`;
+    }
+    function row(name, cond, pt, cards) {
+      return `<div class="yaku-row"><div class="yaku-top"><span class="yaku-name">${name}</span><span class="yaku-cond">${cond}</span><span class="yaku-pt">${pt}</span></div><div class="yaku-cards">${cards}</div></div>`;
+    }
+
+    let html = '';
+
+    // 光役
+    html += '<div class="rule-section"><div class="rule-section-title">光役</div>';
+    html += row('五光','光札5枚すべて（松に鶴・桜に幕・芒に月・雨に人・桐に鳳凰）','50点',
+      cardHtml('card_01_matsu_pica_1.png','松に鶴')+cardHtml('card_03_sakura_pica_1.png','桜に幕')+cardHtml('card_08_susuki_pica_1.png','芒に月')+cardHtml('card_11_yanagi_pica_1.png','雨に人')+cardHtml('card_12_kiri_pica_1.png','桐に鳳凰'));
+    html += row('四光','雨に人を含まない光4枚','40点',
+      cardHtml('card_01_matsu_pica_1.png','松に鶴')+cardHtml('card_03_sakura_pica_1.png','桜に幕')+cardHtml('card_08_susuki_pica_1.png','芒に月')+cardHtml('card_12_kiri_pica_1.png','桐に鳳凰'));
+    html += row('雨四光','松に鶴・芒に月・桐に鳳凰・雨に人の4枚','40点',
+      cardHtml('card_01_matsu_pica_1.png','松に鶴')+cardHtml('card_08_susuki_pica_1.png','芒に月')+cardHtml('card_12_kiri_pica_1.png','桐に鳳凰')+cardHtml('card_11_yanagi_pica_1.png','雨に人'));
+    html += row('三光','松に鶴・芒に月・桐に鳳凰の3枚','30点',
+      cardHtml('card_01_matsu_pica_1.png','松に鶴')+cardHtml('card_08_susuki_pica_1.png','芒に月')+cardHtml('card_12_kiri_pica_1.png','桐に鳳凰'));
+    html += '</div>';
+
+    // 短冊役
+    html += '<div class="rule-section"><div class="rule-section-title">短冊役</div>';
+    html += row('赤短','松・梅・桜の短冊3枚（松に赤短・梅に赤短・桜に赤短）','30点〜',
+      cardHtml('card_01_matsu_zaku_1.png','松に赤短')+cardHtml('card_02_ume_zaku_1.png','梅に赤短')+cardHtml('card_03_sakura_zaku_1.png','桜に赤短'));
+    html += row('青短','牡丹・菊・紅葉の短冊3枚（牡丹に青短・菊に青短・紅葉に青短）','30点〜',
+      cardHtml('card_06_botan_zaku_1.png','牡丹に青短')+cardHtml('card_09_kiku_zaku_1.png','菊に青短')+cardHtml('card_10_momiji_zaku_1.png','紅葉に青短'));
+    html += '<div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">➕ <strong>加点ルール（赤短・青短共通）：</strong>規定の3枚に加え、短冊札を追加で取るたびに +10点。</div>';
+    html += '</div>';
+
+    // その他の役
+    html += '<div class="rule-section"><div class="rule-section-title">その他の役</div>';
+    html += row('猪鹿蝶','萩に猪・紅葉に鹿・牡丹に蝶の3枚','15点',
+      cardHtml('card_07_hagi_tane_1.png','萩に猪')+cardHtml('card_10_momiji_tane_1.png','紅葉に鹿')+cardHtml('card_06_botan_tane_1.png','牡丹に蝶'));
+    html += row('月見酒','芒に月＋菊に盃','10点',
+      cardHtml('card_08_susuki_pica_1.png','芒に月')+cardHtml('card_09_kiku_tane_1.png','菊に盃'));
+    html += row('花見酒','桜に幕＋菊に盃','10点',
+      cardHtml('card_03_sakura_pica_1.png','桜に幕')+cardHtml('card_09_kiku_tane_1.png','菊に盃'));
+    html += row('カス','カス13枚以上（菊に盃はカス1枚として加算）','10点〜',
+      cardHtml('card_01_matsu_kas_1.png','カス×13'));
+    html += '<div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">➕ <strong>カス加点ルール：</strong>13枚を超えるごとに +10点。菊に盃はカス1枚として計算に含む。</div>';
+    html += row('フケ','取り点が手番の基準点以下','80点','');
+    html += '<div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.85">💡 <strong>フケについて：</strong>他の役と同時に成立した場合、その役点にフケの80点が加算されます。</div>';
+    html += '</div>';
+
+    container.innerHTML = html;
+  }
+
+  /* ============================================================
+     札一覧描画（SCR-002 札一覧タブ）
+     ============================================================ */
+  let _cardListRendered = false;
+  function _renderCardList() {
+    if (_cardListRendered) return;
+    _cardListRendered = true;
+    const container = document.getElementById('card-list-container');
+    if (!container) return;
+
+    // 月ごとにグループ化
+    const byMonth = {};
+    for (const c of CARDS.all) {
+      if (!byMonth[c.month]) byMonth[c.month] = [];
+      byMonth[c.month].push(c);
+    }
+
+    let html = '';
+    for (let m = 1; m <= 12; m++) {
+      const cards = byMonth[m];
+      const monthName = cards[0].monthName;
+      html += `<div class="card-list-month">
+        <div class="card-list-month-title">${m}月　${monthName}</div>`;
+      for (const c of cards) {
+        const img = _cardImg(c);
+        const typeLabel = { pica:'光', tane:'種', zaku:'短冊', kas:'カス' }[c.type];
+        const ptsLabel  = c.pts > 0 ? `${c.pts}点` : '—';
+        html += `<div class="card-list-row">
+          <div class="card-list-thumb ${img.cls}"
+               style="background-image:${img.bgImg};background-size:cover;background-position:center"></div>
+          <div class="card-list-name">${c.name}</div>
+          <div class="card-list-type">${typeLabel}</div>
+          <div class="card-list-pt">${ptsLabel}</div>
+        </div>`;
+      }
+      // 11月（柳・雨札）の特殊ルール注記
+      if (m === 11) {
+        html += `<div class="rule-text" style="font-size:11px;margin:6px 4px 0;opacity:0.8">
+          ⚠️ フケ判定では柳札を <strong>0点</strong> として扱います。フケが不成立の場合は通常の点数が適用されます。
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  /* ============================================================
+     手番ラベル
+     ============================================================ */
+  const TURN_LABELS = ['👑 親', '胴二', 'ビキ'];
+  const PLAYER_NAMES = ['あなた', 'CPU1', 'CPU2'];
+  // フケ基準点: 親15 / 胴二20 / ビキ25
+  const FUKE_BASE = [15, 20, 25];
+
+  // turnOrder内の順位(0=親,1=胴二,2=ビキ)を取得
+  function _rankOf(pi) {
+    return G_state.turnOrder.indexOf(pi);
+  }
+
+  /* ============================================================
+     startRound — 局を開始する
+     ============================================================ */
+  function startRound() {
+    const st = G_state;
+    st.roundNo++;
+    _shownYakuKeys = new Set(); // 役フラッシュ履歴をリセット
+    G_state.nagare = null;  // 流れ状態リセット
+    _updateNagareBanner();
+
+    // 親を決定（1局目ランダム、以降右隣）
+    if (st.roundNo === 1) {
+      st.parentIdx = Math.floor(Math.random() * 3);
+    } else {
+      st.parentIdx = (st.parentIdx + 1) % 3;
+    }
+    // turnOrder: 親→胴二→ビキ
+    st.turnOrder = [
+      st.parentIdx,
+      (st.parentIdx + 1) % 3,
+      (st.parentIdx + 2) % 3,
+    ];
+    st.turnIdx = 0;
+    st.phase = 'exchange';
+
+    // 手札・取り札リセット
+    st.hands = [[], [], []];
+    st.caps  = [[], [], []];
+    st.field = [];
+    st.deck  = [];
+
+    // 配札
+    _deal();
+
+    // ヘッダー更新
+    document.getElementById('g-round-label').textContent =
+      `${st.roundNo}局／${st.totalRounds}局`;
+
+    // ボタンバーはrenderBtns()で制御するためここでは不要（nullセーフ化）
+    const bsr = document.getElementById('btn-start-round');
+    if (bsr) bsr.style.display = 'none';
+
+    render();
+    log(`=== ${st.roundNo}局開始 親:${PLAYER_NAMES[st.parentIdx]} ===`);
+
+    // 交換フェーズ開始（親→胴二→ビキの順）
+    setTimeout(() => chkExchange(0), _spd());
+  }
+
+  /* ============================================================
+     _deal — 配札
+     仕様: 手札7枚×3 / 場札6枚 / 残り山札
+     場札: 同月3枚→重ね / 同月4枚→場札を全部山札に戻してやり直し
+     ============================================================ */
+  function _deal() {
+    const st = G_state;
+    let ok = false;
+    while (!ok) {
+      // デッキを用意してシャッフル
+      const deck = shuf(CARDS.all.map(c => Object.assign({}, c)));
+
+      // 配る
+      const hands = [[], [], []];
+      for (let i = 0; i < 7; i++) {
+        hands[0].push(deck.pop());
+        hands[1].push(deck.pop());
+        hands[2].push(deck.pop());
+      }
+      // 場札6枚
+      const field = [];
+      for (let i = 0; i < 6; i++) field.push(deck.pop());
+
+      // 場札チェック
+      const monthCount = {};
+      for (const c of field) {
+        monthCount[c.month] = (monthCount[c.month] || 0) + 1;
+      }
+      const has4 = Object.values(monthCount).some(n => n === 4);
+      if (has4) {
+        // 同月4枚 → やり直し（場札のカードを山札に戻してシャッフル不要、単純に再配布）
+        continue;
+      }
+
+      // 場札スロットを12個（null埋め）で管理
+      // 同月3枚は先頭のカードに他2枚を積む（stackedプロパティ）
+      const fieldSlots = Array(12).fill(null);
+      const used = [];
+      let slotIdx = 0;
+      for (let m = 1; m <= 12; m++) {
+        const group = field.filter(c => c.month === m);
+        if (group.length === 3) {
+          // 3枚重ね: 先頭カードにstacked配列を付与
+          const base = group[0];
+          base.stacked = [group[1], group[2]];
+          fieldSlots[slotIdx++] = base;
+        } else {
+          for (const c of group) fieldSlots[slotIdx++] = c;
+        }
+      }
+
+      st.hands = hands;
+      st.field = fieldSlots;
+      st.deck  = deck;
+      ok = true;
+    }
+  }
+
+  /* ============================================================
+     calcScore — 取り札の取り点を計算
+     柳0点ルール: yanagi を1枚でも取っていたら柳の取り点を0として返す
+     （フケ不成立時に呼び出し元で加算）
+     ============================================================ */
+  function calcScore(caps, applyYanagiRule = false) {
+    let pts = 0;
+    let yanagiPts = 0;
+    let hasYanagi = caps.some(c => CARDS.YANAGI_IDS.has(c.id));
+    for (const c of caps) {
+      if (CARDS.YANAGI_IDS.has(c.id)) {
+        yanagiPts += c.pts;
+        if (!applyYanagiRule) pts += c.pts;
+        // applyYanagiRule=true のとき柳は加算しない
+      } else {
+        pts += c.pts;
+      }
+    }
+    return { pts, yanagiPts, hasYanagi };
+  }
+
+  /* ============================================================
+     render — 全体再描画
+     ============================================================ */
+  function render() {
+    renderCapAll();
+    renderField();
+    renderHands();
+    renderBtns();
+  }
+
+  /* ============================================================
+     renderCapAll — 全プレイヤーの取り札エリアを再描画
+     ============================================================ */
+  function renderCapAll() {
+    const st = G_state;
+    const currentPlayer = st.turnOrder[st.turnIdx];
+
+    for (let pi = 0; pi < 3; pi++) {
+      const rank = _rankOf(pi);
+      const label = TURN_LABELS[rank];
+      const name  = PLAYER_NAMES[pi];
+      const { pts } = calcScore(st.caps[pi], true);
+
+      // 名前ラベル（局開始時に設定、手番が変わっても固定・全員にラベル表示）
+      const nameEl = document.getElementById(pi === 0 ? 'cap-name-0' : `cap-name-${pi}`);
+      if (nameEl) {
+        const newLabel = `${label}　${name}`;
+        if (nameEl.textContent !== newLabel) nameEl.textContent = newLabel;
+      }
+
+      // 取り点 + リアルタイム役名バッジ
+      const ptsEl = document.getElementById(`cap-pts-${pi}`);
+      if (ptsEl) {
+        const liveYaku = calcYakuLive(st.caps[pi]);
+        const yakuBadges = liveYaku.map(n =>
+          `<span class="yaku-badge" style="margin-left:3px">${n}</span>`
+        ).join('');
+        ptsEl.innerHTML = `取り点 ${pts}点${yakuBadges}`;
+      }
+
+      // 手番バッジ＋エリアハイライト
+      const isActiveTurn = (st.phase === 'play' || st.phase === 'draw') && currentPlayer === pi;
+      const tbEl = document.getElementById(`turn-badge-${pi}`);
+      if (tbEl) tbEl.style.display = isActiveTurn ? 'inline-block' : 'none';
+      // エリアハイライト
+      const areaEl = pi === 0
+        ? document.querySelector('.player-cap')
+        : document.getElementById(`cap-area-${pi}`);
+      if (areaEl) areaEl.classList.toggle('turn-active', isActiveTurn);
+
+      // フケ圏バッジ（取り点がフケ基準点以下）
+      const fbEl = document.getElementById(`fuke-badge-${pi}`);
+      if (fbEl) {
+        const fukeBase = FUKE_BASE[rank];
+        fbEl.style.display = pts <= fukeBase && st.roundNo > 0 ? 'inline-block' : 'none';
+      }
+
+      // 取り札カード描画（光/種/短冊を1段目、カスを2段目に分離）
+      const capEl = document.getElementById(`cap-cards-${pi}`);
+      if (!capEl) continue;
+      const groups = { pica:[], tane:[], zaku:[], kas:[] };
+      for (const c of st.caps[pi]) {
+        if (groups[c.type]) groups[c.type].push(c);
+      }
+
+      // カードグループHTML生成ヘルパー
+      const _capGroupHtml = (type, cards) => {
+        const label2 = { pica:'光', tane:'種', zaku:'短冊', kas:'カス' }[type];
+        if (cards.length === 0) {
+          return `<div class="cap-cat"><div class="cap-cat-label">${label2}</div>` +
+                 `<div class="cap-cards"><div class="mini-card mc-empty"></div></div></div>`;
+        } else if (cards.length >= 4) {
+          const totalW = 24 + (cards.length - 1) * 12;
+          let h = `<div class="cap-cat"><div class="cap-cat-label">${label2}</div>` +
+                  `<div class="cap-cards stacked" style="width:${totalW + 24}px">`;
+          cards.forEach((c, i) => {
+            const img = _cardImg(c);
+            h += `<div class="mini-card ${img.cls}"
+              style="background-image:${img.bgImg};background-size:cover;background-position:center;left:${i*12}px"
+              title="${c.name}"></div>`;
+          });
+          return h + `</div></div>`;
+        } else {
+          let h = `<div class="cap-cat"><div class="cap-cat-label">${label2}</div><div class="cap-cards">`;
+          for (const c of cards) {
+            const img = _cardImg(c);
+            h += `<div class="mini-card ${img.cls}"
+              style="background-image:${img.bgImg};background-size:cover;background-position:center"
+              title="${c.name}"></div>`;
+          }
+          return h + `</div></div>`;
+        }
+      };
+
+      // 1段目: 光・種・短冊
+      const row1 = ['pica','tane','zaku'].map(t => _capGroupHtml(t, groups[t])).join('');
+      // 2段目: カス
+      const row2 = _capGroupHtml('kas', groups.kas);
+
+      capEl.innerHTML =
+        `<div class="cap-row1">${row1}</div>` +
+        `<div class="cap-row2">${row2}</div>`;
+    }
+  }
+
+  /* ============================================================
+     renderField — 場札を再描画
+     ============================================================ */
+  function renderField() {
+    const st = G_state;
+    const el = document.getElementById('field-cards');
+    if (!el) return;
+
+    // 山札
+    const yamaCnt = document.getElementById('yama-count');
+    if (yamaCnt) yamaCnt.textContent = `${st.deck.length}枚`;
+    const yamaImg = document.getElementById('yama-card-img');
+    if (yamaImg) {
+      yamaImg.style.backgroundImage = st.deck.length > 0 ? _backImg() : 'none';
+      yamaImg.style.backgroundSize = 'cover';
+      yamaImg.style.backgroundPosition = 'center';
+      yamaImg.style.visibility = st.deck.length > 0 ? 'visible' : 'hidden';
+      yamaImg.textContent = '';
+    }
+
+    // 捨てゾーン固定スロットを先頭に置く
+    let html = `<div class="field-card fc-discard" id="discard-zone"
+      onclick="G.discardCard()" title="捨てる">🗑</div>`;
+
+    for (let i = 0; i < 13; i++) {
+      const c = st.field[i];
+      if (!c) {
+        html += `<div class="field-card fc-empty" id="fc-${i}"></div>`;
+      } else {
+        const img = _cardImg(c);
+        if (c.stacked) {
+          const img1 = _cardImg(c.stacked[0]);
+          const img2 = _cardImg(c.stacked[1]);
+          html += `<div class="fc-stacked-wrap" id="fc-${i}" onclick="G.selField(${i})" title="${c.name}（3枚重ね）">
+            <div class="fc-stack-card" style="background-image:${img1.bgImg}"></div>
+            <div class="fc-stack-card" style="background-image:${img2.bgImg}"></div>
+            <div class="fc-stack-card" style="background-image:${img.bgImg}"></div>
+          </div>`;
+        } else {
+          html += `<div class="field-card ${img.cls}"
+            id="fc-${i}"
+            style="background-image:${img.bgImg};background-size:cover;background-position:center;position:relative;"
+            onclick="G.selField(${i})"
+            title="${c.name}"
+            ></div>`;
+        }
+      }
+    }
+    el.innerHTML = html;
+  }
+
+  /* ============================================================
+     renderHands — プレイヤー手札を再描画
+     ============================================================ */
+  function renderHands() {
+    const st = G_state;
+    const el = document.getElementById('player-cards');
+    if (!el) return;
+
+    const isPlayerTurn = st.turnOrder[st.turnIdx] === 0
+                      && st.phase === 'play';
+    let html = '';
+    for (let i = 0; i < st.hands[0].length; i++) {
+      const c = st.hands[0][i];
+      const img = _cardImg(c);
+      const selClass = (c._selected) ? 'selected' : '';
+      const disClass = (!isPlayerTurn) ? 'disabled' : '';
+      html += `<div class="hand-card ${img.cls} ${selClass} ${disClass}"
+        id="hc-${i}"
+        style="background-image:${img.bgImg};background-size:cover;background-position:center;"
+        onclick="G.selectCard(${i})"
+        title="${c.name}"></div>`;
+    }
+    el.innerHTML = html;
+  }
+
+  /* ============================================================
+     renderBtns — ボタンバーの状態を更新
+     ============================================================ */
+  function renderBtns() {
+    const st = G_state;
+    const bar = document.getElementById('g-btn-bar');
+    if (!bar) return;
+
+    // ステータステキスト
+    if (st.phase === 'idle') {
+      bar.innerHTML = `<button class="g-action-btn g-action-btn-primary"
+        id="btn-start-round" onclick="G.startRound()">局を開始</button>`;
+      return;
+    }
+
+    // phase=end → 精算ボタンを表示
+    if (st.phase === 'end') {
+      bar.innerHTML = `<button class="g-action-btn g-action-btn-primary"
+        onclick="G.endRound()">精算</button>`;
+      return;
+    }
+
+    // ゲーム中はボタンバー不要（手札タップで操作）
+    bar.innerHTML = '';
+  }
+
+  /* ============================================================
+     ch — ヘルパー: 要素取得
+     ============================================================ */
+  function ch(id) { return document.getElementById(id); }
+
+  /* ============================================================
+     selectCard — 手札タップ
+     ============================================================ */
+  function selectCard(idx) {
+    const st = G_state;
+    if (_animating) return;
+    if (st.phase !== 'play' || st.turnOrder[st.turnIdx] !== 0) return;
+    SE.play('btn');
+
+    const hand = st.hands[0];
+    // 既に選択中のカードをタップ → 選択解除
+    const prev = hand.findIndex(c => c._selected);
+    if (prev !== -1) hand[prev]._selected = false;
+    if (prev === idx) {
+      _clearHighlight();
+      renderHands();
+      return;
+    }
+    hand[idx]._selected = true;
+
+    // 場札ハイライト
+    _clearHighlight();
+    const sel = hand[idx];
+    const matchSlots = [];
+    for (let i = 0; i < 13; i++) {
+      const fc = st.field[i];
+      if (fc && fc.month === sel.month) matchSlots.push(i);
+    }
+    for (const si of matchSlots) {
+      const el = document.getElementById(`fc-${si}`);
+      if (el) el.classList.add('highlight');
+    }
+
+    // 捨てゾーン: 合う場札がない時のみハイライト・有効
+    const dz = document.getElementById('discard-zone');
+    if (dz) {
+      if (matchSlots.length === 0) {
+        dz.classList.add('highlight');       // マッチなし → ハイライト
+        dz.style.pointerEvents = 'auto';
+      } else {
+        dz.style.opacity = '0.25';           // マッチあり → 無効
+        dz.style.pointerEvents = 'none';     // タップ自体を無効化
+      }
+    }
+
+    renderHands();
+  }
+
+  function _clearHighlight() {
+    document.querySelectorAll('.field-card.highlight, .fc-stacked-wrap.highlight')
+      .forEach(el => el.classList.remove('highlight'));
+    const dz = document.getElementById('discard-zone');
+    if (dz) {
+      dz.classList.remove('highlight');
+      dz.style.opacity = '0.4';
+      dz.style.pointerEvents = 'auto';
+    }
+  }
+
+  /* ============================================================
+     selField — 場札タップ（手札と合わせて取る）
+     ============================================================ */
+  function selField(slotIdx) {
+    const st = G_state;
+    if (_animating) return;
+    if (st.phase !== 'play' || st.turnOrder[st.turnIdx] !== 0) return;
+
+    const selCardIdx = st.hands[0].findIndex(c => c._selected);
+    if (selCardIdx === -1) return;
+
+    const fieldCard = st.field[slotIdx];
+    if (!fieldCard) return;
+    const handCard = st.hands[0][selCardIdx];
+    if (fieldCard.month !== handCard.month) return;
+
+    SE.play('take');
+    _doTake(0, selCardIdx, slotIdx);
+  }
+
+  /* ============================================================
+     discardCard — 捨てるゾーンタップ
+     ============================================================ */
+  function discardCard() {
+    const st = G_state;
+    if (_animating) return;
+    if (st.phase !== 'play' || st.turnOrder[st.turnIdx] !== 0) return;
+
+    const selCardIdx = st.hands[0].findIndex(c => c._selected);
+    if (selCardIdx === -1) return;
+
+    // 合う場札がある場合は捨て不可
+    const sel = st.hands[0][selCardIdx];
+    const hasMatch = st.field.some(fc => fc && fc.month === sel.month);
+    if (hasMatch) return;
+
+    SE.play('discard');
+    _doDiscard(0, selCardIdx);
+  }
+
+  /* ============================================================
+     fmSafe — 月不一致バグの防御的チェック
+     手札と場札の月が一致しているか検証し、不一致ならfalseを返す
+     ============================================================ */
+  function fmSafe(handCard, fieldCard) {
+    if (!handCard || !fieldCard) return false;
+    if (handCard.month !== fieldCard.month) {
+      log(`[WARNING] 月不一致検出: hand=${handCard.name}(${handCard.month}) field=${fieldCard.name}(${fieldCard.month})`);
+      return false;
+    }
+    return true;
+  }
+
+  /* ============================================================
+     _doTake — 手札と場札を取って取り札へ
+     stacked(3枚重ね)の場合は3枚まとめて取得
+     ============================================================ */
+  function _doTake(pi, handIdx, slotIdx) {
+    const st = G_state;
+    const handCard  = st.hands[pi][handIdx];
+    const fieldCard = st.field[slotIdx];
+
+    if (!fmSafe(handCard, fieldCard)) return;
+
+    handCard._selected = false;
+    _clearHighlight();
+
+    // 飛翔元・先
+    const fromEl = pi === 0
+      ? document.getElementById(`hc-${handIdx}`)
+      : document.getElementById(`cap-area-${pi}`);
+    const toEl   = document.getElementById(`fc-${slotIdx}`);
+    const bgImg  = _cardImg(handCard).bgImg;
+
+    // CPU取り時: 取得カード（最大4枚）を取り札エリアへスライドするアニメ
+    const _animCpuSlide = (afterCb) => {
+      if (pi === 0) { afterCb(); return; } // プレイヤーは既存アニメのみ
+      const takenCards = [handCard, fieldCard];
+      if (fieldCard.stacked) takenCards.push(...fieldCard.stacked);
+      const capEl = document.getElementById(`cap-area-${pi}`);
+      if (!capEl) { afterCb(); return; }
+      const spd = _spd();
+      const interval = Math.round(spd * 0.3);
+      let done = 0;
+      takenCards.forEach((card, i) => {
+        setTimeout(() => {
+          const srcEl = document.getElementById(`fc-${slotIdx}`) || toEl;
+          const cardImg = _cardImg(card).bgImg;
+          animCardFly(srcEl || capEl, capEl, cardImg, () => {
+            done++;
+            if (done === takenCards.length) afterCb();
+          }, false);
+        }, i * interval);
+      });
+    };
+
+    const _exec = () => {
+      st.caps[pi].push(handCard);
+      st.caps[pi].push(fieldCard);
+      if (fieldCard.stacked) st.caps[pi].push(...fieldCard.stacked);
+      st.hands[pi].splice(handIdx, 1);
+      st.field[slotIdx] = null;
+
+      // CPU: 取り札スライドアニメ後にrender
+      _animCpuSlide(() => {
+        render();
+        checkNagare();
+        animYakuFlash(pi, st.caps[pi], () => {
+          setTimeout(() => autoDraw(pi), _spd());
+        });
+      });
+    };
+
+    // CPU: 場札を一瞬ハイライトしてから飛翔
+    if (pi !== 0 && toEl) {
+      toEl.style.boxShadow = '0 0 0 3px var(--gold), 0 0 12px rgba(200,153,58,0.6)';
+      toEl.style.transition = 'box-shadow 0.15s';
+      setTimeout(() => {
+        toEl.style.boxShadow = '';
+        if (fromEl && toEl) {
+          animCardFly(fromEl, toEl, bgImg, _exec, true);
+        } else {
+          _exec();
+        }
+      }, Math.round(_spd() * 0.4));
+    } else if (fromEl && toEl) {
+      if (pi === 0) fromEl.style.opacity = '0';
+      animCardFly(fromEl, toEl, bgImg, _exec, false);
+    } else {
+      _exec();
+    }
+  }
+
+  /* ============================================================
+     _doDiscard — 手札を場に捨てる
+     ============================================================ */
+  function _doDiscard(pi, handIdx) {
+    const st = G_state;
+    const card = st.hands[pi][handIdx];
+    card._selected = false;
+    _clearHighlight();
+
+    const fromEl = pi === 0
+      ? document.getElementById(`hc-${handIdx}`)
+      : document.getElementById(`cap-area-${pi}`);  // CPU: 取り札エリア右端を飛翔元に
+    const emptySlotIdx = G_state.field.slice(0, 12).findIndex(c => c === null);
+    const toEl = emptySlotIdx !== -1
+      ? document.getElementById(`fc-${emptySlotIdx}`)
+      : document.getElementById('field-cards');
+    const bgImg = _cardImg(card).bgImg;
+
+    const _exec = () => {
+      const emptySlot = st.field.slice(0, 12).findIndex(c => c === null);
+      if (emptySlot !== -1) st.field[emptySlot] = card;
+      st.hands[pi].splice(handIdx, 1);
+      render();
+      setTimeout(() => autoDraw(pi), _spd());
+    };
+
+    if (fromEl && toEl) {
+      if (pi === 0) fromEl.style.opacity = '0';
+      animCardFly(fromEl, toEl, bgImg, _exec, pi !== 0);
+    } else {
+      _exec();
+    }
+  }
+
+  /* ============================================================
+     autoDraw — 山札めくり
+     ============================================================ */
+  function autoDraw(pi) {
+    const st = G_state;
+    st.phase = 'draw';
+
+    if (st.deck.length === 0) {
+      afterDraw(pi, null, -1);
+      return;
+    }
+
+    const drawn = st.deck.pop();
+    SE.play('draw');
+
+    // 山札要素を表面に切り替えてめくり演出
+    const yamaEl = document.getElementById('yama-card-img');
+    const drawnImg = _cardImg(drawn);
+    if (yamaEl) {
+      yamaEl.style.backgroundImage = drawnImg.bgImg;
+      yamaEl.style.backgroundSize = 'cover';
+      yamaEl.style.backgroundPosition = 'center';
+      yamaEl.textContent = '';
+    }
+
+    const matches = [];
+    for (let i = 0; i < 13; i++) {
+      if (st.field[i] && st.field[i].month === drawn.month) matches.push(i);
+    }
+
+    // めくり後に少し見せてからスライド
+    const revealMs = _spd() === 250 ? 360 : _spd() === 500 ? 520 : 400;
+
+    setTimeout(() => {
+      if (matches.length === 0) {
+        // 合う札なし → 空きスロットへスライド
+        const emptyIdx = st.field.slice(0, 12).findIndex(c => c === null);
+        const toEl = emptyIdx !== -1 ? document.getElementById(`fc-${emptyIdx}`) : null;
+        const _exec = () => {
+          if (emptyIdx !== -1) st.field[emptyIdx] = drawn;
+          render();
+          afterDraw(pi, null, -1);
+        };
+        if (yamaEl && toEl) {
+          animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
+            _exec();
+          });
+        } else {
+          _exec();
+        }
+
+      } else if (matches.length === 1) {
+        // 1枚マッチ → 合う場札へスライド
+        const toEl = document.getElementById(`fc-${matches[0]}`);
+        const _exec = () => {
+          const takenField = st.field[matches[0]];
+          const takenCards = [drawn, takenField, ...(takenField.stacked || [])];
+          st.caps[pi].push(drawn);
+          st.caps[pi].push(takenField);
+          if (takenField.stacked) st.caps[pi].push(...takenField.stacked);
+          st.field[matches[0]] = null;
+          // CPU: 取り札スライドアニメ
+          if (pi !== 0) {
+            const capEl = document.getElementById(`cap-area-${pi}`);
+            const spd = _spd();
+            let done = 0;
+            takenCards.forEach((card, i) => {
+              setTimeout(() => {
+                animCardFly(toEl || yamaEl, capEl, _cardImg(card).bgImg, () => {
+                  done++;
+                  if (done === takenCards.length) {
+                    render(); checkNagare();
+                    animYakuFlash(pi, st.caps[pi], () => { afterDraw(pi, drawn, matches[0]); });
+                  }
+                }, false);
+              }, i * Math.round(spd * 0.3));
+            });
+          } else {
+            render();
+            checkNagare();
+            animYakuFlash(pi, st.caps[pi], () => {
+              afterDraw(pi, drawn, matches[0]);
+            });
+          }
+        };
+        if (yamaEl && toEl) {
+          animCardFly(yamaEl, toEl, drawnImg.bgImg, () => {
+            _exec();
+          });
+        } else {
+          _exec();
+        }
+
+      } else if (matches.length >= 2) {
+        if (pi === 0) {
+          // 2枚マッチ・プレイヤー → 選択させてからスライド
+          _showFieldSelect(drawn, matches, (chosenSlot) => {
+            const toEl = document.getElementById(`fc-${chosenSlot}`);
+            const _exec = () => {
+              st.caps[pi].push(drawn);
+              st.caps[pi].push(st.field[chosenSlot]);
+              if (st.field[chosenSlot].stacked) st.caps[pi].push(...st.field[chosenSlot].stacked);
+              st.field[chosenSlot] = null;
+              render();
+              animYakuFlash(pi, st.caps[pi], () => {
+                afterDraw(pi, drawn, chosenSlot);
+              });
+            };
+            if (yamaEl && toEl) {
+              animCardFly(yamaEl, toEl, drawnImg.bgImg, () => { _exec(); });
+            } else {
+              _exec();
+            }
+          });
+        } else {
+          // 2枚マッチ・CPU → 合う場札へスライド
+          const chosen = matches[0];
+          const toEl = document.getElementById(`fc-${chosen}`);
+          const _exec = () => {
+            const takenField = st.field[chosen];
+            const takenCards = [drawn, takenField, ...(takenField.stacked || [])];
+            st.caps[pi].push(drawn);
+            st.caps[pi].push(takenField);
+            if (takenField.stacked) st.caps[pi].push(...takenField.stacked);
+            st.field[chosen] = null;
+            // CPU: 取り札スライドアニメ
+            const capEl = document.getElementById(`cap-area-${pi}`);
+            const spd = _spd();
+            let done = 0;
+            takenCards.forEach((card, i) => {
+              setTimeout(() => {
+                animCardFly(toEl || yamaEl, capEl, _cardImg(card).bgImg, () => {
+                  done++;
+                  if (done === takenCards.length) {
+                    render(); checkNagare();
+                    animYakuFlash(pi, st.caps[pi], () => { afterDraw(pi, drawn, chosen); });
+                  }
+                }, false);
+              }, i * Math.round(spd * 0.3));
+            });
+          };
+          if (yamaEl && toEl) {
+            animCardFly(yamaEl, toEl, drawnImg.bgImg, () => { _exec(); });
+          } else {
+            _exec();
+          }
+        }
+      }
+    }, revealMs);
+  }
+
+  /* ============================================================
+     afterDraw — 山札めくり後の処理
+     ============================================================ */
+  function afterDraw(pi, drawnCard, slotIdx) {
+    const st = G_state;
+    st.phase = 'play';
+
+    // 局終了判定: 全員の手札が空
+    const allEmpty = st.hands.every(h => h.length === 0);
+    if (allEmpty) {
+      st.phase = 'end';
+      render();  // renderBtns内で精算ボタンが表示される
+      return;
+    }
+
+    // 次の手番へ
+    st.turnIdx = (st.turnIdx + 1) % 3;
+    render();
+
+    // CPU手番なら自動プレイ（Step6実装）
+    const next = st.turnOrder[st.turnIdx];
+    if (next !== 0) {
+      setTimeout(() => cpuPlay(next), _spd() * 2);
+    }
+  }
+
+  /* ============================================================
+     endRound — 局終了・精算フロー
+     仕様書 §11 の順序通りに処理する
+     ============================================================ */
+  function endRound() {
+    const st = G_state;
+
+    // --- 1. 取り点計算（柳0点ルール込み）---
+    // calcYakuに渡す前に各プレイヤーの取り点を確定
+    // 柳を1枚でも取っていたら柳点を0としてフケ判定
+    const rawPts  = [0, 0, 0]; // 柳0点適用前の純粋な取り点
+    const fkPts   = [0, 0, 0]; // フケ判定用取り点（柳0点）
+    const yPts    = [0, 0, 0]; // 柳の点数
+    const hasY    = [false, false, false];
+
+    for (let pi = 0; pi < 3; pi++) {
+      const r = calcScore(st.caps[pi], false); // 柳含む通常取り点
+      rawPts[pi] = r.pts;
+      yPts[pi]   = r.yanagiPts;
+      hasY[pi]   = r.hasYanagi;
+      fkPts[pi]  = rawPts[pi] - yPts[pi]; // 柳を0点にした取り点
+    }
+
+    // --- 3. フケ判定 ---
+    const isFuke = [false, false, false];
+    for (let oi = 0; oi < 3; oi++) {
+      const pi = st.turnOrder[oi];
+      const base = FUKE_BASE[oi]; // 親15/胴二20/ビキ25
+      isFuke[pi] = fkPts[pi] <= base;
+    }
+
+    // フケ不成立の場合は柳点を戻す
+    const finalRawPts = rawPts.slice();
+    for (let pi = 0; pi < 3; pi++) {
+      if (!isFuke[pi]) {
+        // フケでなければ柳点を通常通り計算済み → rawPts がそのまま使える
+        finalRawPts[pi] = rawPts[pi];
+      } else {
+        // フケなので柳0点のまま
+        finalRawPts[pi] = fkPts[pi];
+      }
+    }
+
+    // --- 2. 役計算 ---
+    const yakuResults = [
+      calcYaku(0, st.caps[0], finalRawPts[0], isFuke[0]),
+      calcYaku(1, st.caps[1], finalRawPts[1], isFuke[1]),
+      calcYaku(2, st.caps[2], finalRawPts[2], isFuke[2]),
+    ];
+
+    // --- 4. 雨流れ判定 ---
+    // 1人が柳4枚すべて取得 → 全員役無効
+    let amefure = false;
+    for (let pi = 0; pi < 3; pi++) {
+      const yanagiOwned = st.caps[pi].filter(c => CARDS.YANAGI_IDS.has(c.id)).length;
+      if (yanagiOwned === 4) { amefure = true; break; }
+    }
+
+    // --- 5. 役流れ判定 ---
+    // 3人全員がフケ以外の役あり → 役無効
+    const yakuNagare = !amefure &&
+      yakuResults.every(r => r.yakuPts > 0 && !r.isFuke);
+
+    // 雨流れ・役流れ時: フケ以外の役を無効化
+    // フケプレイヤーはフケ80点のみ有効（同時成立の他の役も無効）
+    // 表示用に無効化前の役名を保存しておく
+    yakuResults.forEach(r => { r.yakuNamesOrig = r.yakuNames.slice(); });
+    if (amefure || yakuNagare) {
+      yakuResults.forEach(r => {
+        if (r.isFuke) {
+          r.yakuPts   = 80;
+          r.yakuNames = ['フケ'];
+        } else {
+          r.yakuPts   = 0;
+          r.yakuNames = [];
+        }
+      });
+    }
+
+    // --- 6 & 7. フケ精算・役精算（差額精算方式）---
+    // 役点（フケは80点の役として扱う）
+    const yakuPts = yakuResults.map(r => r.isFuke ? 80 : r.yakuPts);
+
+    // 3ペア間で役点比較・差額精算
+    // seisan[pi] = この局でのpi の精算収支
+    const seisan = [0, 0, 0];
+    const seisanDetail = [[], [], []]; // 表示用: [{vs:pi, amount, dir:'pay'|'recv'|'even'}]
+
+    const pairs = [[0,1],[0,2],[1,2]];
+    for (const [a, b] of pairs) {
+      const diff = yakuPts[a] - yakuPts[b];
+      if (diff === 0) {
+        seisanDetail[a].push({ vs: b, amount: 0, dir: 'even' });
+        seisanDetail[b].push({ vs: a, amount: 0, dir: 'even' });
+      } else if (diff > 0) {
+        // a の役点が高い → b が a に diff 点支払い
+        seisan[a] += diff;
+        seisan[b] -= diff;
+        seisanDetail[a].push({ vs: b, amount: diff, dir: 'recv' });
+        seisanDetail[b].push({ vs: a, amount: diff, dir: 'pay' });
+      } else {
+        // b の役点が高い → a が b に |diff| 点支払い
+        const d = -diff;
+        seisan[b] += d;
+        seisan[a] -= d;
+        seisanDetail[a].push({ vs: b, amount: d, dir: 'pay' });
+        seisanDetail[b].push({ vs: a, amount: d, dir: 'recv' });
+      }
+    }
+
+    // --- 8. 最終得点 = 精算後取り点 − 80点 ---
+    const finalPts = [0, 0, 0];
+    for (let pi = 0; pi < 3; pi++) {
+      finalPts[pi] = finalRawPts[pi] + seisan[pi] - 80;
+    }
+
+    // 累計更新
+    for (let pi = 0; pi < 3; pi++) {
+      st.cumScore[pi] += finalPts[pi];
+    }
+
+    log('=== 精算 ===', { finalRawPts, yakuPts, seisan, finalPts, cumScore: st.cumScore });
+
+    // 精算モーダル表示
+    SE.play('seisan');
+    _showSeisanModal({
+      yakuResults, amefure, yakuNagare,
+      finalRawPts, seisan, seisanDetail, finalPts,
+      cumScore: st.cumScore.slice(),
+    });
+  }
+
+  /* ============================================================
+     calcYakuLive — リアルタイム役チェック（局中表示用・フケ判定なし）
+     現時点の取り札で成立している役名一覧を返す
+     ============================================================ */
+  function calcYakuLive(caps) {
+    const ids = new Set(caps.map(c => c.id));
+    const S   = CARDS.SPECIAL;
+    const names = [];
+
+    const picaIds = [S.matsu_pica, S.sakura_pica, S.susuki_pica, S.yanagi_pica, S.kiri_pica];
+    const picaOwn = picaIds.filter(id => ids.has(id));
+    if (picaOwn.length === 5) names.push('五光');
+    else if (picaOwn.length === 4) {
+      if (ids.has(S.yanagi_pica) && ids.has(S.matsu_pica) && ids.has(S.kiri_pica) && ids.has(S.susuki_pica))
+        names.push('雨四光');
+      else if (!ids.has(S.yanagi_pica)) names.push('四光');
+    } else if (picaOwn.length === 3) {
+      if (ids.has(S.matsu_pica) && ids.has(S.kiri_pica) && ids.has(S.susuki_pica)) names.push('三光');
+    }
+
+    if ([S.matsu_zaku, S.ume_zaku, S.sakura_zaku].every(id => ids.has(id))) names.push('赤短');
+    if ([S.botan_zaku, S.kiku_zaku, S.momiji_zaku].every(id => ids.has(id))) names.push('青短');
+    if ([S.hagi_tane, S.momiji_tane, S.botan_tane].every(id => ids.has(id))) names.push('猪鹿蝶');
+    if (ids.has(S.susuki_pica) && ids.has(S.kiku_tane)) names.push('月見酒');
+    if (ids.has(S.sakura_pica) && ids.has(S.kiku_tane)) names.push('花見酒');
+
+    const kasCount = caps.filter(c => c.type === 'kas').length + (ids.has(S.kiku_tane) ? 1 : 0);
+    if (kasCount >= 13) names.push(`カス`);
+
+    return names;
+  }
+
+  /* ============================================================
+     calcYaku — 役計算
+     戻り値: { yakuPts, yakuNames:string[], isFuke }
+     ============================================================ */
+  function calcYaku(pi, caps, rawPts, isFuke) {
+    const ids = new Set(caps.map(c => c.id));
+    const S   = CARDS.SPECIAL;
+    let pts = 0;
+    const names = [];
+
+    // --- 光役 ---
+    const picaIds = [S.matsu_pica, S.sakura_pica, S.susuki_pica, S.yanagi_pica, S.kiri_pica];
+    const picaOwn = picaIds.filter(id => ids.has(id));
+
+    if (picaOwn.length === 5) {
+      pts += 50; names.push('五光');
+    } else if (picaOwn.length === 4) {
+      if (ids.has(S.yanagi_pica)) {
+        // 雨に人を含む4枚 → 雨四光（松鶴・桐鳳凰・芒月・雨に人）
+        if (ids.has(S.matsu_pica) && ids.has(S.kiri_pica) && ids.has(S.susuki_pica)) {
+          pts += 40; names.push('雨四光');
+        }
+      } else {
+        pts += 40; names.push('四光');
+      }
+    } else if (picaOwn.length === 3) {
+      if (ids.has(S.matsu_pica) && ids.has(S.kiri_pica) && ids.has(S.susuki_pica)) {
+        pts += 30; names.push('三光');
+      }
+    }
+
+    // --- 短冊役 ---
+    const aka = [S.matsu_zaku, S.ume_zaku, S.sakura_zaku];
+    if (aka.every(id => ids.has(id))) {
+      const extra = caps.filter(c => c.type === 'zaku').length - 3;
+      pts += 30 + Math.max(0, extra) * 10;
+      names.push('赤短');
+    }
+    const ao = [S.botan_zaku, S.kiku_zaku, S.momiji_zaku];
+    if (ao.every(id => ids.has(id))) {
+      const extra = caps.filter(c => c.type === 'zaku').length - 3;
+      pts += 30 + Math.max(0, extra) * 10;
+      names.push('青短');
+    }
+
+    // --- 猪鹿蝶 ---
+    if ([S.hagi_tane, S.momiji_tane, S.botan_tane].every(id => ids.has(id))) {
+      pts += 15; names.push('猪鹿蝶');
+    }
+
+    // --- 月見酒・花見酒 ---
+    if (ids.has(S.susuki_pica) && ids.has(S.kiku_tane)) {
+      pts += 10; names.push('月見酒');
+    }
+    if (ids.has(S.sakura_pica) && ids.has(S.kiku_tane)) {
+      pts += 10; names.push('花見酒');
+    }
+
+    // --- カス役 ---
+    // 菊に盃はカス+1枚として計算
+    const kasCount = caps.filter(c => c.type === 'kas').length
+                   + (ids.has(S.kiku_tane) ? 1 : 0);
+    if (kasCount >= 13) {
+      pts += 10 + (kasCount - 13) * 10;
+      names.push(`カス(${kasCount}枚)`);
+    }
+
+    // フケ成立時はフケ80点を加算（他の役と同時成立可）
+    if (isFuke) {
+      pts += 80;
+      names.unshift('フケ');
+      return { yakuPts: pts, yakuNames: names, isFuke: true };
+    }
+    return { yakuPts: pts, yakuNames: names, isFuke: false };
+  }
+
+  /* ============================================================
+     nextRound — 次の局へ / ゲーム終了
+     ============================================================ */
+  function nextRound() {
+    hideOv('seisan-overlay');
+    const st = G_state;
+    if (st.roundNo >= st.totalRounds) {
+      // 全局終了 → スタート画面へ
+      showFinal();
+    } else {
+      startRound();
+    }
+  }
+
+  /* ============================================================
+     showFinal — 最終結果表示後スタート画面へ
+     ============================================================ */
+  function showFinal() {
+    const st = G_state;
+    const sorted = [0,1,2].sort((a,b) => st.cumScore[b] - st.cumScore[a]);
+    const winner = PLAYER_NAMES[sorted[0]];
+    showToast(`🎉 ${winner} の勝利！`, 3000);
+    setTimeout(() => {
+      st.phase = 'idle';
+      G_state = {
+        hands: [[],[],[]], caps: [[],[],[]], field: [], deck: [],
+        turnOrder: [0,1,2], turnIdx: 0, roundNo: 0,
+        totalRounds: 6,
+        cumScore: [0,0,0], phase: 'idle', parentIdx: 0,
+      };
+      showScreen('scr-start');
+    }, 3200);
+  }
+
+  /* ============================================================
+     _showSeisanModal — 精算モーダルHTMLを組み立てて表示
+     ============================================================ */
+  function _showSeisanModal(data) {
+    const st = G_state;
+    const { yakuResults, amefure, yakuNagare,
+            finalRawPts, seisan, seisanDetail, finalPts, cumScore } = data;
+
+    // 列順: あなた(0) / CPU1(1) / CPU2(2)
+    const cols = [0, 1, 2];
+
+    // ヘッダー行
+    let thHtml = '<th class="row-label" style="width:18%"></th>';
+    for (const pi of cols) {
+      const rank = _rankOf(pi);
+      thHtml += `<th>${PLAYER_NAMES[pi]}<br>
+        <span style="font-size:8px;color:var(--text-faint)">${TURN_LABELS[rank]}</span></th>`;
+    }
+
+    // 取り点行
+    let rawHtml = '<td class="row-label">取り点</td>';
+    for (const pi of cols) rawHtml += `<td>${finalRawPts[pi]}点</td>`;
+
+    // 役行
+    let yakuHtml = '<td class="row-label">役</td>';
+    for (const pi of cols) {
+      const r = yakuResults[pi];
+      const isVoided = (amefure || yakuNagare) && !r.isFuke; // 無効化された役あり
+      const dispNames = isVoided ? r.yakuNamesOrig : r.yakuNames;
+
+      if (r.isFuke) {
+        // フケはゴールドで表示
+        const fukeNames = r.yakuNames.map(n =>
+          `<span class="yaku-badge">${n}</span>`).join(' ');
+        yakuHtml += `<td>${fukeNames}<br>
+          <span style="color:var(--gold)">+${r.yakuPts}点</span></td>`;
+      } else if (dispNames.length > 0) {
+        // 無効化された役: 役名に（無効）を付けてグレー表示
+        const badges = dispNames.map(n =>
+          `<span class="yaku-badge" style="${isVoided ? 'opacity:0.5' : ''}">${n}</span>`
+        ).join(' ');
+        if (isVoided) {
+          yakuHtml += `<td>${badges}<br>
+            <span style="color:var(--text-dim);font-size:9px">（無効）</span></td>`;
+        } else {
+          yakuHtml += `<td>${badges}<br>
+            <span style="color:var(--gold)">+${r.yakuPts}点</span></td>`;
+        }
+      } else {
+        yakuHtml += '<td>—</td>';
+      }
+    }
+
+    // 雨流れ・役流れバナー
+    let bannerHtml = '';
+    if (amefure) {
+      bannerHtml = `<tr class="banner-row">
+        <td colspan="4"><div class="banner-cell">☔ 雨流れ：全員の役が無効</div></td></tr>`;
+    } else if (yakuNagare) {
+      bannerHtml = `<tr class="banner-row">
+        <td colspan="4"><div class="banner-cell">🌊 役流れ：全員の役が無効</div></td></tr>`;
+    }
+
+    // 精算行
+    let seisanHtml = '<td class="row-label">精算</td>';
+    for (const pi of cols) {
+      let cell = '';
+      for (const d of seisanDetail[pi]) {
+        const vsName = PLAYER_NAMES[d.vs];
+        // 矢印方向: 相手列が右(d.vs > pi)なら→、左(d.vs < pi)なら←
+        const goRight = d.vs > pi;
+        if (d.dir === 'even') {
+          cell += `<div class="s-even">差額なし（${vsName}）</div>`;
+        } else if (d.dir === 'pay') {
+          // 支払い
+          if (goRight) {
+            cell += `<div class="s-pay">${vsName}へ ${d.amount}点 →</div>`;
+          } else {
+            cell += `<div class="s-pay">← ${d.amount}点 ${vsName}へ</div>`;
+          }
+        } else {
+          // 受け取り
+          if (goRight) {
+            cell += `<div class="s-recv">${vsName}から ${d.amount}点 ←</div>`;
+          } else {
+            cell += `<div class="s-recv">→ ${d.amount}点 ${vsName}から</div>`;
+          }
+        }
+      }
+      seisanHtml += `<td class="seisan-arrow">${cell}</td>`;
+    }
+
+    // 最終得点行
+    let finalHtml = '<td class="row-label" style="color:var(--text-dim);font-size:10px">最終得点</td>';
+    for (const pi of cols) {
+      const color = finalPts[pi] >= 0 ? 'var(--green)' : 'var(--red)';
+      const sign  = finalPts[pi] >= 0 ? '+' : '';
+      finalHtml += `<td style="color:${color}">${sign}${finalPts[pi]}点</td>`;
+    }
+
+    // 累計行
+    let cumulHtml = '<td class="row-label" style="color:var(--text-game-dim);font-size:10px">累計点</td>';
+    for (const pi of cols) {
+      const color = cumScore[pi] >= 0 ? 'var(--green)' : 'var(--red)';
+      const sign  = cumScore[pi] >= 0 ? '+' : '';
+      cumulHtml += `<td style="color:${color}">${sign}${cumScore[pi]}点</td>`;
+    }
+
+    const isLast = st.roundNo >= st.totalRounds;
+    const btnLabel = isLast ? '結果を見る' : '次の局へ';
+
+    const html = `
+      <div class="seisan-title">精算　${st.roundNo}局目</div>
+      <table class="seisan-table">
+        <thead><tr>${thHtml}</tr></thead>
+        <tbody>
+          <tr><td class="row-label">取り点</td>${rawHtml.replace('<td class="row-label">取り点</td>','')}</tr>
+          <tr><td class="row-label">役</td>${yakuHtml.replace('<td class="row-label">役</td>','')}</tr>
+          ${bannerHtml}
+          <tr><td class="row-label">精算</td>${seisanHtml.replace('<td class="row-label">精算</td>','')}</tr>
+          <tr class="final-row"><td class="row-label" style="color:var(--text-dim);font-size:10px">最終得点</td>${finalHtml.replace(/<td class="row-label"[^>]*>最終得点<\/td>/,'')}</tr>
+          <tr class="cumul-row"><td class="row-label" style="color:var(--text-game-dim);font-size:10px">累計点</td>${cumulHtml.replace(/<td class="row-label"[^>]*>累計点<\/td>/,'')}</tr>
+        </tbody>
+      </table>
+      <button class="ok-btn" onclick="G.nextRound()">${btnLabel}</button>`;
+
+    document.getElementById('seisan-modal-content').innerHTML = html;
+
+    // 役・流れフラッシュが残存していれば即クリーンアップ
+    document.querySelectorAll('.yaku-flash, .nagare-flash').forEach(el => el.remove());
+
+    showOv('seisan-overlay');
+  }
+
+  /* ============================================================
+     chkExchange — 交換フェーズ判定
+     turnOrderIdx: 0=親, 1=胴二, 2=ビキ の順に処理
+     ============================================================ */
+  function chkExchange(orderIdx) {
+    const st = G_state;
+
+    // 全員チェック済み → 手番フェーズへ
+    if (orderIdx >= 3) {
+      st.phase = 'play';
+      st.turnIdx = 0;
+      render();
+      // 最初の手番がCPUなら自動プレイ
+      const first = st.turnOrder[0];
+      if (first !== 0) {
+        setTimeout(() => cpuPlay(first), _spd() * 2);
+      }
+      return;
+    }
+
+    const pi = st.turnOrder[orderIdx]; // 実プレイヤーindex
+    const hand = st.hands[pi];
+
+    // 同月グループを探す
+    const groups = _findSoroi(hand);
+    const soroi3 = groups.filter(g => g.length === 3);
+    const soroi4 = groups.filter(g => g.length === 4);
+
+    if (soroi3.length === 0 && soroi4.length === 0) {
+      // 交換条件なし → 次へ
+      chkExchange(orderIdx + 1);
+      return;
+    }
+
+    if (pi === 0) {
+      // プレイヤー: モーダルで提示
+      _showExchangeModal(pi, orderIdx, soroi3, soroi4);
+    } else {
+      // CPU: 交換する（常に交換する方針、Step8でロジック改善可）
+      _doCpuExchange(pi, orderIdx, soroi3, soroi4);
+    }
+  }
+
+  /* ============================================================
+     _findSoroi — 手札から同月3枚・4枚グループを返す
+     ============================================================ */
+  function _findSoroi(hand) {
+    const byMonth = {};
+    for (const c of hand) {
+      if (!byMonth[c.month]) byMonth[c.month] = [];
+      byMonth[c.month].push(c);
+    }
+    return Object.values(byMonth).filter(g => g.length >= 3);
+  }
+
+  /* ============================================================
+     _showExchangeModal — プレイヤー向け交換モーダル
+     ============================================================ */
+  function _showExchangeModal(pi, orderIdx, soroi3, soroi4) {
+    // 最初の対象グループを提示（複数グループある場合は1つずつ）
+    const group = soroi4.length > 0 ? soroi4[0] : soroi3[0];
+    const is4 = group.length === 4;
+    const el = document.getElementById('exchange-modal-content');
+    if (!el) { chkExchange(orderIdx + 1); return; }
+
+    const cardsHtml = group.map(c => {
+      const img = _cardImg(c);
+      return `<div class="exchange-card ${img.cls}"
+        style="background-image:${img.bgImg};background-size:cover;background-position:center;"
+        title="${c.name}"></div>`;
+    }).join('');
+
+    const desc = is4
+      ? `同じ月の札が4枚あります。\n両隣が1枚ずつ引き、山札の2枚が補充されます。`
+      : `同じ月の札が3枚あります。\n次の手番のプレイヤーが1枚引き、山札の1枚が補充されます。`;
+
+    el.innerHTML = `
+      <div class="exchange-title">交換フェーズ</div>
+      <div class="exchange-desc" style="white-space:pre-line">${desc}</div>
+      <div class="exchange-cards">${cardsHtml}</div>
+      <div class="exchange-btns">
+        <button class="exchange-btn exchange-btn-skip"
+          onclick="G._exchangeSkip(${orderIdx})">しない</button>
+        <button class="exchange-btn exchange-btn-do"
+          onclick="G._exchangeDo(${pi}, ${orderIdx}, ${is4 ? 4 : 3})">交換する</button>
+      </div>`;
+
+    showOv('exchange-overlay');
+  }
+
+  /* ============================================================
+     _exchangeDo / _exchangeSkip — モーダルのボタン応答
+     ============================================================ */
+  function _exchangeDo(pi, orderIdx, count) {
+    hideOv('exchange-overlay');
+    SE.play('btn');
+    const st = G_state;
+    const hand = st.hands[pi];
+    const groups = _findSoroi(hand).filter(g => g.length === count);
+    if (groups.length === 0) { chkExchange(orderIdx + 1); return; }
+    doExch(pi, orderIdx, groups[0]);
+  }
+
+  function _exchangeSkip(orderIdx) {
+    hideOv('exchange-overlay');
+    SE.play('btn');
+    chkExchange(orderIdx + 1);
+  }
+
+  /* ============================================================
+     doExch — 実際の交換処理
+     3枚: 次の手番プレイヤーが1枚抜く → 山札補充1枚
+     4枚: 両隣が1枚ずつ抜く → 山札補充2枚
+     交換後も条件を満たす場合は再度チェック
+     ============================================================ */
+  function doExch(pi, orderIdx, group) {
+    const st = G_state;
+    const is4 = group.length === 4;
+
+    // 1. 同月札を手札から取り出す
+    for (const c of group) {
+      const idx = st.hands[pi].findIndex(h => h.id === c.id);
+      if (idx !== -1) st.hands[pi].splice(idx, 1);
+    }
+
+    if (is4) {
+      // 4枚の場合:
+      // ・次のプレイヤーが1枚、その次が1枚をランダムに選んで山札へ（計2枚）
+      // ・残り2枚は手札に直接戻す
+      // ・山札シャッフル → 上2枚を補充
+      const discardIdx1 = Math.floor(Math.random() * group.length);
+      const kept = group.filter((_, i) => i !== discardIdx1);
+      const discardIdx2 = Math.floor(Math.random() * kept.length);
+      const returnCards = kept.filter((_, i) => i !== discardIdx2);
+      const discardCards = group.filter(c => !returnCards.includes(c));
+
+      // 選ばれた2枚のみ山札へ
+      st.deck.push(...discardCards);
+      shuf(st.deck);
+      // 残り2枚を手札に戻す（同月2枚が必ず残る）
+      st.hands[pi].push(...returnCards);
+      // 山札上2枚を補充
+      st.hands[pi].push(st.deck.pop());
+      st.hands[pi].push(st.deck.pop());
+    } else {
+      // 3枚の場合:
+      // ・次のプレイヤーが1枚をランダムに選んで山札へ
+      // ・残り2枚は手札に直接戻す
+      // ・山札シャッフル → 上1枚を補充
+      const discardIdx = Math.floor(Math.random() * group.length);
+      const returnCards = group.filter((_, i) => i !== discardIdx);
+      const discardCard = group[discardIdx];
+
+      // 選ばれた1枚のみ山札へ
+      st.deck.push(discardCard);
+      shuf(st.deck);
+      // 残り2枚を手札に戻す（同月2枚が必ず残る）
+      st.hands[pi].push(...returnCards);
+      // 山札上1枚を補充
+      st.hands[pi].push(st.deck.pop());
+    }
+
+    log(`交換: ${PLAYER_NAMES[pi]} ${is4 ? '4枚' : '3枚'}交換 手札:${st.hands[pi].length}枚`);
+    render();
+
+    // 交換後も同月3枚・4枚が発生したら再度交換可能
+    const groups = _findSoroi(st.hands[pi]);
+    if (groups.length > 0) {
+      if (pi === 0) {
+        const s3 = groups.filter(g => g.length === 3);
+        const s4 = groups.filter(g => g.length === 4);
+        setTimeout(() => _showExchangeModal(pi, orderIdx, s3, s4), _spd());
+      } else {
+        setTimeout(() => _doCpuExchange(pi, orderIdx, groups.filter(g=>g.length===3), groups.filter(g=>g.length===4)), _spd());
+      }
+    } else {
+      chkExchange(orderIdx + 1);
+    }
+  }
+
+  /* ============================================================
+     _doCpuExchange — CPUの交換処理（常に交換）
+     ============================================================ */
+  function _doCpuExchange(pi, orderIdx, soroi3, soroi4) {
+    const group = soroi4.length > 0 ? soroi4[0] : soroi3[0];
+    log(`CPU${pi} 交換: ${group.length}枚`);
+    doExch(pi, orderIdx, group);
+    // doExch内で再チェックするのでここでは次へ渡さない
+    // ただしdoExchが再帰しない場合に備えてchkExchange(orderIdx+1)はdoExch内で呼ぶ
+  }
+
+  /* ============================================================
+     cpuPlay — CPUの手番
+     easy:   ランダム選択
+     normal: 役・取り点を考慮した基本選択
+     hard:   役・取り点・フケ回避を総合考慮
+     ============================================================ */
+  function cpuPlay(pi) {
+    const st = G_state;
+    if (st.phase !== 'play') return;
+
+    const hand = st.hands[pi];
+    if (hand.length === 0) { afterDraw(pi, null, -1); return; }
+
+    // 手番トースト表示してから実行
+    animTurnToast(pi, () => {
+    const level = cfg.hana_cpu || 'normal';
+    let chosen;
+
+    if (level === 'easy') {
+      chosen = _cpuEasy(pi);
+    } else if (level === 'normal') {
+      chosen = _cpuNormal(pi);
+    } else {
+      chosen = _cpuHard(pi);
+    }
+
+    if (chosen.discard) {
+      SE.play('discard');
+      _doDiscard(pi, chosen.handIdx);
+    } else {
+      SE.play('take');
+      _doTake(pi, chosen.handIdx, chosen.slotIdx);
+    }
+    });
+  }
+
+  /* ============================================================
+     _cpuEasy — ランダム選択
+     ============================================================ */
+  function _cpuEasy(pi) {
+    const st = G_state;
+    const hand = st.hands[pi];
+    const handIdx = Math.floor(Math.random() * hand.length);
+    const card = hand[handIdx];
+    const matches = _fieldMatches(card.month);
+    if (matches.length > 0) {
+      return { handIdx, slotIdx: matches[Math.floor(Math.random() * matches.length)] };
+    }
+    return { handIdx, discard: true };
+  }
+
+  /* ============================================================
+     _cpuNormal — 役・取り点を考慮した基本選択
+     優先順位:
+       1. 役完成カードを取れる手があれば最優先
+       2. 取り点が高い場札を取る手
+       3. マッチなし → 点数の低いカードを捨てる
+     ============================================================ */
+  function _cpuNormal(pi) {
+    const st = G_state;
+    const hand = st.hands[pi];
+    const caps = st.caps[pi];
+
+    let best = null;
+    let bestScore = -Infinity;
+
+    for (let hi = 0; hi < hand.length; hi++) {
+      const card = hand[hi];
+      const matches = _fieldMatches(card.month);
+
+      if (matches.length === 0) continue;
+
+      for (const si of matches) {
+        const fc = st.field[si];
+        // 取り点 = 手札点 + 場札点（stacked分も含む）
+        let gainPts = card.pts + fc.pts;
+        if (fc.stacked) gainPts += fc.stacked.reduce((s, c) => s + c.pts, 0);
+
+        // 役完成ボーナス
+        const yakuBonus = _yakuBonus(pi, card, fc);
+        const score = gainPts * 10 + yakuBonus;
+
+        if (score > bestScore) {
+          bestScore = score;
+          best = { handIdx: hi, slotIdx: si };
+        }
+      }
+    }
+
+    if (best) return best;
+
+    // マッチなし → 点数最低の手札を捨てる
+    const handIdx = _lowestPtsIdx(hand);
+    return { handIdx, discard: true };
+  }
+
+  /* ============================================================
+     _cpuHard — 役・取り点・フケ回避を総合考慮
+     normalに加え:
+       - 自分のフケ回避（取り点が基準点を超えるか）
+       - 相手の役阻止（相手が役完成に近い場合に場札を消す）
+     ============================================================ */
+  function _cpuHard(pi) {
+    const st = G_state;
+    const hand = st.hands[pi];
+    const caps = st.caps[pi];
+    const rank = _rankOf(pi);
+    const { pts: curPts } = calcScore(caps, true);
+    const fukeBase = FUKE_BASE[rank];
+    const needPts = Math.max(0, fukeBase - curPts + 1); // フケ回避に必要な追加点
+
+    let best = null;
+    let bestScore = -Infinity;
+
+    for (let hi = 0; hi < hand.length; hi++) {
+      const card = hand[hi];
+      const matches = _fieldMatches(card.month);
+
+      if (matches.length === 0) continue;
+
+      for (const si of matches) {
+        const fc = st.field[si];
+        let gainPts = card.pts + fc.pts;
+        if (fc.stacked) gainPts += fc.stacked.reduce((s, c) => s + c.pts, 0);
+
+        const yakuBonus  = _yakuBonus(pi, card, fc);
+        // フケ回避ボーナス: 基準点を超えるための取り点に高い価値
+        const fukeBonus  = (curPts + gainPts > fukeBase) && curPts <= fukeBase ? 500 : 0;
+        // 相手役阻止ボーナス: 相手が必要としている場札を取る
+        const blockBonus = _blockBonus(pi, fc);
+
+        const score = gainPts * 10 + yakuBonus + fukeBonus + blockBonus;
+        if (score > bestScore) {
+          bestScore = score;
+          best = { handIdx: hi, slotIdx: si };
+        }
+      }
+    }
+
+    if (best) return best;
+
+    // マッチなし → フケ回避中は点数の高いカードを残す（低いカードを捨てる）
+    const handIdx = _lowestPtsIdx(hand);
+    return { handIdx, discard: true };
+  }
+
+  /* ============================================================
+     _fieldMatches — 場札から指定月のスロット番号一覧を返す
+     ============================================================ */
+  function _fieldMatches(month) {
+    const st = G_state;
+    const result = [];
+    for (let i = 0; i < 13; i++) {
+      if (st.field[i] && st.field[i].month === month) result.push(i);
+    }
+    return result;
+  }
+
+  /* ============================================================
+     _yakuBonus — カードを取ることで役に近づくボーナス点
+     既取得 + 取得予定で役が完成/近づくかを判定
+     ============================================================ */
+  function _yakuBonus(pi, handCard, fieldCard) {
+    const st = G_state;
+    const caps = st.caps[pi];
+    const afterIds = new Set([...caps.map(c => c.id), handCard.id, fieldCard.id]);
+    if (fieldCard.stacked) fieldCard.stacked.forEach(c => afterIds.add(c.id));
+
+    const S = CARDS.SPECIAL;
+    let bonus = 0;
+
+    // 光役チェック
+    const picaIds = [S.matsu_pica, S.sakura_pica, S.susuki_pica, S.yanagi_pica, S.kiri_pica];
+    const picaCount = picaIds.filter(id => afterIds.has(id)).length;
+    if (picaCount >= 3) bonus += picaCount * 80;
+
+    // 猪鹿蝶
+    const ikc = [S.hagi_tane, S.momiji_tane, S.botan_tane];
+    const ikcCount = ikc.filter(id => afterIds.has(id)).length;
+    if (ikcCount >= 2) bonus += ikcCount * 50;
+
+    // 赤短
+    const aka = [S.matsu_zaku, S.ume_zaku, S.sakura_zaku];
+    const akaCount = aka.filter(id => afterIds.has(id)).length;
+    if (akaCount >= 2) bonus += akaCount * 60;
+
+    // 青短
+    const ao = [S.botan_zaku, S.kiku_zaku, S.momiji_zaku];
+    const aoCount = ao.filter(id => afterIds.has(id)).length;
+    if (aoCount >= 2) bonus += aoCount * 60;
+
+    // 月見酒・花見酒
+    if (afterIds.has(S.susuki_pica) && afterIds.has(S.kiku_tane)) bonus += 100;
+    if (afterIds.has(S.sakura_pica) && afterIds.has(S.kiku_tane)) bonus += 100;
+
+    return bonus;
+  }
+
+  /* ============================================================
+     _blockBonus — 相手の役を阻止するボーナス
+     相手が役完成まで1枚という場合に高いボーナスを返す
+     ============================================================ */
+  function _blockBonus(myPi, fieldCard) {
+    const st = G_state;
+    let bonus = 0;
+    const S = CARDS.SPECIAL;
+
+    for (let pi = 0; pi < 3; pi++) {
+      if (pi === myPi) continue;
+      const otherIds = new Set(st.caps[pi].map(c => c.id));
+
+      // 相手が猪鹿蝶まで2枚持ちで fieldCard が残り1枚
+      const ikc = [S.hagi_tane, S.momiji_tane, S.botan_tane];
+      if (ikc.includes(fieldCard.id) && ikc.filter(id => otherIds.has(id)).length === 2) {
+        bonus += 200;
+      }
+      // 相手が赤短まで2枚持ちで fieldCard が残り1枚
+      const aka = [S.matsu_zaku, S.ume_zaku, S.sakura_zaku];
+      if (aka.includes(fieldCard.id) && aka.filter(id => otherIds.has(id)).length === 2) {
+        bonus += 200;
+      }
+      // 相手が青短まで2枚持ちで fieldCard が残り1枚
+      const ao = [S.botan_zaku, S.kiku_zaku, S.momiji_zaku];
+      if (ao.includes(fieldCard.id) && ao.filter(id => otherIds.has(id)).length === 2) {
+        bonus += 200;
+      }
+      // 相手が五光・四光まで3枚以上持ちで光札を阻止
+      const picaIds = [S.matsu_pica, S.sakura_pica, S.susuki_pica, S.yanagi_pica, S.kiri_pica];
+      if (picaIds.includes(fieldCard.id) && picaIds.filter(id => otherIds.has(id)).length >= 3) {
+        bonus += 300;
+      }
+    }
+    return bonus;
+  }
+
+  /* ============================================================
+     _lowestPtsIdx — 手札の中で最も取り点が低いカードのインデックス
+     ============================================================ */
+  function _lowestPtsIdx(hand) {
+    let minPts = Infinity, minIdx = 0;
+    for (let i = 0; i < hand.length; i++) {
+      if (hand[i].pts < minPts) { minPts = hand[i].pts; minIdx = i; }
+    }
+    return minIdx;
+  }
+
+  /* ============================================================
+     _showFieldSelect — 山札2枚マッチ時の選択モーダル
+     ============================================================ */
+  function _showFieldSelect(drawn, slots, cb) {
+    const st = G_state;
+    const el = document.getElementById('field-select-content');
+    if (!el) { cb(slots[0]); return; }
+
+    const drawnImg = _cardImg(drawn);
+    let cardsHtml = '';
+    for (const si of slots) {
+      const fc = st.field[si];
+      const img = _cardImg(fc);
+      cardsHtml += `<div class="field-select-card ${img.cls}"
+        style="background-image:${img.bgImg};background-size:cover;background-position:center;"
+        onclick="_fieldSelectCb(${si})"
+        title="${fc.name}"></div>`;
+    }
+
+    el.innerHTML = `
+      <div class="field-select-title">どちらを取りますか？</div>
+      <div class="field-select-desc">
+        山札：<strong style="color:var(--gold-light)">${drawn.name}</strong>
+      </div>
+      <div class="field-select-cards">${cardsHtml}</div>`;
+
+    window._fieldSelectCb = (si) => {
+      hideOv('field-select-overlay');
+      cb(si);
+    };
+    showOv('field-select-overlay');
+  }
+
+  /* ============================================================
+     ログ
+     ============================================================ */
+  /* ============================================================
+     _preloadImages — 必須画像をプリロードしてからcbを呼ぶ
+     card_back.png のみ必須チェック。タイムアウト1.5秒でフォールバック
+     ============================================================ */
+  function _preloadImages(cb) {
+    const design = cfg.hana_design || 'original';
+    const ext    = design === 'artistic' ? 'webp' : 'png';
+    const backUrl = IMG_BASE + '/' + design + '/card_back.' + ext;
+    const img = new Image();
+    const timer = setTimeout(() => { cb(); }, 1500);
+    img.onload  = () => { clearTimeout(timer); cb(); };
+    img.onerror = () => { clearTimeout(timer); cb(); };
+    img.src = backUrl;
+  }
+
+  // デバッグログ: リリース前に削除する
+  function log(...args) {
+    // console.log('[HANA]', ...args); // リリース前に削除
+  }
+
+  /* ============================================================
+     公開API
+     ============================================================ */
+  return {
+    init,
+    startGame,
+    showRules,
+    hideRules,
+    showStartSettings,
+    toggleSettings,
+    goHome,
+    setRounds,
+    switchRuleTab,
+    setS,
+    showToast,
+    showOv,
+    hideOv,
+    _cardImg,
+    _backImg,
+    shuf,
+    log,
+    cfg,
+    CARDS,
+    // Step3
+    startRound,
+    render,
+    renderHands,
+    renderField,
+    renderCapAll,
+    renderBtns,
+    // Step4
+    chkExchange,
+    doExch,
+    _exchangeDo,
+    _exchangeSkip,
+    // Step6
+    cpuPlay,
+    // Step7
+    endRound,
+    calcYaku,
+    nextRound,
+    showFinal,
+    // Step3 (手番操作)
+    selectCard,
+    selField,
+    discardCard,
+    autoDraw,
+    afterDraw,
+    // Step8
+    fmSafe,
+    // ゲーム状態（Step4以降で利用）
+    get state() { return G_state; },
+  };
+})();
+
+/* ============================================================
+   SE — 効果音モジュール（構造のみ・後から差し替え可能）
+   各タイミングで SE.play('take') 等を呼ぶ
+   ============================================================ */
+const SE = (() => {
+  // 効果音ファイルマップ（後から差し替え：パスをここで一元管理）
+  const FILES = {
+    take:   'sounds/se_take.mp3',    // カードを取る
+    discard:'sounds/se_discard.mp3', // カードを捨てる
+    draw:   'sounds/se_draw.mp3',    // 山札めくり
+    yaku:   'sounds/se_yaku.mp3',    // 役成立・フケ
+    seisan: 'sounds/se_seisan.mp3',  // 精算モーダル表示
+    btn:    'sounds/se_btn.mp3',     // ボタンタップ
+  };
+
+  const _cache = {};
+
+  function _load(key) {
+    if (_cache[key]) return _cache[key];
+    const audio = new Audio(FILES[key]);
+    audio.preload = 'auto';
+    _cache[key] = audio;
+    return audio;
+  }
+
+  function play(key) {
+    if (G.cfg.hana_se !== 'on') return;
+    const audio = _load(key);
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(() => {/* ファイル未存在時は無視 */});
+  }
+
+  return { play, FILES };
+})();
+
+/* ============================================================
+   BGM — BGMモジュール（構造のみ・後から差し替え可能）
+   ============================================================ */
+const BGM = (() => {
+  // BGMファイルパス（後から差し替え：ここを変更）
+  const FILE = 'sounds/bgm_main.mp3';
+  let _audio = null;
+
+  function _ensure() {
+    if (_audio) return _audio;
+    _audio = new Audio(FILE);
+    _audio.loop = true;
+    _audio.volume = 0.4;
+    return _audio;
+  }
+
+  function play() {
+    if (G.cfg.hana_bgm !== 'on') return;
+    _ensure().play().catch(() => {});
+  }
+
+  function stop() {
+    if (_audio) { _audio.pause(); _audio.currentTime = 0; }
+  }
+
+  function applyVolume() {
+    if (!_audio) return;
+    if (G.cfg.hana_bgm === 'on') {
+      _audio.play().catch(() => {});
+    } else {
+      _audio.pause();
+    }
+  }
+
+  return { play, stop, applyVolume, FILE };
+})();
+
+/* ============================================================
+   起動
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => G.init());
+</script>
+</body>
+</html>
