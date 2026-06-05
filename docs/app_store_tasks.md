@@ -19,11 +19,11 @@
 
 | \# | タスク | 状態 |
 | :---- | :---- | :---- |
-| 5 | `npm init` \+ Capacitor CLI導入 | \[ \] |
-| 6 | `capacitor.config.ts` 設定（appId: `inc.hitonomigi.hanafuda88`） | \[ \] |
-| 7 | `@capacitor/ios` 追加・`npx cap add ios` | \[ \] |
-| 8 | `npx cap copy ios` でWebAssets転送 | \[ \] |
-| 9 | Xcodeで動作確認（シミュレータ・実機） | \[ \] |
+| 5 | `npm init` \+ Capacitor CLI導入 | \[x\] 完了 |
+| 6 | `capacitor.config.ts` 設定（appId: `inc.hitonomigi.hanafuda88`） | \[x\] 完了 |
+| 7 | `@capacitor/ios` 追加・`npx cap add ios` | \[x\] 完了 |
+| 8 | `npx cap copy ios` でWebAssets転送 | \[x\] 完了（`www/`移行済み） |
+| 9 | Xcodeで動作確認（シミュレータ・実機） | \[-\] 待機中（Xcodeインストール待ち・macOSアップデート or 旧Xcode手動DL） |
 
 ---
 
