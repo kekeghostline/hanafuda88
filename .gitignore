@@ -1,0 +1,11 @@
+node_modules/
+
+# iOS Capacitorビルド成果物
+ios/App/Pods/
+ios/App/App.xcworkspace/
+ios/.DS_Store
+*.DS_Store
+
+# 一般
+*.log
+.env
