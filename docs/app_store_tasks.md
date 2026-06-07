@@ -15,7 +15,7 @@
 
 ---
 
-## フェーズ2：Capacitor化
+## フェーズ2：Capacitor化 ✅ 完了
 
 | \# | タスク | 状態 |
 | :---- | :---- | :---- |
@@ -23,7 +23,7 @@
 | 6 | `capacitor.config.ts` 設定（appId: `inc.hitonomigi.hanafuda88`） | \[x\] 完了 |
 | 7 | `@capacitor/ios` 追加・`npx cap add ios` | \[x\] 完了 |
 | 8 | `npx cap copy ios` でWebAssets転送 | \[x\] 完了（`www/`移行済み） |
-| 9 | Xcodeで動作確認（シミュレータ・実機） | \[-\] 待機中（Xcodeインストール待ち・macOSアップデート or 旧Xcode手動DL） |
+| 9 | Xcodeで動作確認（シミュレータ・実機） | \[x\] 完了（iPhone 16 / iOS 18.6 シミュレータで確認） |
 
 ---
 
