@@ -1043,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.10　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.11　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1176,7 +1176,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.10</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.11</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1452,6 +1452,7 @@ const G = (() => {
   let _rulesFrom    = 'start';
   let _settingsDirty = false;
   let _cfgSnapshot = {};
+  let _tmpCfg = {};
   let _toastTimer = null;
   let _confirmCb = null;
 
@@ -1785,9 +1786,9 @@ const G = (() => {
 
   function _openSettings() {
     _cfgSnapshot = Object.assign({}, cfg);
+    _tmpCfg = Object.assign({}, cfg);  // 編集用一時オブジェクト
     _settingsDirty = false;
     showScreen('scr-settings');
-    // アニメーション用：次フレームでクラス付与済み状態にする
     requestAnimationFrame(() => {
       document.getElementById('scr-settings').classList.add('active');
     });
@@ -1804,9 +1805,10 @@ const G = (() => {
           _doCloseSettings();
         },
         () => {
-          // キャンセル → 変更を破棄
+          // キャンセル → 変更を破棄してUIも元に戻す
           cfg = Object.assign({}, _cfgSnapshot);
-          applySettingsUI();
+          _tmpCfg = Object.assign({}, _cfgSnapshot);
+          applySettings();
           _doCloseSettings();
         }
       );
@@ -1882,6 +1884,7 @@ const G = (() => {
   }
 
   function saveSettings() {
+    cfg = Object.assign({}, _tmpCfg);  // 一時オブジェクトを本反映
     for (const [k, v] of Object.entries(cfg)) {
       localStorage.setItem(k, v);
     }
@@ -1933,24 +1936,28 @@ const G = (() => {
 
   // 設定ボタンから呼ばれる汎用setter
   function setS(key, val, btn, toggleKey) {
-    cfg[key] = val;
+    _tmpCfg[key] = val;  // cfgではなく一時オブジェクトに書き込む
     _settingsDirty = true;
 
     if (toggleKey) {
-      // SE/BGM はトグルペア
       if (key === 'hana_se') {
         _syncToggle('opt-se-on', 'opt-se-off', val === 'on');
       } else if (key === 'hana_bgm') {
         _syncToggle('opt-bgm-on', 'opt-bgm-off', val === 'on');
+        // BGM音量プレビューのみ（保存はしない）
         BGM.applyVolume();
       }
     } else {
-      // ラジオ系グループ
       const parent = btn.parentElement;
       parent.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      // 即時反映するもの
-      if (key === 'hana_bg') applyBg();
+      // 背景のみプレビュー表示（tmpCfgベース）
+      if (key === 'hana_bg') {
+        const saved = cfg.hana_bg;
+        cfg.hana_bg = val;
+        applyBg();
+        cfg.hana_bg = saved;
+      }
     }
     SE.play('btn');
   }
