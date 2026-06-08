@@ -610,7 +610,45 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background-position: center;
 }
 .yama-count { font-size: 11px; color: var(--text-game-dim); }
-.field-zone { flex: 1; }
+.field-zone { flex: 1; position: relative; }
+
+/* 雨流れ・役流れ 場札エリア背景 */
+.field-zone.nagare-ame {
+  background-color: rgba(10,30,80,0.18);
+  background-image: repeating-linear-gradient(
+    110deg,
+    transparent,
+    transparent 8px,
+    rgba(100,150,255,0.08) 8px,
+    rgba(100,150,255,0.08) 9px
+  );
+  border-radius: 4px;
+}
+.field-zone.nagare-yaku {
+  background-color: rgba(40,40,40,0.18);
+  background-image: repeating-linear-gradient(
+    110deg,
+    transparent,
+    transparent 8px,
+    rgba(180,180,180,0.08) 8px,
+    rgba(180,180,180,0.08) 9px
+  );
+  border-radius: 4px;
+}
+
+/* 山札下の流れラベル */
+#nagare-label {
+  display: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-align: center;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+#nagare-label.ame  { display: block; color: #a8c8ff; background: rgba(10,20,80,0.6); }
+#nagare-label.yaku { display: block; color: #b0b0b0; background: rgba(40,40,40,0.6); }
 .field-title { font-size: 11px; color: var(--text-game-dim); margin-bottom: 3px; }
 #field-cards {
   display: grid;
@@ -1043,7 +1081,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.11　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.13　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1176,7 +1214,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.11</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.13</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1212,6 +1250,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
       <div class="yamafuda">
         <div class="yama-card" id="yama-card-img">山</div>
         <div class="yama-count" id="yama-count">0枚</div>
+        <div id="nagare-label"></div>
       </div>
       <div class="field-zone">
         <div class="field-title">場札</div>
@@ -1574,18 +1613,25 @@ const G = (() => {
   }
 
   function _updateNagareBanner() {
-    const el = document.getElementById('nagare-banner');
-    if (!el) return;
     const nagare = G_state.nagare;
-    if (!nagare) {
-      el.className = '';
-      el.textContent = '';
-      return;
+
+    // field-zone背景クラス
+    const fieldZone = document.querySelector('.field-zone');
+    if (fieldZone) {
+      fieldZone.classList.remove('nagare-ame', 'nagare-yaku');
+      if (nagare) fieldZone.classList.add('nagare-' + nagare);
     }
-    el.className = 'active ' + nagare;
-    el.textContent = nagare === 'ame'
-      ? '☔ 雨流れ発生中 — 全員の役が無効になります'
-      : '🌊 役流れ発生中 — 全員の役が無効になります';
+
+    // 山札下ラベル
+    const labelEl = document.getElementById('nagare-label');
+    if (labelEl) {
+      labelEl.className = nagare || '';
+      labelEl.textContent = nagare === 'ame' ? '🌧 雨流れ' : nagare === 'yaku' ? '三役流れ' : '';
+    }
+
+    // nagare-bannerは非表示のまま（レイアウト崩れ防止）
+    const bannerEl = document.getElementById('nagare-banner');
+    if (bannerEl) { bannerEl.className = ''; bannerEl.textContent = ''; }
   }
 
   function _animNagareFlash(type) {
