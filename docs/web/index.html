@@ -614,24 +614,24 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* 雨流れ・役流れ 場札エリア背景 */
 .field-zone.nagare-ame {
-  background-color: rgba(10,30,80,0.18);
+  background-color: rgba(10,30,80,0.30);
   background-image: repeating-linear-gradient(
     110deg,
     transparent,
     transparent 8px,
-    rgba(100,150,255,0.08) 8px,
-    rgba(100,150,255,0.08) 9px
+    rgba(100,150,255,0.13) 8px,
+    rgba(100,150,255,0.13) 9px
   );
   border-radius: 4px;
 }
 .field-zone.nagare-yaku {
-  background-color: rgba(40,40,40,0.18);
+  background-color: rgba(40,40,40,0.30);
   background-image: repeating-linear-gradient(
     110deg,
     transparent,
     transparent 8px,
-    rgba(180,180,180,0.08) 8px,
-    rgba(180,180,180,0.08) 9px
+    rgba(180,180,180,0.13) 8px,
+    rgba(180,180,180,0.13) 9px
   );
   border-radius: 4px;
 }
@@ -1081,7 +1081,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.13　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.14　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1214,7 +1214,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.13</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.14</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
