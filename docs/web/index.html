@@ -1081,7 +1081,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.15　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.16　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1214,7 +1214,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.15</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.16</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -3014,8 +3014,8 @@ const G = (() => {
     }
 
     // --- 6 & 7. フケ精算・役精算（差額精算方式）---
-    // 役点（フケは80点の役として扱う）
-    const yakuPts = yakuResults.map(r => r.isFuke ? 80 : r.yakuPts);
+    // 役点（calcYakuがフケ込みの全点数を返すのでそのまま使う）
+    const yakuPts = yakuResults.map(r => r.yakuPts);
 
     // 3ペア間で役点比較・差額精算
     // seisan[pi] = この局でのpi の精算収支
