@@ -753,6 +753,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 1px solid var(--gold-dark);
 }
 .g-action-btn:disabled { opacity: 0.3; pointer-events: none; }
+.opt-btn:disabled { opacity: 0.3; pointer-events: none; cursor: not-allowed; }
 
 /* プレイヤー手札 */
 .player-hand {
@@ -1081,7 +1082,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <button class="s1-btn s1-btn-primary" onclick="G.startGame()">ゲーム開始</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showRules('start')">ルール説明</button>
     <button class="s1-btn s1-btn-secondary" onclick="G.showStartSettings()">設定</button>
-    <div class="s1-footer">v0.1.16　© 2026 Hitonomigi Inc.</div>
+    <div class="s1-footer">v0.1.17　© 2026 Hitonomigi Inc.</div>
   </div>
 
   <!-- SCR-002 ルール説明画面 -->
@@ -1214,7 +1215,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="g-header">
       <div class="g-title">花合わせ</div>
       <div class="g-meta" id="g-round-label">—局／12局</div>
-      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.16</div>
+      <div class="g-meta" style="font-size:9px;opacity:0.45;letter-spacing:0.05em">v0.1.17</div>
       <div class="g-icons">
         <button class="g-icon-btn" onclick="G.goHome()" title="スタートへ戻る">🏠</button>
         <button class="g-icon-btn" onclick="G.showRules('game')" title="ルール">📖</button>
@@ -1338,17 +1339,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         <div class="setting-opts">
           <button class="opt-btn active" id="opt-se-on"  onclick="G.setS('hana_se','on',this,'hana_se')">SE ON</button>
           <button class="opt-btn"        id="opt-se-off" onclick="G.setS('hana_se','off',this,'hana_se')">SE OFF</button>
-          <button class="opt-btn active" id="opt-bgm-on"  onclick="G.setS('hana_bgm','on',this,'hana_bgm')">BGM ON</button>
-          <button class="opt-btn"        id="opt-bgm-off" onclick="G.setS('hana_bgm','off',this,'hana_bgm')">BGM OFF</button>
+          <button class="opt-btn"        id="opt-bgm-on"  disabled>BGM ON</button>
+          <button class="opt-btn active" id="opt-bgm-off" disabled>BGM OFF</button>
         </div>
       </div>
       <div class="setting-divider"></div>
       <div class="setting-row">
         <div class="setting-label">CPU強さ</div>
         <div class="setting-opts" id="opt-cpu">
-          <button class="opt-btn" data-val="easy" onclick="G.setS('hana_cpu','easy',this)">弱い</button>
-          <button class="opt-btn active" data-val="normal" onclick="G.setS('hana_cpu','normal',this)">普通</button>
-          <button class="opt-btn" data-val="hard" onclick="G.setS('hana_cpu','hard',this)">強い</button>
+          <button class="opt-btn" data-val="easy" disabled>弱い</button>
+          <button class="opt-btn active" data-val="normal" disabled>普通</button>
+          <button class="opt-btn" data-val="hard" disabled>強い</button>
         </div>
       </div>
     </div>
@@ -1480,7 +1481,7 @@ const G = (() => {
     hana_bg:      'kuronuri',
     hana_speed:   'normal',
     hana_se:      'on',
-    hana_bgm:     'on',
+    hana_bgm:     'off',
     hana_cpu:     'normal',
     hana_rounds:  '6',
   };
@@ -1927,6 +1928,9 @@ const G = (() => {
       const v = localStorage.getItem(k);
       cfg[k] = v !== null ? v : def;
     }
+    // 暫定: BGMはOFF固定、CPUは普通固定（設定UI非活性のため）
+    cfg.hana_bgm = 'off';
+    cfg.hana_cpu = 'normal';
   }
 
   function saveSettings() {
