@@ -10,7 +10,7 @@
 | :---- | :---- | :---- | :---- |
 | 1 | デバッグログ削除 | `startTurn`・`cpuPlay`・`afterDraw` の `console.log` を除去 | \[x\] コメントアウト済み・対応完了 |
 | 2 | 月不一致バグ根本修正 | `fmSafe()` の暫定対処を恒久修正 | \[-\] 様子見（暫定対処で安定中） |
-| 3 | SEファイル用意 | `sounds/se_take.mp3`（カードを取る） \`sounds/se\_discard.mp3\`（捨てる） \`sounds/se\_draw.mp3\`（山札めくり） \`sounds/se\_yaku.mp3\`（役成立・フケ） \`sounds/se\_seisan.mp3\`（精算モーダル） \`sounds/se\_btn.mp3\`（ボタンタップ） | \[x\] 完了 |
+| 3 | SEファイル用意 | `sounds/se_take.mp3`（カードを取る） `sounds/se_discard.mp3`（捨てる） `sounds/se_draw.mp3`（山札めくり） `sounds/se_yaku.mp3`（役成立・フケ） `sounds/se_seisan.mp3`（精算モーダル） `sounds/se_btn.mp3`（ボタンタップ） | \[x\] 完了 |
 | 4 | BGMファイル用意 | `sounds/bgm_main.mp3`（ループ再生・volume 0.4） | \[x\] 完了 |
 
 ---
@@ -31,8 +31,8 @@
 
 | \# | タスク | 備考 | 状態 |
 | :---- | :---- | :---- | :---- |
-| 10 | Apple Developer Program登録 | 年$99 | \[ \] |
-| 11 | App Store Connectでアプリ登録 | Bundle ID設定 | \[ \] |
+| 10 | Apple Developer Program登録 | 法人（Hitonomigi Inc.）で登録済 | \[x\] 完了 |
+| 11 | App Store Connectでアプリ登録 | Bundle ID `inc.hitonomigi.hana-awase` / SKU `hana-awase01` | \[x\] 完了 |
 | 12 | アプリアイコン作成 | 1024×1024px PNG（Alpha不可） | \[ \] |
 | 13 | スクリーンショット撮影 | iPhone 6.9" / 6.5" / 5.5" 等 | \[ \] |
 | 14 | プライバシーポリシーURL用意 | LocalStorage使用があるため必須 | \[ \] |
