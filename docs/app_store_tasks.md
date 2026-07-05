@@ -33,9 +33,9 @@
 | :---- | :---- | :---- | :---- |
 | 10 | Apple Developer Program登録 | 法人（Hitonomigi Inc.）で登録済 | \[x\] 完了 |
 | 11 | App Store Connectでアプリ登録 | Bundle ID `inc.hitonomigi.hana-awase` / SKU `hana-awase01` | \[x\] 完了 |
-| 12 | アプリアイコン作成 | 1024×1024px PNG（Alpha不可） | \[ \] |
-| 13 | スクリーンショット撮影 | iPhone 6.9" / 6.5" / 5.5" 等 | \[ \] |
-| 14 | プライバシーポリシーURL用意 | LocalStorage使用があるため必須 | \[ \] |
+| 12 | アプリアイコン作成 | 扇状3枚デザイン・@capacitor/assetsで生成済 | \[x\] 完了 |
+| 13 | スクリーンショット撮影 | iPhone 16 Pro Max（6.9"）等で撮影済 | \[x\] 完了 |
+| 14 | プライバシーポリシーURL用意 | [https://hitonomigi.co.jp/privacy-policy.html](https://hitonomigi.co.jp/privacy-policy.html) | \[x\] 完了 |
 | 15 | アプリ説明文・キーワード作成 | 日本語・英語 | \[ \] |
 | 16 | 年齢レーティング設定 | ゲームカテゴリ選択 | \[ \] |
 | 17 | Provisioning Profile / 証明書設定 | Xcode or App Store Connect | \[ \] |
