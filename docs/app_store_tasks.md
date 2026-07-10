@@ -36,8 +36,8 @@
 | 12 | アプリアイコン作成 | 扇状3枚デザイン・@capacitor/assetsで生成済 | \[x\] 完了 |
 | 13 | スクリーンショット撮影 | iPhone 16 Pro Max（6.9"）等で撮影済 | \[x\] 完了 |
 | 14 | プライバシーポリシーURL用意 | [https://hitonomigi.co.jp/privacy-policy.html](https://hitonomigi.co.jp/privacy-policy.html) | \[x\] 完了 |
-| 15 | アプリ説明文・キーワード作成 | 日本語・英語 | \[ \] |
-| 16 | 年齢レーティング設定 | ゲームカテゴリ選択 | \[ \] |
+| 15 | アプリ説明文・キーワード作成 | 日本語で入力済（©・罫線は使用不可） | \[x\] 完了 |
+| 16 | 年齢レーティング設定 | 4+（模擬ギャンブルなしで回答） | \[x\] 完了 |
 | 17 | Provisioning Profile / 証明書設定 | Xcode or App Store Connect | \[ \] |
 | 18 | Archive → TestFlight配布 | 内部テスト | \[ \] |
 | 19 | 審査提出 | App Review | \[ \] |
